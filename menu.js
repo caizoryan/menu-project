@@ -631,6 +631,8 @@ class Book {
     this.spreads = spreads
     this.v_offsets = []
     this.h_offsets = []
+		 /** @type {Offset[]}*/
+    this.offsets = []
   }
 
   saddle_pages() {
@@ -666,6 +668,40 @@ class Book {
     return pairedup
   }
 
+	/**
+		 @param {number} index
+		 @param {Offset} offset
+	*/
+  mark_sheet_offset(index, offset) {
+    if (!this.validate_spread(index)) return
+
+    let spreads = this.saddle_pages()
+
+    let sheet = spreads[index]
+    let pair_index = isOdd(index) ? index - 1 : index + 1
+    let pair = spreads[pair_index]
+
+    sheet.forEach((e) => {
+      if (this.offsets.findIndex(f => f.page == e) == -1) {
+				this.offsets.push({
+					page: e,
+					offset: offset.offset,
+					axis: offset.axis
+				})
+			}
+    })
+
+    pair.forEach((e) => {
+      if (this.v_offsets.findIndex(f => f.page == e) == -1) {
+				this.offsets.push({
+					page: e,
+					offset: offset.offset,
+					axis: offset.axis
+				})
+			}
+    })
+  }
+
   // Will take sheet number, find pages in the sheet and mark it offset
   mark_sheet_v_offset(index) {
     if (!this.validate_spread(index)) return
@@ -689,7 +725,6 @@ class Book {
     if (!this.validate_spread(index)) return
 
     let spreads = this.saddle_pages()
-
     let sheet = spreads[index]
     let pair_index = isOdd(index) ? index - 1 : index + 1
     let pair = spreads[pair_index]
@@ -705,18 +740,18 @@ class Book {
 
   // Will take page number and convert to sheet then mark it.
 	/**
-		 @param {"h" | "v"} type
+		 @param {Offset} offset
 	 */
-  mark_page_offset(page, type) {
+  mark_page_offset(offset) {
     let spread = this.saddle_pages()
     let index = -1
 
     spread.forEach((e, i) => {
-      e.forEach(pg => pg == page ? index = i : null)
+      e.forEach(pg => pg == offset.page ? index = i : null)
     })
 
-		if (type=="h") this.mark_sheet_h_offset(index)
-		if (type=="v") this.mark_sheet_v_offset(index)
+		if (offset.axis=="horizontal") this.mark_sheet_h_offset(index, offset)
+		if (offset.axis=="vertical") this.mark_sheet_v_offset(index, offset)
   }
 
   page_to_spread(num) {
@@ -1177,16 +1212,32 @@ oninit.push(() => {
 /**@type {Book}*/
 let book
 let page = 1
-let v_offsets = []
 let v_offset_direction = -1
 
-let h_offsets = [6, 4, 15]
-let h_offset_direction = -1
+/**@type {Offset[]}*/
+let offsets = [
+	{
+		offset: offset_size,
+		axis: "horizontal",
+		page: 6
+	},
+
+	{
+		offset: offset_size,
+		axis: "horizontal",
+		page: 4
+	},
+
+	{
+		offset: offset_size,
+		axis: "horizontal",
+		page: 15 
+	}
+]
 
 oninit.push(() => {
   book = new Book(pages)
-  v_offsets.forEach((e) => book.mark_page_offset(e, "v"))
-  h_offsets.forEach((e) => book.mark_page_offset(e, "h"))
+	offsets.forEach((o) => book.mark_page_offset(o))
   book.set_page(page)
 })
 
@@ -1891,6 +1942,12 @@ const decodeHTML = function(str) {
 };
 
 /**
+@typedef {{
+	axis: ("vertical" | "horizontal")
+	offset: Unit,
+	page: number,
+}} Offset
+
 @typedef {{
   vertical_pos: number,
   word_count: number,
