@@ -881,14 +881,7 @@ class Paper {
   }
 
   setup(p, s, el) {
-    p.preload = () => {
-      saddle_stich_img = p.loadImage("/fs/fonts/saddle_stitch.png")
-      front_img = p.loadImage("/fs/fonts/front.png")
-      introduction_img = p.loadImage("/fs/fonts/introduction.png")
-      translation_img = p.loadImage("/fs/fonts/translation.png")
-      saddle_one = p.loadImage("/fs/fonts/saddle_one.png")
-      saddle_two = p.loadImage("/fs/fonts/saddle_two.png")
-    }
+    p.preload = () => {}
 
     p.setup = () => {
       p.createCanvas(this.size.width.px, this.size.height.px);
@@ -919,11 +912,11 @@ class Paper {
 
     let nextvisibleverso = (spread) => {
       let verso_page = spread * 2
-      let verso_offset = book.page_is_v_offset(verso_page)
-      let offset_pages = book.v_offsets
+      let verso_offset = book.page_is_h_offset(verso_page)
+      let offset_pages = book.h_offsets
 
       let found = -100
-      if (verso_offset) return found
+      if (verso_offset && before_spine(verso_page)) return found
 
       offset_pages.forEach(page => {
         if (!isOdd(page) &&
@@ -939,13 +932,14 @@ class Paper {
 
       return found
     }
+
     let nextvisiblerecto = (spread) => {
       let recto_page = spread * 2 + 1
-      let recto_offset = book.page_is_v_offset(recto_page)
-      let offset_pages = book.v_offsets
+      let recto_offset = book.page_is_h_offset(recto_page)
+      let offset_pages = book.h_offsets
 
       let found = -200
-      if (recto_offset) return found
+      if (recto_offset && !before_spine(recto_page)) return found
 
       offset_pages.forEach(page => {
         if (isOdd(page) &&
@@ -954,7 +948,7 @@ class Paper {
           let diff = Math.abs(recto_page - page)
           let diffAlready = Math.abs(recto_page - found)
 
-          if (diff < diffAlready) found = page
+          if (diff < diffAlready && !before_spine(page)) found = page
         }
       })
 
@@ -1159,7 +1153,10 @@ oninit.push(() => {
   // for offset
   else {
     paper = new Paper(p, s, el, {
-      width: s.inch(11),
+      width: s.add(
+        grid.props.page_width,
+        s.px_raw(offset_size.px * 2.5)
+      ),
       height: s.add(
         grid.props.page_height,
         s.px_raw(offset_size.px * 2.5)
@@ -1215,7 +1212,8 @@ let drawpaper = () => saddle() ?
 
 oninit.push(() => eff_on(saddle, drawpaper))
 let pg = sig(0)
-let container = () => html`
+let container = () => {
+	return html`
   <style>
     ${GlobalStyle}
   </style>
@@ -1256,7 +1254,7 @@ let container = () => html`
     </button>
   </div>
 `
-
+}
 let style = {
   title: [
     ["font_family", "GapSansBlack"],
@@ -1290,7 +1288,6 @@ let style = {
     ["color", "#00000066"],
   ]
 }
-
 let introduction = ``
 
 // x------------------x
@@ -1327,636 +1324,6 @@ let cover = {
     ]
   ]
 }
-
-
-// x------------------x
-// *Header: Structure
-// x------------------x
-let structure_writing = ``
-let graphic_processes_first = ``
-
-let graphicprocesses = [
-  ["Header",
-    ["text", "Language of Graphic Processes"],
-    ["x", ["recto", 3, "x"]],
-    ["y", ["hangline", 1]],
-    ["height", ["em", 18]],
-    ["length", ["column_width", 5]],
-    ["rect", false],
-  ],
-
-  ["Rect",
-    ["x", ["recto", 2, "x"]],
-    ["y", ["recto", 1.5, "y"]],
-    ["height", ["em", 12]],
-    ["length", ["em", 6]],
-    ["fill", "#22222222"],
-  ],
-
-  ["TextFrame",
-    ["text", "as {language}"],
-    ["x", ["recto", 3, "x"]],
-    ["y", ["recto", 0, "y"]],
-    ["height", ["em", 8]],
-    ["length", ["column_width", 3.5]],
-    ["rect", false],
-    ...style.label,
-  ],
-
-  ["LinkedFrame",
-    graphic_processes_first,
-    [
-      ["x", ["recto", 0, "x"]],
-      ["y", ["hangline", 1]],
-      ["length", ["column_width", 4]],
-      ["height", ["em", 8]],
-      ...style.body
-    ],
-    [
-      ["y", ["hangline", 5]],
-      ["length", ["column_width", 4]],
-    ]
-  ],
-]
-
-let structure_graphic = {
-  title: "",
-  content: [
-    ["Header",
-      ["text", "INTRODUCTION"],
-      ["x", ["verso", 2, "x"]],
-      ["y", ["hangline", 0]],
-      ["length", ["column_width", 6]],
-      ["height", ["em", 12]],
-    ],
-
-    // Translucent Rect
-    ["Rect",
-      ["x", ["verso", 1, "x"]],
-      ["y", ["em", 10]],
-      ["height", ["em", 18]],
-      ["length", ["em", 12]],
-      ["fill", "#22222222"],
-    ],
-
-    // Circles
-    ...Array(12).fill(0).map((e, i) => {
-      return ["Circle",
-        ["x", ["verso", 3, "x"]],
-        ["y", ["em", 4 + i * 1]],
-        ["radius", ["em", 1 - (i / 18)]],
-        ["stroke", "black"]
-      ]
-    }),
-
-    // Circles
-    ...Array(7).fill(0).map((e, i) => {
-      return ["Circle",
-        ["x", ["verso", 3, "x"]],
-        ["y", ["em", 18 + i * 1.5]],
-        ["radius", ["em", 1]],
-        ["stroke", "black"]
-      ]
-    }),
-
-    // Fun Arc
-    ["Arc",
-      ["x", ["verso", 2, "x"]],
-      ["y", ["hangline", 1]],
-      ["radius", ["em", 15]],
-      ["stroke", "black"]
-    ],
-
-    // Description text
-    ["LinkedFrame",
-      structure_writing,
-      [
-        ["text", ""],
-        ["x", ["verso", 0, "x"]],
-        ["y", ["hangline", 1.85]],
-        ["height", ["em", 12]],
-        ["length", ["em", 12]],
-        ...style.body
-      ],
-
-      [
-        ["text", ""],
-        ["x", ["verso", 4, "x"]],
-        ["y", ["hangline", 5]],
-        ["height", ["em", 8]],
-        ["length", ["em", 12]],
-        ...style.body
-      ],
-    ],
-
-    ...graphicprocesses
-
-  ]
-}
-
-let finish = ``
-
-let grid_label = ``
-let grid_intro = ``
-
-let gridstructure = [
-  ["Header",
-    ["text", "STRUCTURE"],
-    ["x", ["recto", 3, "x"]],
-    ["y", ["hangline", 1]],
-    ["height", ["em", 8]],
-    ["length", ["column_width", 5]],
-    ["rect", false],
-  ],
-
-  ...grid.hanglines()
-    .map((e, i) =>
-      ["TextFrame",
-        ["text", "[HANGLINE]  "
-          + e.value.toFixed(1)
-          + " "
-          + e.unit
-          + ", "
-          + e.px.toFixed(1)
-          + " px"],
-        ["x", ["recto", 1, "x"]],
-        ["y", [e.unit, e.value]],
-        ["height", ["em", 1]],
-        ["length", ["column_width", 4]],
-        ["rect", false],
-        ...style.metadata
-      ]
-    ),
-
-  ["TextFrame",
-    ["text", "as {grid}"],
-    ["x", ["recto", 3, "x"]],
-    ["y", ["hangline", 3.3]],
-    ["height", ["em", 8]],
-    ["length", ["column_width", 5]],
-    ["rect", false],
-    ...style.label
-  ],
-
-
-  ["TextFrame",
-    ["text", grid_intro],
-    ["x", ["recto", 0, "x"]],
-    ["y", ["hangline", 5]],
-    ["height", ["em", 8]],
-    ["length", ["column_width", 8]],
-    ["rect", false],
-    ...style.body
-  ],
-
-
-  ["Rect",
-    ["x", ["recto", 0, "x"]],
-    ["y", ["hangline", 3.3]],
-    ["height", ["em", 4]],
-    ["length", ["column_width", 3]],
-    ["fill", "blue"]
-  ],
-
-  ["TextFrame",
-    ["text", grid_label],
-    ["x", ["recto", 0, "x"]],
-    ["y", ["hangline", 3.3]],
-    ["height", ["em", 8]],
-    ["length", ["column_width", 3]],
-    ["rect", false],
-    ...style.metadata,
-    ["font_weight", 800],
-    ["color", "yellow"]
-  ],
-]
-
-let grid_text = ``
-let graphic_processes = {
-  title: "",
-  content: [
-
-    ["LinkedFrame",
-      finish,
-      [
-        ["x", ["verso", 0, "x"]],
-        ["y", ["verso", 0, "y"]],
-        ["length", ["column_width", 4]],
-        ["height", ["em", 24]],
-        ...style.body
-      ],
-      [
-        ["x", ["verso", 4, "x"]],
-      ]
-    ],
-    ...gridstructure
-  ]
-}
-
-let for_instance = ``
-let above_example = ``
-let instance_example = {
-  title: "",
-  content: [
-
-    ["Image",
-      ["src", () => saddle_one],
-      ["x", ["verso", 0, "x"]],
-      ["y", ["hangline", 0]],
-      ["width", ["column_width", 8]],
-      ["height", ["em", 4.5]],
-    ],
-
-    ...grid.recto_columns()
-      .map((e, i) =>
-        ["TextFrame",
-          ["text", "[" + (i + 1) + "]" +
-            + e.x.value.toFixed(1)
-            + " " + e.x.unit],
-          ["x", ["verso", i, "x"]],
-          ["y", [e.y.unit, e.y.value]],
-          ["height", ["em", 3]],
-          ["length", ["column_width", 1]],
-          ["rect", false],
-          ...style.metadata
-        ]
-      ),
-
-
-    ["TextFrame",
-      ["text", grid_text],
-      ["x", ["verso", 0, "x"]],
-      ["y", ["hangline", 5]],
-      ["height", ["em", 8]],
-      ["length", ["column_width", 8]],
-      ["rect", false],
-      ...style.body
-    ],
-    ["LinkedFrame",
-      for_instance,
-      [
-        ["x", ["recto", 0, "x"]],
-        ["y", ["recto", 0, "y"]],
-        ["length", ["column_width", 4]],
-        ["height", ["em", 8.5]],
-        ...style.body
-      ],
-      [
-        ["x", ["recto", 4, "x"]],
-      ]
-    ],
-
-    ["LinkedFrame",
-      above_example,
-      [
-        ["x", ["recto", 0, "x"]],
-        ["y", ["hangline", 5]],
-        ["length", ["column_width", 4]],
-        ["height", ["em", 8.5]],
-        ...style.body
-      ],
-      [
-        ["x", ["recto", 4, "x"]],
-        ["height", ["em", 10.5]],
-        ["length", ["column_width", 4.1]],
-      ]
-    ],
-  ]
-}
-
-let translationintro = ``
-let translationoutro = ``
-
-let saddle_stich_img
-let front_img, introduction_img, translation_img
-let saddle_one, saddle_two
-
-let saddle_stich_begin = ``
-let translationstart = {
-  title: "",
-  content: [
-
-    ["Header",
-      ["text", "TRANSLATION"],
-      ["x", ["verso", 3, "x"]],
-      ["y", ["hangline", 1]],
-      ["height", ["em", 18]],
-      ["length", ["column_width", 8]],
-      ["rect", false],
-    ],
-
-    ["Header",
-      ["text", "BOOKLET"],
-      ["x", ["recto", 3, "x"]],
-      ["y", ["hangline", 5]],
-      ["height", ["em", 18]],
-      ["length", ["column_width", 8]],
-      ["rect", false],
-    ],
-
-    ["Image",
-      ["src", () => saddle_two],
-      ["x", ["recto", 0, "x"]],
-      ["y", ["hangline", 0]],
-      ["width", ["column_width", 8]],
-      ["height", ["em", 4.5]],
-    ],
-
-    // Translucent Rect
-    ...Array(88).fill(0).map((e, index) => {
-      return ["Rect",
-        ["x", ["verso", 3, "x"]],
-        ["y", ["hangline", 1 + index / 15]],
-        ["height", ["em", .5]],
-        ["length", ["em", 9]],
-        ["fill", "#ff00ff88"],
-      ]
-    }),
-    //
-    ...Array(22).fill(0).map((e, index) => {
-      return ["Rect",
-        ["x", ["verso", 2, "x"]],
-        ["y", ["hangline", 3 + index / 10]],
-        ["height", ["em", .5]],
-        ["length", ["em", 9]],
-        ["fill", "#ffffff88"],
-      ]
-    }),
-
-    ["LinkedFrame",
-      saddle_stich_begin,
-      [
-        ["x", ["recto", 0, "x"]],
-        ["y", ["hangline", 3]],
-        ["length", ["column_width", 4]],
-        ["height", ["em", 14.5]],
-        ...style.body
-      ],
-      [
-        ["x", ["recto", 4, "x"]],
-      ]
-    ],
-
-    ["LinkedFrame",
-      translationintro,
-      [
-        ["x", ["verso", 0, "x"]],
-        ["y", ["hangline", 3]],
-        ["length", ["column_width", 4]],
-        ["height", ["em", 14.5]],
-        ...style.body
-      ],
-      [
-        ["x", ["verso", 4, "x"]],
-      ]
-    ],
-
-  ]
-}
-let saddle_patterns = ``
-let translationend = {
-  title: "",
-  content: [
-    ["Image",
-      ["src", () => saddle_stich_img],
-      ["x", ["verso", 0, "x"]],
-      ["y", ["verso", 0, "y"]],
-      ["width", ["column_width", 4]],
-      ["height", ["em", 14.5]],
-    ],
-
-    ["LinkedFrame",
-      saddle_patterns,
-      [
-        ["x", ["verso", 0, "x"]],
-        ["y", ["hangline", 5]],
-        ["length", ["column_width", 4]],
-        ["height", ["em", 8.5]],
-        ...style.body
-      ],
-      [
-        ["y", ["hangline", 3]],
-        ["x", ["verso", 4, "x"]],
-        ["height", ["em", 14.5]],
-      ]
-    ],
-
-    ["LinkedFrame",
-      translationoutro,
-      [
-        ["x", ["recto", 0, "x"]],
-        ["y", ["hangline", 5]],
-        ["length", ["column_width", 4]],
-        ["height", ["em", 8.5]],
-        ...style.body
-      ],
-      [
-        ["x", ["verso", 4, "x"]],
-      ]
-    ],
-  ]
-}
-
-let writing_program = ``
-let writing_gui = ``
-
-let programmingnotetakng = {
-  title: "",
-  content: [
-
-    ["Header",
-      ["text", "PROGRAMMING"],
-      ["x", ["verso", 3, "x"]],
-      ["y", ["hangline", 1]],
-      ["height", ["em", 18]],
-      ["length", ["column_width", 8]],
-      ["rect", false],
-    ],
-
-    ["Header",
-      ["text", "NOTETAKING"],
-      ["x", ["recto", 3, "x"]],
-      ["y", ["hangline", 5]],
-      ["height", ["em", 18]],
-      ["length", ["column_width", 8]],
-      ["rect", false],
-    ],
-
-    // Translucent Rect
-    ...Array(88).fill(0).map((e, index) => {
-      return ["Rect",
-        ["x", ["recto", 3, "x"]],
-        ["y", ["hangline", 1 + index / 15]],
-        ["height", ["em", .5]],
-        ["length", ["em", 9]],
-        ["fill", "#ff00ff88"],
-      ]
-    }),
-    //
-    ...Array(22).fill(0).map((e, index) => {
-      return ["Rect",
-        ["x", ["verso", 2, "x"]],
-        ["y", ["hangline", 3 + index / 10]],
-        ["height", ["em", .5]],
-        ["length", ["em", 9]],
-        ["fill", "#ffffff88"],
-      ]
-    }),
-
-    ["LinkedFrame",
-      writing_program,
-      [
-        ["x", ["verso", 0, "x"]],
-        ["y", ["hangline", 3]],
-        ["length", ["column_width", 4]],
-        ["height", ["em", 14.5]],
-        ...style.body
-      ],
-      [
-        ["x", ["verso", 4, "x"]],
-      ]
-    ],
-
-    ["TextFrame",
-      ["text", "&"],
-      ["color", "#ff00ff"],
-      ["font_family", "GapSans"],
-      ["x", ["verso", 7, "x"]],
-      ["y", ["hangline", 3]],
-      ["length", ["column_width", 4]],
-      ["height", ["em", 12.5]],
-      ["font_size", ["em", 8]]
-    ],
-
-    ["LinkedFrame",
-      writing_gui,
-      [
-        ["x", ["recto", 0, "x"]],
-        ["y", ["hangline", 5]],
-        ["length", ["column_width", 4]],
-        ["height", ["em", 8.5]],
-        ...style.body
-      ],
-      [
-        ["x", ["recto", 4, "x"]],
-        ["y", ["recto", 0, "y"]],
-        ["height", ["em", 18.5]],
-      ]
-    ],
-
-  ]
-}
-
-let frame = ``
-let saddle_pages = ``
-
-let front_cover_img = {
-  title: "",
-  content: [
-    ["Image",
-      ["src", () => front_img],
-      ["x", ["verso", 0, "x"]],
-      ["y", ["verso", 0, "y"]],
-      ["width", ["column_width", 6]],
-      ["height", ["em", 25]],
-    ],
-
-    ["Header",
-      ["text", "NOTES"],
-      ["x", ["recto", 3, "x"]],
-      ["y", ["hangline", 0]],
-      ["height", ["em", 18]],
-      ["length", ["column_width", 8]],
-      ["rect", false],
-    ],
-
-    ["TextFrame",
-      ["text", frame],
-      ["color", "#ff00ff"],
-      ["x", ["recto", 4, "x"]],
-      ["y", ["hangline", 0]],
-      ["length", ["column_width", 8]],
-      ["height", ["em", 22.5]],
-      ...style.metadata,
-      ["leading", ["point", 5]],
-    ]
-
-  ]
-}
-
-let saddle_instructions = ``
-
-let intoduction_cover_img = {
-  title: "",
-  content: [
-    ["Image",
-      ["src", () => front_img],
-      ["x", ["verso", 0, "x"]],
-      ["y", ["verso", 0, "y"]],
-      ["width", ["column_width", 6]],
-      ["height", ["em", 25]],
-    ],
-
-    ["Header",
-      ["text", "booklet_bind()"],
-      ["x", ["recto", 3, "x"]],
-      ["y", ["hangline", 5]],
-      ["height", ["em", 18]],
-      ["length", ["column_width", 8]],
-      ["rect", false],
-    ],
-
-    // Translucent Rect
-    ...Array(58).fill(0).map((e, index) => {
-      return ["Rect",
-        ["x", ["recto", 2, "x"]],
-        ["y", ["hangline", 3 + index / 15]],
-        ["height", ["em", .5]],
-        ["length", ["em", 9]],
-        ["fill", "#0000ff22"],
-      ]
-    }),
-
-    ["LinkedFrame",
-      saddle_instructions,
-      [
-        ["color", "#ff00ff"],
-        ["x", ["recto", 0, "x"]],
-        ["y", ["hangline", 1]],
-        ["length", ["column_width", 4]],
-        ["height", ["em", 22.5]],
-        ...style.body,
-      ]
-    ],
-
-    ["LinkedFrame",
-      saddle_pages,
-      [
-        ["color", "#ff00ff"],
-        ["x", ["recto", 4, "x"]],
-        ["y", ["hangline", 1]],
-        ["length", ["column_width", 8]],
-        ["height", ["em", 22.5]],
-        ...style.metadata,
-        ["leading", ["point", 5]],
-      ]],
-
-  ]
-}
-
-let translation_cover_img = {
-  title: "",
-  content: [
-    ["Image",
-      ["src", () => translation_img],
-      ["x", ["verso", 3, "x"]],
-      ["y", ["verso", 0, "y"]],
-      ["width", ["column_width", 10]],
-      ["height", ["em", 25]],
-    ],
-  ]
-}
-
 let colophon = {
   title: "",
   content: [
@@ -1983,26 +1350,6 @@ The booklet was designed in a custom tool developed for an independent study con
   ]
 }
 
-let blankpages = {
-  title: "",
-  content: [
-
-    ["TextFrame",
-      ["text", `[GOTTA PRINT BLANK PAGES]`],
-      ["x", ["verso", 3, "x"]],
-      ["y", ["hangline", 1]],
-      ["length", ["column_width", 5]],
-      ["height", ["em", 25]],
-      ...style.metadata
-    ],
-  ]
-}
-
-let empty = {
-  title: "describes grid",
-  content: []
-}
-
 page = 2
 
 // x-----------------------x
@@ -2011,18 +1358,18 @@ page = 2
 let data = {
   contents: [
     cover,
-    structure_graphic,
-    graphic_processes,
-    instance_example,
-    translationstart,
-    translationend,
-    programmingnotetakng,
-    front_cover_img,
-    intoduction_cover_img,
-    translation_cover_img,
     colophon,
-    blankpages,
-    empty,
+    cover,
+    cover,
+    cover,
+    cover,
+    cover,
+    cover,
+    colophon,
+    colophon,
+    colophon,
+    colophon,
+    colophon,
   ]
 }
 
