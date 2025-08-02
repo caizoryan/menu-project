@@ -46,7 +46,7 @@ const GlobalStyle = `
   }
 `
 let funky_hyphens = false
-let color_hyphens = true
+let color_hyphens = false
 
 /**
 @param {string} text
@@ -60,122 +60,122 @@ let color_hyphens = true
 Takes text and length, and returns overflowed text.
 */
 function draw_line(p, text, x, y, length, state, hooks) {
-  if (text.charAt(0) == `\n`) {
-    return text.slice(1)
-  }
-  let lines = text.split(`\n`)
-  let words = lines.shift().split(" ")
-  let end_lines = `\n` + lines.join(`\n`)
+	if (text.charAt(0) == `\n`) {
+		return text.slice(1)
+	}
+	let lines = text.split(`\n`)
+	let words = lines.shift().split(" ")
+	let end_lines = `\n` + lines.join(`\n`)
 
-  let skip = false
+	let skip = false
 
-  /**@type LineState*/
-  let line_state = {
-    space_size: p.textWidth(" "),
-    hyphen_leftover: "",
-    horizontal_pos: 0,
-    word_count: 0,
-  }
+	/**@type LineState*/
+	let line_state = {
+		space_size: p.textWidth(" "),
+		hyphen_leftover: "",
+		horizontal_pos: 0,
+		word_count: 0,
+	}
 
-  let try_hyphenation = (word) => {
-    if (word.includes("-")) return false
-
-
-    let hyphenated
-    if (funky_hyphens) {
-      hyphenated = word.split("")
-    } else {
-      hyphenated = hyphenateSync(word, {
-        hyphenChar: "---((---))---"
-      }).split("---((---))---")
-    }
+	let try_hyphenation = (word) => {
+		if (word.includes("-")) return false
 
 
-    // try to put first of hyphenated in...
-    /**@type {number[]}*/
-    let sizes = hyphenated.map(e => p.textWidth(e))
-    let already = line_state.horizontal_pos
-    //let lexeme = hyphenated.shift()
-    let condition = () => {
-      let cur_size = sizes
-        .slice(0, count + 1)
-        .reduce((sum, a) => sum += a, 0)
-      return already + cur_size < length.px
-    }
+		let hyphenated
+		if (funky_hyphens) {
+			hyphenated = word.split("")
+		} else {
+			hyphenated = hyphenateSync(word, {
+				hyphenChar: "---((---))---"
+			}).split("---((---))---")
+		}
 
-    let count = 0
-    while (condition()) { count++ }
 
-    //let word_len = p.textWidth(lexeme)
+		// try to put first of hyphenated in...
+		/**@type {number[]}*/
+		let sizes = hyphenated.map(e => p.textWidth(e))
+		let already = line_state.horizontal_pos
+		//let lexeme = hyphenated.shift()
+		let condition = () => {
+			let cur_size = sizes
+				.slice(0, count + 1)
+				.reduce((sum, a) => sum += a, 0)
+			return already + cur_size < length.px
+		}
 
-    if (count == 0) return false
-    else {
-      let remainder = hyphenated.slice(count).join("")
-      let word = hyphenated.slice(0, count).join("")
-      let _fill = p.ctx.fillStyle
-      //
-      if (color_hyphens) p.fill(p.color("red"))
-      p.text(word + "-", x.px + line_state.horizontal_pos, y.px)
-      p.fill(_fill)
-      return remainder
-    }
+		let count = 0
+		while (condition()) { count++ }
 
-    // if (line_state.horizontal_pos + word_len < length.px) {
-    //   let _fill = p.ctx.fillStyle
-    //   // hook to change color of hyphenated
-    //   p.fill(p.color("red"))
-    //   p.text(lexeme + "-",
-    //     x.px + line_state.horizontal_pos, y.px)
-    //   p.fill(_fill)
-    //   return hyphenated.join("")
-    // }
+		//let word_len = p.textWidth(lexeme)
 
-    return false
-  }
+		if (count == 0) return false
+		else {
+			let remainder = hyphenated.slice(count).join("")
+			let word = hyphenated.slice(0, count).join("")
+			let _fill = p.ctx.fillStyle
+			//
+			if (color_hyphens) p.fill(p.color("red"))
+			p.text(word + "-", x.px + line_state.horizontal_pos, y.px)
+			p.fill(_fill)
+			return remainder
+		}
 
-  const props = () => ({
-    paragraph_state: state.paragraph_state,
-    line_state: line_state,
-    paragraph: state.paragraph,
-    p: p,
-  })
+		// if (line_state.horizontal_pos + word_len < length.px) {
+		//   let _fill = p.ctx.fillStyle
+		//   // hook to change color of hyphenated
+		//   p.fill(p.color("red"))
+		//   p.text(lexeme + "-",
+		//     x.px + line_state.horizontal_pos, y.px)
+		//   p.fill(_fill)
+		//   return hyphenated.join("")
+		// }
 
-  words.forEach(word => {
-    if (skip) return
-    let word_len = p.textWidth(word)
+		return false
+	}
 
-    //if (typeof hooks?.beforeWord == "function") hooks?.beforeWord(props())
-    if (line_state.horizontal_pos + word_len > length.px) {
-      // try hyphenation...
-      if (!state.paragraph.hyphenate) {
-        skip = true
-        return
-      }
-      let _leftover = try_hyphenation(word)
-      if (_leftover) {
-        line_state.hyphen_leftover = _leftover
-        line_state.word_count++
-      }
-      skip = true
-      return
-    }
+	const props = () => ({
+		paragraph_state: state.paragraph_state,
+		line_state: line_state,
+		paragraph: state.paragraph,
+		p: p,
+	})
 
-    let _fill = p.ctx.fillStyle
-    if (word.includes(`\n`)) {
-      p.fill(p.color("red"))
-    }
+	words.forEach(word => {
+		if (skip) return
+		let word_len = p.textWidth(word)
 
-    p.text(word, x.px + line_state.horizontal_pos, y.px)
-    p.fill(_fill)
-    line_state.horizontal_pos += word_len
-    line_state.horizontal_pos += line_state.space_size
-    line_state.word_count++
-  })
+		//if (typeof hooks?.beforeWord == "function") hooks?.beforeWord(props())
+		if (line_state.horizontal_pos + word_len > length.px) {
+			// try hyphenation...
+			if (!state.paragraph.hyphenate) {
+				skip = true
+				return
+			}
+			let _leftover = try_hyphenation(word)
+			if (_leftover) {
+				line_state.hyphen_leftover = _leftover
+				line_state.word_count++
+			}
+			skip = true
+			return
+		}
 
-  p.opacity(1)
-  words = words.slice(line_state.word_count).join(" ")
+		let _fill = p.ctx.fillStyle
+		if (word.includes(`\n`)) {
+			p.fill(p.color("red"))
+		}
 
-  return line_state.hyphen_leftover ? line_state.hyphen_leftover + " " + words + end_lines : words + end_lines
+		p.text(word, x.px + line_state.horizontal_pos, y.px)
+		p.fill(_fill)
+		line_state.horizontal_pos += word_len
+		line_state.horizontal_pos += line_state.space_size
+		line_state.word_count++
+	})
+
+	p.opacity(1)
+	words = words.slice(line_state.word_count).join(" ")
+
+	return line_state.hyphen_leftover ? line_state.hyphen_leftover + " " + words + end_lines : words + end_lines
 }
 
 /**
@@ -186,349 +186,349 @@ function draw_line(p, text, x, y, length, state, hooks) {
 @description takes text and length, and returns overflowed text.
 */
 function draw_paragraph(p, paragraph, grid) {
-  const is_fn = fn => typeof fn == "function"
+	const is_fn = fn => typeof fn == "function"
 
-  //@ts-ignore
-  if (paragraph.x && is_fn(paragraph.x)) paragraph.x = paragraph.x(grid)
-  //@ts-ignore
-  if (paragraph.y && is_fn(paragraph.y)) paragraph.y = paragraph.y(grid)
-  //@ts-ignore
-  if (paragraph.length && is_fn(paragraph.length)) paragraph.length = paragraph.length(grid)
-  //@ts-ignore
-  if (paragraph.height && is_fn(paragraph.height)) paragraph.height = paragraph.height(grid)
+	//@ts-ignore
+	if (paragraph.x && is_fn(paragraph.x)) paragraph.x = paragraph.x(grid)
+	//@ts-ignore
+	if (paragraph.y && is_fn(paragraph.y)) paragraph.y = paragraph.y(grid)
+	//@ts-ignore
+	if (paragraph.length && is_fn(paragraph.length)) paragraph.length = paragraph.length(grid)
+	//@ts-ignore
+	if (paragraph.height && is_fn(paragraph.height)) paragraph.height = paragraph.height(grid)
 
-  /**@type Paragraph*/
-  let _paragraph = Object.assign({
-    text: "",
-    font_family: "monospace",
-    font_weight: 300,
-    x: { px: 10 },
-    y: { px: 10 },
-    height: { px: 100 },
-    length: { px: 100 },
-    leading: { px: 12 },
+	/**@type Paragraph*/
+	let _paragraph = Object.assign({
+		text: "",
+		font_family: "monospace",
+		font_weight: 300,
+		x: { px: 10 },
+		y: { px: 10 },
+		height: { px: 100 },
+		length: { px: 100 },
+		leading: { px: 12 },
 
-    color: p.color("black"),
-    stroke: p.color("black"),
-    font_size: { px: 14 },
-    rect: true,
-    hooks: {},
-    hyphenate: true
-  }, paragraph)
-
-
-  p.textSize(_paragraph.font_size.px)
-  p.textFont(_paragraph.font_family)
-  p.textWeight(_paragraph.font_weight)
-
-  /**@type ParagraphState*/
-  let paragraph_state = {
-    vertical_pos: _paragraph.y.px + p.textLeading(),
-    word_count: 0,
-  }
-
-  if (_paragraph.rect) {
-    p.noFill();
-    p.strokeWeight(.5)
-    p.stroke(_paragraph.stroke);
-    p.rect(_paragraph.x.px, _paragraph.y.px, _paragraph.length.px, _paragraph.height.px);
-  }
-
-  p.noStroke();
-  p.fill(_paragraph.color)
-  let start_length = _paragraph.text.length
-
-  while (_paragraph.text.length > 0 && paragraph_state.vertical_pos < _paragraph.y.px + _paragraph.height.px) {
-    paragraph_state.word_count = start_length - _paragraph.text.length
-    _paragraph.text = draw_line(
-      p,
-      _paragraph.text,
-      _paragraph.x,
-      { px: paragraph_state.vertical_pos },
-      _paragraph.length,
-      {
-        paragraph: _paragraph,
-        paragraph_state
-      },
-      _paragraph.hooks
-    )
-    paragraph_state.vertical_pos += _paragraph.leading.px
-  }
+		color: p.color("black"),
+		stroke: p.color("black"),
+		font_size: { px: 14 },
+		rect: true,
+		hooks: {},
+		hyphenate: true
+	}, paragraph)
 
 
+	p.textSize(_paragraph.font_size.px)
+	p.textFont(_paragraph.font_family)
+	p.textWeight(_paragraph.font_weight)
 
-  return _paragraph.text
+	/**@type ParagraphState*/
+	let paragraph_state = {
+		vertical_pos: _paragraph.y.px + p.textLeading(),
+		word_count: 0,
+	}
+
+	if (_paragraph.rect) {
+		p.noFill();
+		p.strokeWeight(.5)
+		p.stroke(_paragraph.stroke);
+		p.rect(_paragraph.x.px, _paragraph.y.px, _paragraph.length.px, _paragraph.height.px);
+	}
+
+	p.noStroke();
+	p.fill(_paragraph.color)
+	let start_length = _paragraph.text.length
+
+	while (_paragraph.text.length > 0 && paragraph_state.vertical_pos < _paragraph.y.px + _paragraph.height.px) {
+		paragraph_state.word_count = start_length - _paragraph.text.length
+		_paragraph.text = draw_line(
+			p,
+			_paragraph.text,
+			_paragraph.x,
+			{ px: paragraph_state.vertical_pos },
+			_paragraph.length,
+			{
+				paragraph: _paragraph,
+				paragraph_state
+			},
+			_paragraph.hooks
+		)
+		paragraph_state.vertical_pos += _paragraph.leading.px
+	}
+
+
+
+	return _paragraph.text
 }
 
 class Scale {
-  constructor(scale = 1) {
-    this.dpi = window.devicePixelRatio * 96
-    this.scale = scale / this.dpi
-  }
+	constructor(scale = 1) {
+		this.dpi = window.devicePixelRatio * 96
+		this.scale = scale / this.dpi
+	}
 
-  /**
-  @param {Unit} unit1 
-  @param {Unit} unit2 
-  */
-  add(unit1, unit2) {
-    return this.px_raw(unit1.px + unit2.px)
-  }
+	/**
+	@param {Unit} unit1 
+	@param {Unit} unit2 
+	*/
+	add(unit1, unit2) {
+		return this.px_raw(unit1.px + unit2.px)
+	}
 
-  /**
-  @param {Unit} unit1 
-  @param {Unit} unit2 
-  */
-  sub(unit1, unit2) {
-    return this.px_raw(unit1.px - unit2.px)
-  }
+	/**
+	@param {Unit} unit1 
+	@param {Unit} unit2 
+	*/
+	sub(unit1, unit2) {
+		return this.px_raw(unit1.px - unit2.px)
+	}
 
-  /**
-  @param {Unit} unit1 
-  @param {number} unit2 
-  */
-  mul(unit1, unit2) {
-    return this.px_raw(unit1.px * unit2)
-  }
+	/**
+	@param {Unit} unit1 
+	@param {number} unit2 
+	*/
+	mul(unit1, unit2) {
+		return this.px_raw(unit1.px * unit2)
+	}
 
-  /**
-  @param {Unit} unit1 
-  @param {Unit} unit2 
-  */
-  div(unit1, unit2) {
-    return this.px_raw(unit1.px / unit2.px)
-  }
+	/**
+	@param {Unit} unit1 
+	@param {Unit} unit2 
+	*/
+	div(unit1, unit2) {
+		return this.px_raw(unit1.px / unit2.px)
+	}
 
-  /**
-  @param {number} value 
-  @returns {Unit} 
-  */
-  em(value) {
-    return {
-      unit: "em",
-      value,
-      px: this.inch(value / 6).px
-    }
-  }
+	/**
+	@param {number} value 
+	@returns {Unit} 
+	*/
+	em(value) {
+		return {
+			unit: "em",
+			value,
+			px: this.inch(value / 6).px
+		}
+	}
 
-  /**
-  @param {number} value 
-  @returns {Unit} 
-  */
-  px(value) {
-    return {
-      unit: "pixel",
-      value,
-      px: value * this.scale
-    }
-  }
+	/**
+	@param {number} value 
+	@returns {Unit} 
+	*/
+	px(value) {
+		return {
+			unit: "pixel",
+			value,
+			px: value * this.scale
+		}
+	}
 
-  /**
-  @param {number} value 
-  @returns {Unit} 
-  */
-  px_raw(value) {
-    return {
-      unit: "pixel",
-      value,
-      px: value
-    }
-  }
+	/**
+	@param {number} value 
+	@returns {Unit} 
+	*/
+	px_raw(value) {
+		return {
+			unit: "pixel",
+			value,
+			px: value
+		}
+	}
 
-  pixel(value) { return this.px(value) }
+	pixel(value) { return this.px(value) }
 
-  /**
-  @param {number} value 
-  @returns {Unit} 
-  */
-  inch(value) {
-    return {
-      unit: "inch",
-      value,
-      px: value * this.dpi * this.scale
-    }
-  }
+	/**
+	@param {number} value 
+	@returns {Unit} 
+	*/
+	inch(value) {
+		return {
+			unit: "inch",
+			value,
+			px: value * this.dpi * this.scale
+		}
+	}
 
-  /**
-  @param {number} value 
-  @returns {Unit} 
-  */
-  pica(value) { return this.em(value) }
-  picas(value) { return this.pica(value) }
+	/**
+	@param {number} value 
+	@returns {Unit} 
+	*/
+	pica(value) { return this.em(value) }
+	picas(value) { return this.pica(value) }
 
 
-  /**
-  @param {number} value 
-  @returns {Unit} 
-  */
-  point(value) {
-    return {
-      unit: "point",
-      value,
-      px: this.pica(value).px / 12
-    }
-  }
+	/**
+	@param {number} value 
+	@returns {Unit} 
+	*/
+	point(value) {
+		return {
+			unit: "point",
+			value,
+			px: this.pica(value).px / 12
+		}
+	}
 }
 
 let s = new Scale(dpi)
 class LinkedFrame {
-  /**
-  @param {ParagraphProps[]} [frames=[]] 
-  @param {string} [text=""] 
-  */
-  constructor(text = "", frames = []) {
-    this.frames = frames
-    this.text = text
-  }
+	/**
+	@param {ParagraphProps[]} [frames=[]] 
+	@param {string} [text=""] 
+	*/
+	constructor(text = "", frames = []) {
+		this.frames = frames
+		this.text = text
+	}
 
-  /**
-  @param {ParagraphProps} frame 
-  */
-  add(frame) {
-    this.frames.push(frame)
-  }
+	/**
+	@param {ParagraphProps} frame 
+	*/
+	add(frame) {
+		this.frames.push(frame)
+	}
 
-  set_text(text) {
-    this.text = text
-  }
+	set_text(text) {
+		this.text = text
+	}
 
-  /**
-  @param {p5} p 
-  @param {SpreadProps} props 
-  */
-  draw(p, props) {
-    let text = this.text
-    let count = 0
-    /**@type {ParagraphProps}*/
-    let last_props = { text: "" }
+	/**
+	@param {p5} p 
+	@param {SpreadProps} props 
+	*/
+	draw(p, props) {
+		let text = this.text
+		let count = 0
+		/**@type {ParagraphProps}*/
+		let last_props = { text: "" }
 
-    while (text && count < this.frames.length) {
-      let updated = this.frames[count]
-      updated.text = text
-      Object.assign(last_props, updated)
+		while (text && count < this.frames.length) {
+			let updated = this.frames[count]
+			updated.text = text
+			Object.assign(last_props, updated)
 
-      text = draw_paragraph(p, last_props, props.structure)
-      count++
-    }
+			text = draw_paragraph(p, last_props, props.structure)
+			count++
+		}
 
-    return text
-  }
+		return text
+	}
 }
 
 /** 
 @typedef {{
-  margin: {
-    top: Unit,
-    bottom: Unit,
-    inside: Unit,
-    outside: Unit,
-  }
+	margin: {
+		top: Unit,
+		bottom: Unit,
+		inside: Unit,
+		outside: Unit,
+	}
 
-  columns: number,
-  gutter: Unit,
+	columns: number,
+	gutter: Unit,
   
-  hanglines: Unit[]
-  page_width: Unit,
-  page_height: Unit,
+	hanglines: Unit[]
+	page_width: Unit,
+	page_height: Unit,
 }} GridProps
 */
 class Grid {
-  /**
-  @param {GridProps} props
-  @param {Scale} s
-  */
-  constructor(props, s) {
-    this.props = props
-    this.s = s
-  }
+	/**
+	@param {GridProps} props
+	@param {Scale} s
+	*/
+	constructor(props, s) {
+		this.props = props
+		this.s = s
+	}
 
-  hanglines() {
-    return this.props.hanglines
-  }
+	hanglines() {
+		return this.props.hanglines
+	}
 
-  set_margin(margin) {
-    this.props.margin = margin
-  }
+	set_margin(margin) {
+		this.props.margin = margin
+	}
 
-  /**@returns {{x:Unit, y:Unit, w:Unit, h: Unit}[]}*/
-  recto_columns() {
-    /**@type {{x:Unit, y:Unit, w:Unit, h: Unit}[]}*/
-    const cols = []
+	/**@returns {{x:Unit, y:Unit, w:Unit, h: Unit}[]}*/
+	recto_columns() {
+		/**@type {{x:Unit, y:Unit, w:Unit, h: Unit}[]}*/
+		const cols = []
 
-    for (let i = 0; i < this.props.columns; i++) {
-      const y = this.props.margin.top
-      const w = this.column_width()
+		for (let i = 0; i < this.props.columns; i++) {
+			const y = this.props.margin.top
+			const w = this.column_width()
 
-      // outside + gutters + size
-      const x = s.px_raw(this.half_page().x.px + this.props.margin.inside.px + i * this.props.gutter.px + i * this.column_width().px);
-      const h = s.px_raw(this.props.page_height.px - (this.props.margin.top.px + this.props.margin.bottom.px))
+			// outside + gutters + size
+			const x = s.px_raw(this.half_page().x.px + this.props.margin.inside.px + i * this.props.gutter.px + i * this.column_width().px);
+			const h = s.px_raw(this.props.page_height.px - (this.props.margin.top.px + this.props.margin.bottom.px))
 
-      cols.push({ x, y, w, h })
-    }
+			cols.push({ x, y, w, h })
+		}
 
-    return cols
-  }
+		return cols
+	}
 
-  /**@returns {{x:Unit, y:Unit, w:Unit, h: Unit}[]}*/
-  verso_columns() {
-    /**@type {{x:Unit, y:Unit, w:Unit, h: Unit}[]}*/
-    const cols = []
+	/**@returns {{x:Unit, y:Unit, w:Unit, h: Unit}[]}*/
+	verso_columns() {
+		/**@type {{x:Unit, y:Unit, w:Unit, h: Unit}[]}*/
+		const cols = []
 
-    for (let i = 0; i < this.props.columns; i++) {
-      const y = this.props.margin.top
-      const w = this.column_width()
+		for (let i = 0; i < this.props.columns; i++) {
+			const y = this.props.margin.top
+			const w = this.column_width()
 
-      // outside + gutters + size
-      const x = s.px_raw(this.props.margin.outside.px + i * this.props.gutter.px + i * this.column_width().px);
-      const h = s.px_raw(this.props.page_height.px - (this.props.margin.top.px + this.props.margin.bottom.px))
+			// outside + gutters + size
+			const x = s.px_raw(this.props.margin.outside.px + i * this.props.gutter.px + i * this.column_width().px);
+			const h = s.px_raw(this.props.page_height.px - (this.props.margin.top.px + this.props.margin.bottom.px))
 
-      cols.push({ x, y, w, h })
-    }
+			cols.push({ x, y, w, h })
+		}
 
-    return cols
-  }
+		return cols
+	}
 
-  columns() { return [this.verso_columns(), this.recto_columns()] }
+	columns() { return [this.verso_columns(), this.recto_columns()] }
 
-  /**@returns {Unit}*/
-  column_width(n = 1) {
-    let w = this.half_page().x.px - (this.props.margin.inside.px + this.props.margin.outside.px);
-    let g = (n - 1) * this.props.gutter.px
-    return s.px_raw(((w - (this.props.gutter.px * (this.props.columns - 1))) / this.props.columns) * n + g);
-  }
+	/**@returns {Unit}*/
+	column_width(n = 1) {
+		let w = this.half_page().x.px - (this.props.margin.inside.px + this.props.margin.outside.px);
+		let g = (n - 1) * this.props.gutter.px
+		return s.px_raw(((w - (this.props.gutter.px * (this.props.columns - 1))) / this.props.columns) * n + g);
+	}
 
-  /**@returns {{x: Unit, y: Unit}}*/
-  half_page() {
-    return {
-      x: s.px_raw(this.props.page_width.px / 2),
-      y: s.px_raw(this.props.page_height.px / 2)
-    }
-  }
+	/**@returns {{x: Unit, y: Unit}}*/
+	half_page() {
+		return {
+			x: s.px_raw(this.props.page_width.px / 2),
+			y: s.px_raw(this.props.page_height.px / 2)
+		}
+	}
 }
 
 let offset_size = s.em(12)
 let grid = new Grid({
-  page_width: s.inch(10),
-  page_height: s.inch(5),
+	page_width: s.add(s.inch(7), s.em(6)),
+	page_height: s.inch(6),
 
-  margin: {
-    top: s.em(2),
-    bottom: s.em(3),
-    inside: s.em(1),
-    outside: s.em(4),
-  },
+	margin: {
+		top: s.em(2),
+		bottom: s.em(3),
+		inside: s.em(1),
+		outside: s.em(4),
+	},
 
-  columns: 8,
-  gutter: s.point(6),
-  hanglines: [
-    s.em(6),
-    s.em(6.5),
-    s.em(12),
-    s.em(12.5),
-    s.em(18),
-    s.em(18.5),
-    s.em(24),
-    s.em(24.5),
-  ],
+	columns: 8,
+	gutter: s.point(6),
+	hanglines: [
+		s.em(6),
+		s.em(6.5),
+		s.em(12),
+		s.em(12.5),
+		s.em(18),
+		s.em(18.5),
+		s.em(24),
+		s.em(24.5),
+	],
 }, s)
 
 /**
@@ -536,151 +536,174 @@ let grid = new Grid({
 @property {(p: p5, props: SpreadProps) => void} draw
 
 @typedef {{
-  structure: Grid,
-  scale: Scale,
+	structure: Grid,
+	scale: Scale,
 }} SpreadProps
 */
 class Spread {
-  /**
-  @param {Grid} grid 
-  @param {Scale} [scale=new Scale()] 
-  @param {Drawable[]} [contents=[]] 
-  */
-  constructor(grid, scale = new Scale(), contents = []) {
-    /**@type Scale*/
-    this.s = scale
-    /**@type Grid*/
-    this.structure = grid
-    /**@type Drawable[]*/
-    this.contents = contents
-  }
+	/**
+	@param {Grid} grid 
+	@param {Scale} [scale=new Scale()] 
+	@param {Drawable[]} [contents=[]] 
+	*/
+	constructor(grid, scale = new Scale(), contents = []) {
+		/**@type Scale*/
+		this.s = scale
+		/**@type Grid*/
+		this.structure = grid
+		/**@type Drawable[]*/
+		this.contents = contents
+	}
 
-  setup(p) {
-    // if needing to create canvas as well
-  }
+	setup(p) {
+		// if needing to create canvas as well
+	}
 
-  draw(p) {
-    this.contents.forEach(d => d.draw(p, this.props()))
-  }
+	draw(p) {
+		this.contents.forEach(d => d.draw(p, this.props()))
+	}
 
-  draw_grid(p, no) {
-    // -----------
-    // draw grid
-    // -----------
-    let [recto, verso] = grid.columns()
-    p.fill(0)
-    p.textSize(this.s.point(9).px)
-    p.textFont("monospace")
-    p.textWeight(600)
-    p.text("[ PAGE " + (no[0]) + " ]",
-      this.structure.verso_columns()[0].x.px,
-      this.structure.recto_columns()[3].y.px)
-    p.text("[ PAGE " + (no[1]) + " ]",
-      this.structure.recto_columns()[0].x.px,
-      this.structure.recto_columns()[3].y.px)
+	draw_grid(p, no) {
+		// -----------
+		// draw grid
+		// -----------
+		let [recto, verso] = grid.columns()
+		p.fill(0)
+		p.textSize(this.s.point(9).px)
+		p.textFont("monospace")
+		p.textWeight(600)
+		p.text("[ PAGE " + (no[0]) + " ]",
+			this.structure.verso_columns()[0].x.px,
+			this.structure.recto_columns()[3].y.px)
+		p.text("[ PAGE " + (no[1]) + " ]",
+			this.structure.recto_columns()[0].x.px,
+			this.structure.recto_columns()[3].y.px)
 
-    p.noFill()
-    p.stroke(200, 0, 250)
-    p.strokeWeight(.2)
-
-
-
-    recto.forEach((col) => { p.rect(col.x.px, col.y.px, col.w.px, col.h.px) })
-    verso.forEach((col) => { p.rect(col.x.px, col.y.px, col.w.px, col.h.px) })
-
-    p.stroke(0, 0, 255)
-    p.strokeWeight(.2)
-    grid.hanglines().forEach(y => {
-      p.line(0, y.px, p.width, y.px)
-    })
-  }
+		p.noFill()
+		p.stroke(200, 0, 250)
+		p.strokeWeight(.2)
 
 
-  /**@returns {SpreadProps}*/
-  props() {
-    return {
-      scale: this.s,
-      structure: this.structure
-    }
-  }
 
-  /**
-  @param {LinkedFrame} frame 
-  */
-  add_linked_frame(frame) {
-    this.contents.push(frame)
-  }
+		recto.forEach((col) => { p.rect(col.x.px, col.y.px, col.w.px, col.h.px) })
+		verso.forEach((col) => { p.rect(col.x.px, col.y.px, col.w.px, col.h.px) })
 
-  // --------
-  // Later
-  // --------
-  add_graphic() { }
+		p.stroke(0, 0, 255)
+		p.strokeWeight(.2)
+		grid.hanglines().forEach(y => {
+			p.line(0, y.px, p.width, y.px)
+		})
+	}
+
+
+	/**@returns {SpreadProps}*/
+	props() {
+		return {
+			scale: this.s,
+			structure: this.structure
+		}
+	}
+
+	/**
+	@param {LinkedFrame} frame 
+	*/
+	add_linked_frame(frame) {
+		this.contents.push(frame)
+	}
+
+	// --------
+	// Later
+	// --------
+	add_graphic() {}
 }
 
 class Book {
-  /**
-  @param {Spread[]} [spreads=[]] 
-  @param {{draw_grid: boolean}=} opts
-  */
-  constructor(spreads = [], opts = { draw_grid: true }) {
-    this.grid = opts.draw_grid
-    this.structure = spreads[0] ? spreads[0].props().structure : undefined
-    this.current_spread = 0
-    /**@type Spread[]*/
+	/**
+	@param {Spread[]} [spreads=[]] 
+	@param {{draw_grid: boolean}=} opts
+	*/
+	constructor(spreads = [], opts = { draw_grid: true }) {
+		this.grid = opts.draw_grid
+		this.structure = spreads[0] ? spreads[0].props().structure : undefined
+		this.current_spread = 0
+		/**@type Spread[]*/
 
-    this.spreads = spreads
-		 /** @type {Offset[]}*/
-    this.offsets = []
-  }
+		this.spreads = spreads
+		/** @type {Offset[]}*/
+		this.offsets = []
+	}
 
-  saddle_pages() {
-    // get pages
-    let pages = this.pages()
+	before_spine(page_num) {
+		let spread = this.pages()
+		let is = undefined
+		let middle = Math.floor(spread.length / 2)
 
-    //let pages = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9], [10, 11], [12, 13], [14, 15], [16, 17]]
-    if (!Array.isArray(pages)) return
+		spread.forEach((e, i) => {
+			e.forEach((pg, side) => {
+				if (pg == page_num) {
+					if (i == middle) {
+						if (side == 0) is = true
+						else is = false
+					}
+					else {
+						if (i < middle) is = true
+						else is = false
+					}
+				}
+			})
+		})
 
-    let last = pages.length - 1
-    let pair = (i) => pages[last - i]
-    let pairskiplast = (i) => pages[last - i - 1]
+		return is
+	}
 
-    let middle = Math.ceil(last / 2)
+	saddle_pages() {
+		// get pages
+		let pages = this.pages()
 
-    // switch each recto with pair spread recto till middle
-    for (let i = 0; i < middle; i++) {
-      let f_verso = pages[i][0]
-      let p_verso = pair(i)[0]
+		//let pages = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9], [10, 11], [12, 13], [14, 15], [16, 17]]
+		if (!Array.isArray(pages)) return
 
-      pages[i][0] = p_verso
-      pair(i)[0] = f_verso
-    }
+		let last = pages.length - 1
+		let pair = (i) => pages[last - i]
+		let pairskiplast = (i) => pages[last - i - 1]
 
-    let pairedup = []
+		let middle = Math.ceil(last / 2)
 
-    // pair spreads up with each other
-    for (let i = 0; i < middle; i++) {
-      pairedup.push(pages[i])
-      pairedup.push(pairskiplast(i))
-    }
+		// switch each recto with pair spread recto till middle
+		for (let i = 0; i < middle; i++) {
+			let f_verso = pages[i][0]
+			let p_verso = pair(i)[0]
 
-    return pairedup
-  }
+			pages[i][0] = p_verso
+			pair(i)[0] = f_verso
+		}
+
+		let pairedup = []
+
+		// pair spreads up with each other
+		for (let i = 0; i < middle; i++) {
+			pairedup.push(pages[i])
+			pairedup.push(pairskiplast(i))
+		}
+
+		return pairedup
+	}
 
 	/**
 		 @param {number} index
 		 @param {Offset} offset
 	*/
-  mark_sheet_offset(index, offset) {
-    if (!this.validate_spread(index)) return
+	mark_sheet_offset(index, offset) {
+		if (!this.validate_spread(index)) return
 
-    let spreads = this.saddle_pages()
+		let spreads = this.saddle_pages()
 
-    let sheet = spreads[index]
-    let pair_index = isOdd(index) ? index - 1 : index + 1
-    let pair = spreads[pair_index]
+		let sheet = spreads[index]
+		let pair_index = isOdd(index) ? index - 1 : index + 1
+		let pair = spreads[pair_index]
 
-    sheet.forEach((e) => {
-      if (this.offsets.findIndex(f => f.page == e) == -1) {
+		sheet.forEach((e) => {
+			if (this.offsets.findIndex(f => (f.page == e && f.axis == offset.axis)) == -1) {
 				this.offsets.push({
 					page: e,
 					size: offset.size,
@@ -689,10 +712,10 @@ class Book {
 					color: offset.color
 				})
 			}
-    })
+		})
 
-    pair.forEach((e) => {
-      if (this.offsets.findIndex(f => f.page == e) == -1) {
+		pair.forEach((e) => {
+			if (this.offsets.findIndex(f => (f.page == e && f.axis == offset.axis)) == -1) {
 				this.offsets.push({
 					page: e,
 					size: offset.size,
@@ -701,210 +724,267 @@ class Book {
 					color: offset.color
 				})
 			}
-    })
-  }
+		})
+	}
 
-  // Will take page number and convert to sheet then mark it.
+	// Will take page number and convert to sheet then mark it.
 	/**
 		 @param {Offset} offset
 	 */
-  mark_page_offset(offset) {
-    let spread = this.saddle_pages()
-    let index = -1
+	mark_page_offset(offset) {
+		let spread = this.saddle_pages()
+		let index = -1
 
-    spread.forEach((e, i) => {
-      e.forEach(pg => pg == offset.page ? index = i : null)
-    })
+		spread.forEach((e, i) => {
+			e.forEach(pg => pg == offset.page ? index = i : null)
+		})
 
 		this.mark_sheet_offset(index, offset)
-  }
+	}
 
-  page_to_spread(num) {
-    return Math.floor(num / 2)
-  }
+	page_to_spread(num) {
+		return Math.floor(num / 2)
+	}
 
-  get_page(num = 1) {
-    let spread = this.page_to_spread(num)
-    return this.spreads[spread]
-  }
+	get_page(num = 1) {
+		let spread = this.page_to_spread(num)
+		return this.spreads[spread]
+	}
 
-  set_spread(spread) {
-    let valid = this.validate_spread(spread)
-    if (!valid) return
-    this.current_spread = spread
-  }
+	set_spread(spread) {
+		let valid = this.validate_spread(spread)
+		if (!valid) return
+		this.current_spread = spread
+	}
 
-  set_page(num) {
-    let spread = this.page_to_spread(num)
-    this.set_spread(spread)
-  }
+	set_page(num) {
+		let spread = this.page_to_spread(num)
+		this.set_spread(spread)
+	}
 
-  validate_spread(spread) {
-    if (this.spreads.length <= spread
-      || spread < 0
-    ) return false
-    else return true
-  }
+	validate_spread(spread) {
+		if (this.spreads.length <= spread
+			|| spread < 0
+		) return false
+		else return true
+	}
 
-  pages() {
-    /**@type {[number, number][]}*/
-    let arr = []
-    let is_odd = (num) => (num % 2) == 1
+	pages() {
+		/**@type {[number, number][]}*/
+		let arr = []
+		let is_odd = (num) => (num % 2) == 1
 
-    // also make sure number of spreads is odd
-    // TOD0: if it isn't, add a spread before last page in booklet binding... 
-    if (is_odd(this.spreads.length)) {
-      this.spreads.forEach((_, i) => {
-        let last = i == this.spreads.length - 1
-        let first = i == 0
-        let num = i * 2
-        let recto = last ? 0 : num + 1
-        let verso = num
-        arr.push([verso, recto])
-      })
+		// also make sure number of spreads is odd
+		// TOD0: if it isn't, add a spread before last page in booklet binding... 
+		if (is_odd(this.spreads.length)) {
+			this.spreads.forEach((_, i) => {
+				let last = i == this.spreads.length - 1
+				let first = i == 0
+				let num = i * 2
+				let recto = last ? 0 : num + 1
+				let verso = num
+				arr.push([verso, recto])
+			})
 
-      return arr
-    }
-    else {
-      console.log("FUCK NOT MULTIPLE OF 4", (this.spreads.length * 2) - 2)
-    }
-  }
+			return arr
+		}
+		else {
+			console.log("FUCK NOT MULTIPLE OF 4", (this.spreads.length * 2) - 2)
+		}
+	}
 
-  /**@param {Spread} spread */
-  add_spread(spread) {
-    this.spreads.push(spread)
-  }
+	/**@param {Spread} spread */
+	add_spread(spread) {
+		this.spreads.push(spread)
+	}
 
-  draw(p) {
-    //if (this.grid) this.spreads[this.current_spread].draw_grid(p, this.pages()[this.current_spread])
-    //this.spreads[this.current_spread].draw(p)
-    this.draw_recto(p)
-    this.draw_verso(p)
-  }
+	// draw(p) {
+	//   //if (this.grid) this.spreads[this.current_spread].draw_grid(p, this.pages()[this.current_spread])
+	//   //this.spreads[this.current_spread].draw(p)
+	//   this.draw_recto(p)
+	//   this.draw_verso(p)
+	// }
 
-  page_image(p, number) {
-    let spread = this.page_to_spread(number)
+	page_image(p, number) {
+		let spread = this.page_to_spread(number)
 
-    if (number % 2 == 1) return this.recto_image(p, spread)
-    else return this.verso_image(p, spread)
-  }
+		if (number % 2 == 1) return this.recto_image(p, spread,)
+		else return this.verso_image(p, spread)
+	}
 
-  /**
-  @typedef {p5.Image} Image
-  */
-  verso_image(p, number, color = "white", width = .5) {
-    let _p = p.createGraphics(p.width, p.height)
-    _p.background(color)
-    if (this.grid) this.spreads[number].draw_grid(_p, [(number * 2), (number * 2) + 1])
-    this.spreads[number].draw(_p)
-    if (number == 0) _p.background(200)
-    let img = _p.get(0, 0, _p.width * width, _p.height)
+	/**
+	@typedef {p5.Image} Image
+	*/
+	verso_image(p, number, color = "white", width = .5) {
+		let _p = p.createGraphics(p.width, p.height)
+		_p.background(color)
+		if (this.grid) this.spreads[number].draw_grid(_p, [(number * 2), (number * 2) + 1])
+		this.spreads[number].draw(_p)
+		if (number == 0) _p.background(200)
+		let img = _p.get(0, 0, _p.width * width, _p.height)
 
-    return img
-  }
+		return img
+	}
 
-  recto_image(p, number, color = "white", width = .5) {
-		let from = 1-width
-		console.log("width:",width, "from: ", from)
-    let _p = p.createGraphics(p.width, p.height)
-    _p.background(color)
-    if (this.grid) this.spreads[number].draw_grid(_p, [(number * 2), (number * 2) + 1])
-    this.spreads[number].draw(_p)
-    if (number == this.spreads.length - 1) _p.background(200)
-    let img = _p.get(_p.width * from, 0, _p.width * width, _p.height)
+	recto_image(p, number, color = "white", width = .5) {
+		let from = 1 - width
+		let _p = p.createGraphics(p.width, p.height)
+		_p.background(color)
+		if (this.grid) this.spreads[number].draw_grid(_p, [(number * 2), (number * 2) + 1])
+		this.spreads[number].draw(_p)
+		if (number == this.spreads.length - 1) _p.background(200)
 
-    return img
-  }
+		if (foldline) {
+			_p.stroke(0)
+			_p.strokeWeight(3)
+			_p.line(_p.width * from, 0, _p.width * from, _p.height)
+		}
+
+		let img = _p.get(_p.width * from, 0, _p.width * width, _p.height)
+
+		return img
+	}
 
 
-  draw_saddle_view(p) {
-    let saddle = this.saddle_pages()
-    if (!saddle) return
+	draw_saddle_view(p) {
+		let saddle = this.saddle_pages()
+		if (!saddle) return
 
-    let curr = saddle[this.current_spread]
-    this.draw_page_set(p, curr[0], curr[1])
-  }
+		console.log("called saddle view")
+		let curr = saddle[this.current_spread]
+		this.draw_page_set(p, curr[0], curr[1])
+	}
 
-  /**
-  @param {Image} img  
-  */
-  draw_img(p, img, x = 0, y = 0) {
-    p.image(img, x, y, img.width, img.height)
-  }
+	/**
+	@param {Image} img  
+	*/
+	draw_img(p, img, x = 0, y = 0) {
+		p.image(img, x, y, img.width, img.height)
+	}
 
-  page_is_offset(page) {
+	page_is_offset(page) {
 		let is = false
 		this.offsets.forEach((e) => {
 			if (e.page == page) is = true
 		})
-    return is
-  }
+		return is
+	}
 
-  draw_verso(p) {
-    let img = this.verso_image(p, this.current_spread)
-    this.draw_img(p, img, 0, 0)
-  }
+	// draw_verso(p) {
+	//   let img = this.verso_image(p, this.current_spread)
+	//   this.draw_img(p, img, 0, 0)
+	// }
 
-  draw_recto(p) {
-    let img = this.recto_image(p, this.current_spread)
-    this.draw_img(p, img, img.width, 0)
-  }
+	// draw_recto(p) {
+	//   let img = this.recto_image(p, this.current_spread)
+	//   this.draw_img(p, img, img.width, 0)
+	// }
 
-  draw_page_set(p, num1, num2) {
-    this.draw_img(p, this.page_image(p, num1))
-    let recto = this.page_image(p, num2)
-    this.draw_img(p, recto, recto.width)
-  }
+	draw_page_set(p, num1, num2) {
 
-  seek(page) {
-    this.set_page(page)
-  }
+			// let verso_image = book.verso_image(graphic, spread, color, horizontal_offset ? proportional_width : .5)
+
+			// let x = horizontal_offset?.axis == "horizontal" ? left + (horizontal_offset.size.px * (v_offset_direction * op)) : left
+			// let y = vertical_offset ? top + (vertical_offset.size.px * v_offset_direction) : top
+			// p.image(verso_image, x, y, verso_image.width, verso_image.height)
+
+		if (num1){
+			let offset = book.offsets.filter((e) => e.page == num1)
+			let horizontal_offset = offset.find((e) => e.axis == "horizontal")
+			let width = book.structure?.props.page_width
+
+			let before = book.before_spine(num1)
+
+			let op = before ? -1 : 1
+			let new_page_width
+			let proportional_width
+
+			if (horizontal_offset) {
+				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op)
+				proportional_width = new_page_width / width.px
+			}
+
+
+			let spread_num_1 = this.page_to_spread(num1)
+			let img = this.verso_image(p, spread_num_1, "white", horizontal_offset ? proportional_width : .5)
+			this.draw_img(p, img, 0, 0)
+		}
+
+		if (num2) {
+			let offset = book.offsets.filter((e) => e.page == num2)
+			let horizontal_offset = offset.find((e) => e.axis == "horizontal")
+
+			let width = book.structure?.props.page_width
+
+			let before = book.before_spine(num2)
+
+			let op = before ? -1 : 1
+			let new_page_width
+			let proportional_width
+
+			if (horizontal_offset) {
+				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op)
+				proportional_width = new_page_width / width.px
+			}
+
+			let spread_num_2 = this.page_to_spread(num2)
+			let img = this.recto_image(p, spread_num_2, "white", horizontal_offset ? proportional_width : .5)
+			let x = horizontal_offset?.axis == "horizontal" ? (horizontal_offset.size.px * (v_offset_direction * op)) : 0
+			this.draw_img(p, img, p.width/2 + x, 0)
+		}
+
+	}
+
+	seek(page) {
+		this.set_page(page)
+	}
 }
 
 class Paper {
-  /**
-   * @param {{width: Unit, height: Unit}} size 
-   * @param {Scale} s 
-   * @param {p5} p 
-   * @param {Element} el 
-   * */
-  constructor(p, s, el, size, print = false) {
-    this.setup(p, s, el)
-    this.size = size
-    this.scale = s
-    this.p5 = p
-    this.print = print
-  }
+	/**
+	 * @param {{width: Unit, height: Unit}} size 
+	 * @param {Scale} s 
+	 * @param {p5} p 
+	 * @param {Element} el 
+	 * */
+	constructor(p, s, el, size, print = false) {
+		this.setup(p, s, el)
+		this.size = size
+		this.scale = s
+		this.p5 = p
+		this.print = print
+	}
 
-  setup(p, s, el) {
-    p.preload = () => {}
+	setup(p, s, el) {
+		p.preload = () => {}
 
-    p.setup = () => {
-      p.createCanvas(this.size.width.px, this.size.height.px);
-      el.style.transform = "scale(" + (1 / s.scale) * viewport + ")"
-    };
+		p.setup = () => {
+			p.createCanvas(this.size.width.px, this.size.height.px);
+			el.style.transform = "scale(" + (1 / s.scale) * viewport + ")"
+		};
 
-    p.draw = () => {
-      p.background(200);
-      p.noFill();
-      p.noLoop()
-    };
-  }
+		p.draw = () => {
+			p.background(200);
+			p.noFill();
+			p.noLoop()
+		};
+	}
 
-  /**@param {Book} book */
-  draw_book(book) {
-    let p = this.p5
-    p.background(200);
 
-    let width = book.structure?.props.page_width
-    let height = book.structure?.props.page_height
-    let left = (this.size.width.px - width.px) / 2
-    let top = (this.size.height.px - height.px) / 2
+	/**@param {Book} book */
+	draw_book(book) {
+		let p = this.p5
+		p.background(200);
 
-    let graphic = p.createGraphics(width.px, height.px)
-    graphic.background(255)
+		let width = book.structure?.props.page_width
+		let height = book.structure?.props.page_height
+		let left = (this.size.width.px - width.px) / 2
+		let top = (this.size.height.px - height.px) / 2
 
-    this.draw_crop_marks(book)
+		let graphic = p.createGraphics(width.px, height.px)
+		graphic.background(255)
+
+		this.draw_crop_marks(book)
 
 		// TODO:
 		// FOR Next visibles,
@@ -912,220 +992,204 @@ class Paper {
 		// calculate their rects
 		// then do a bounds check, and when bounds are greater
 		// then collect the page for render
-    let nextvisibleverso = (spread) => {
-      let verso_page = spread * 2
-      let verso_offset = book.page_is_offset(verso_page)
-      let offset_pages = book.offsets
+		let nextvisibleverso = (spread) => {
+			let verso_page = spread * 2
+			let verso_offset = book.page_is_offset(verso_page)
+			let offset_pages = book.offsets
 
-      let found = -100
-      if (verso_offset && before_spine(verso_page)) return found
+			let found = -100
+			if (verso_offset && book.before_spine(verso_page)) return found
 
-      offset_pages.forEach(page => {
-        if (!isOdd(page) &&
-          page.page < verso_page) {
+			offset_pages.forEach(page => {
+				if (!isOdd(page) &&
+					page.page < verso_page) {
 
-          // if diff is less then 
-          let diff = Math.abs(verso_page - page.page)
-          let diffAlready = Math.abs(verso_page - found)
+					// if diff is less then 
+					let diff = Math.abs(verso_page - page.page)
+					let diffAlready = Math.abs(verso_page - found)
 
-          if (diff < diffAlready) found = page.page
-        }
-      })
-
-      return found
-    }
-    let nextvisiblerecto = (spread) => {
-      let recto_page = spread * 2 + 1
-      let recto_offset = book.page_is_offset(recto_page)
-      let offset_pages = book.offsets
-
-      let found = -200
-      if (recto_offset && !before_spine(recto_page)) return found
-
-      offset_pages.forEach(page => {
-        if (isOdd(page) &&
-          page.page > recto_page) {
-          // if diff is less then 
-          let diff = Math.abs(recto_page - page.page)
-          let diffAlready = Math.abs(recto_page - found)
-
-          if (diff < diffAlready && !before_spine(page)) found = page.page
-        }
-      })
-
-      return found
-    }
-
-		let before_spine = (page_num) => {
-			let spread = book.pages()
-			let is = undefined
-			let middle = Math.floor(spread.length/2)
-
-			spread.forEach((e, i) => {
-				e.forEach((pg, side) => {
-					if (pg == page_num){
-						if (i == middle) {
-							if (side == 0) is = true
-							else is = false
-						}
-						else {
-							if (i < middle) is= true
-							else is= false
-						}
-					}
-				})
+					if (diff < diffAlready) found = page.page
+				}
 			})
 
-			return is
+			return found
+		}
+		let nextvisiblerecto = (spread) => {
+			let recto_page = spread * 2 + 1
+			let recto_offset = book.page_is_offset(recto_page)
+			let offset_pages = book.offsets
+
+			let found = -200
+			if (recto_offset && !book.before_spine(recto_page)) return found
+
+			offset_pages.forEach(page => {
+				if (isOdd(page) &&
+					page.page > recto_page) {
+					// if diff is less then 
+					let diff = Math.abs(recto_page - page.page)
+					let diffAlready = Math.abs(recto_page - found)
+
+					if (diff < diffAlready && !book.before_spine(page)) found = page.page
+				}
+			})
+
+			return found
 		}
 
-    let draw_verso = (graphic, spread, draw_behind = true) => {
-      let verso_page = spread * 2
-			let offset = book.offsets.find((e) => e.page == verso_page)
-      let verso_offset = book.page_is_offset(verso_page)
+
+		let draw_verso = (graphic, spread, draw_behind = true) => {
+			let verso_page = spread * 2
+			let offset = book.offsets.filter((e) => e.page == verso_page)
+			let vertical_offset = offset.find((e) => e.axis == "vertical")
+			let horizontal_offset = offset.find((e) => e.axis == "horizontal")
+			let verso_offset = book.page_is_offset(verso_page)
 
 			if (offset) verso_offset = true
 			else if (!verso_offset && verso_offset) console.log("inconsistencey!!!")
 
-			let color = verso_offset ? offset.color: "white"
+			let color = offset[0] ? offset[0].color : "white"
 			let width = book.structure?.props.page_width
 
-			let before = before_spine(verso_page)
+			let before = book.before_spine(verso_page)
 
 			let op = before ? -1 : 1
-			let new_page_width 
-			let proportional_width 
+			let new_page_width
+			let proportional_width
 
-			if (verso_offset){
-				new_page_width = book.structure?.props.page_width.px / 2 + (offset.size.px * op)
-				proportional_width =  new_page_width / width.px 
+			if (horizontal_offset) {
+				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op)
+				proportional_width = new_page_width / width.px
 			}
 
-      let verso_image = book.verso_image(graphic, spread, color, offset?.axis == "horizontal" ? proportional_width : .5)
+			let verso_image = book.verso_image(graphic, spread, color, horizontal_offset ? proportional_width : .5)
 
-      if (spread > 0 && draw_behind) {
-        draw_verso(graphic, spread - 1)
-        p.opacity(.8)
-      }
+			// TODO: add conditionals on whether to draw next or not...
+			if (spread > 0 && draw_behind) {
+				draw_verso(graphic, spread - 1)
+				p.opacity(.8)
+			}
 
-			let x = offset?.axis == "horizontal" ? left + (offset.size.px * (v_offset_direction * op)) : left
+			let x = horizontal_offset?.axis == "horizontal" ? left + (horizontal_offset.size.px * (v_offset_direction * op)) : left
+			let y = vertical_offset ? top + (vertical_offset.size.px * v_offset_direction) : top
+			p.image(verso_image, x, y, verso_image.width, verso_image.height)
 
-      p.image(verso_image, x,
-							offset?.axis == "vertical"
-							? top + (offset.size.px * v_offset_direction)
-								: top,
-							verso_image.width, verso_image.height)
-
-      p.opacity(1)
-    }
+			p.opacity(1)
+		}
 
 
-    let draw_recto = (graphic, spread, draw_behind = true) => {
-      let recto_page = spread * 2 + 1
-			let offset = book.offsets.find((e) => e.page == recto_page)
-      let recto_offset = book.page_is_offset(recto_page)
+		let draw_recto = (graphic, spread, draw_behind = true) => {
+			let recto_page = spread * 2 + 1
+			let offset = book.offsets.filter((e) => e.page == recto_page)
+			let vertical_offset = offset.find((e) => e.axis == "vertical")
+			let horizontal_offset = offset.find((e) => e.axis == "horizontal")
+
+			let recto_offset = book.page_is_offset(recto_page)
 			if (offset) recto_offset = true
 			else if (!recto_offset && recto_offset) console.log("inconsistencey!!!")
 
-			let color = recto_offset ? offset.color  : "white"
+			let color = offset[0] ? offset[0].color : "white"
 
 			let width = book.structure?.props.page_width
-			let before = before_spine(recto_page)
-			console.log(recto_page, "is before: ", before)
+			let before = book.before_spine(recto_page)
 			let op = before ? -1 : 1
 
-			let new_page_width 
-			let proportional_width 
-			if (recto_offset){
-			new_page_width = book.structure?.props.page_width.px / 2 + (offset.size.px * op)
-			proportional_width =  new_page_width / width.px 
+			let new_page_width
+			let proportional_width
+			if (horizontal_offset) {
+				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op)
+				proportional_width = new_page_width / width.px
 			}
-      let recto_image = book.recto_image(graphic, spread,color, offset?.axis == "horizontal" ? proportional_width : .5)
 
-      if (spread < book.spreads.length-1 && draw_behind) {
-        draw_recto(graphic, spread + 1)
-        p.opacity(.8)
-      }
+			let recto_image = book.recto_image(graphic, spread, color, horizontal_offset ? proportional_width : .5)
 
-      p.image(
+			if (spread < book.spreads.length - 1 && draw_behind) {
+				draw_recto(graphic, spread + 1)
+				p.opacity(.8)
+			}
+
+			p.image(
 				recto_image, left + width.px / 2,
 
-				offset?.axis == "vertical"
-					? top + (offset.size.px * v_offset_direction)
+				vertical_offset
+					? top + (vertical_offset.size.px * v_offset_direction)
 					: top
 
 				, recto_image.width, recto_image.height)
 
-      p.opacity(1)
-    }
+			p.opacity(1)
+		}
 
 
-    let visible_recto = nextvisiblerecto(book.current_spread)
-    let visible_verso = nextvisibleverso(book.current_spread)
+		// let visible_recto = nextvisiblerecto(book.current_spread)
+		// let visible_verso = nextvisibleverso(book.current_spread)
 
-    if (visible_recto >= 0) draw_recto(graphic, book.page_to_spread(visible_recto), false)
-    if (visible_verso >= 0) draw_verso(graphic, book.page_to_spread(visible_verso), false)
+		// if (visible_recto >= 0) draw_recto(graphic, book.page_to_spread(visible_recto), false)
+		// if (visible_verso >= 0) draw_verso(graphic, book.page_to_spread(visible_verso), false)
 
-    draw_verso(graphic, book.current_spread)
-    draw_recto(graphic, book.current_spread)
-  }
+		draw_verso(graphic, book.current_spread)
+		draw_recto(graphic, book.current_spread)
+	}
 
-  /**@param {Book} book */
-  draw_crop_marks(book) {
-    let p = this.p5
+	/**@param {Book} book */
+	draw_crop_marks(book, page) {
+		let p = this.p5
 
-    let width = book.structure?.props.page_width
-    let height = book.structure?.props.page_height
-    let left = (this.size.width.px - width.px) / 2
-    let top = (this.size.height.px - height.px) / 2
+		let width = book.structure?.props.page_width
+		let height = book.structure?.props.page_height
+		let left = (this.size.width.px - width.px) / 2
+		let top = (this.size.height.px - height.px) / 2
 
-    // crop marks
-    p.line(left, 0, left, top)
-    p.line(0, top, left, top)
+		// crop marks
+		p.line(left, 0, left, top)
+		p.line(0, top, left, top)
 
-    p.line(p.width - left, 0, p.width - left, top)
-    p.line(p.width, top, p.width - left, top)
+		p.line(p.width - left, 0, p.width - left, top)
+		p.line(p.width, top, p.width - left, top)
 
-    p.line(0, p.height - top, left, p.height - top)
-    p.line(left, p.height, left, p.height - top)
+		// center
+		p.line(p.width / 2, 0, p.width / 2, top)
+		p.line(p.width / 2, p.height, p.width / 2, p.height - top)
 
-    p.line(p.width, p.height - top, p.width - left, p.height - top)
-    p.line(p.width - left, p.height, p.width - left, p.height - top)
-  }
+		p.line(0, p.height - top, left, p.height - top)
+		p.line(left, p.height, left, p.height - top)
 
-  /**@param {Book} book */
-  draw_saddle(book) {
-    let p = this.p5
+		p.line(p.width, p.height - top, p.width - left, p.height - top)
+		p.line(p.width - left, p.height, p.width - left, p.height - top)
+	}
 
-    if (this.print) {
-      p.background(255);
-    } else {
-      p.background(200);
-    }
-    let width = book.structure?.props.page_width
-    let height = book.structure?.props.page_height
+	/**@param {Book} book */
+	draw_saddle(book) {
+		let p = this.p5
 
-    let graphic = p.createGraphics(width.px, height.px)
-    graphic.background(255)
+		if (this.print) {
+			p.background(255);
+		} else {
+			p.background(200);
+		}
+		let width = book.structure?.props.page_width
+		let height = book.structure?.props.page_height
 
-    book.draw_saddle_view(graphic)
-    this.draw_crop_marks(book)
+		let graphic = p.createGraphics(width.px, height.px)
+		graphic.background(255)
 
-    let left = (this.size.width.px - width.px) / 2
-    let top = (this.size.height.px - height.px) / 2
+		book.draw_saddle_view(graphic)
+		this.draw_crop_marks(book)
 
-    p.image(graphic, left, top, width.px, height.px)
-    return graphic
-  }
-  /**@param {Book} book */
-  draw_spread(book) { }
+		let left = (this.size.width.px - width.px) / 2
+		let top = (this.size.height.px - height.px) / 2
 
-  /**@param {Book} book */
-  save_saddle_spread(book) {
-    // will draw saddle spread and download it
-    let save = this.draw_saddle(book)
-    this.p5.save("spread-" + book.current_spread + ".jpg")
-  }
+		p.image(graphic, left, top, width.px, height.px)
+		return graphic
+	}
+	/**@param {Book} book */
+	draw_spread(book) {}
+
+	/**@param {Book} book */
+	save_saddle_spread(book) {
+		// will draw saddle spread and download it
+		let save = this.draw_saddle(book)
+		this.p5.save("spread-" + book.current_spread + ".jpg")
+	}
 }
 
 
@@ -1134,9 +1198,9 @@ let p
 
 
 fetch("./quick.json")
-  // .then((res) => res.json())
-  //.then((res) => data = res)
-  .then(_ => init())
+	// .then((res) => res.json())
+	//.then((res) => data = res)
+	.then(_ => init())
 
 
 let oninit = []
@@ -1146,43 +1210,49 @@ let oninit = []
 let paper
 let pages
 let printing = false
+let foldline = true
 
 function init() {
-  render(container, document.body)
-  pages = data.contents.map((e) => spread_from_block(e, []))
-  oninit.forEach(fn => typeof fn == "function" ? fn() : null)
+	render(container, document.body)
+	pages = data.contents.map((e) => spread_from_block(e, []))
+	oninit.forEach(fn => typeof fn == "function" ? fn() : null)
 }
 
 oninit.push(() => {
-  let el = document.querySelector(".q5")
-  p = new p5('instance', el);
+	let el = document.querySelector(".q5")
+	p = new p5('instance', el);
 
-  // for export
-  if (printing) {
-    paper = new Paper(p, s, el, {
-      width: s.inch(11),
-      height: s.inch(8.5),
-    }, true)
-  }
+	// for export
+	if (printing) {
+		paper = new Paper(p, s, el, {
+			width: s.inch(11),
+			height: s.inch(8.5),
+		}, true)
+	}
 
-  // for offset
-  else {
-    paper = new Paper(p, s, el, {
-      width: s.add(
-        grid.props.page_width,
-        s.px_raw(offset_size.px * 2.5)
-      ),
-      height: s.add(
-        grid.props.page_height,
-        s.px_raw(offset_size.px * 2.5)
-      ),
-    })
-  }
+	// for offset
+	else {
+		paper = new Paper(p, s, el, {
+			width: s.inch(5.5 * 2),
+			height: s.inch(9),
+		}, true)
 
-  setTimeout(() => {
-    paper.draw_book(book)
-    //paper.draw_saddle(book)
-  }, 100)
+		// paper = new Paper(p, s, el, {
+		//   width: s.add(
+		//     grid.props.page_width,
+		//     s.px_raw(offset_size.px * 2.5)
+		//   ),
+		//   height: s.add(
+		//     grid.props.page_height,
+		//     s.px_raw(offset_size.px * 2.5)
+		//   ),
+		// })
+	}
+
+	setTimeout(() => {
+		paper.draw_book(book)
+		//paper.draw_saddle(book)
+	}, 100)
 })
 
 // x--------------------x
@@ -1197,7 +1267,7 @@ let v_offset_direction = -1
 /**@type {Offset[]}*/
 let offsets = [
 	{
-		size: s.em(14),
+		size: s.em(6),
 		axis: "horizontal",
 		color: "#9985F7",
 		direction: 1,
@@ -1205,7 +1275,7 @@ let offsets = [
 	},
 
 	{
-		size: offset_size,
+		size: s.em(4),
 		axis: "horizontal",
 		color: "yellow",
 		direction: 1,
@@ -1213,7 +1283,7 @@ let offsets = [
 	},
 
 	{
-		size: s.em(6),
+		size: s.em(2),
 		axis: "vertical",
 		color: "#BF58CE",
 		direction: 1,
@@ -1221,39 +1291,47 @@ let offsets = [
 	},
 
 	{
-		size: offset_size,
+		size: s.em(4),
+		axis: "vertical",
+		color: "pink",
+		direction: 1,
+		page: 7
+	},
+
+	{
+		size: s.em(2),
 		axis: "horizontal",
 		color: "pink",
 		direction: 1,
-		page: 15 
+		page: 7
 	}
 ]
 
 oninit.push(() => {
-  book = new Book(pages)
+	book = new Book(pages)
 	offsets.forEach((o) => book.mark_page_offset(o))
-  book.set_page(page)
+	book.set_page(page)
 })
 
 class TextFrame {
-  /**
-   * @param {ParagraphProps} props 
-   * @param {Grid} structure 
-   * */
-  constructor(text, props) {
-    this.text = text
-    this.props = props
-  }
+	/**
+	 * @param {ParagraphProps} props 
+	 * @param {Grid} structure 
+	 * */
+	constructor(text, props) {
+		this.text = text
+		this.props = props
+	}
 
-  draw(p, prop) {
-    draw_paragraph(p, { text: this.text, font_size: s.point(7), ...this.props }, prop.structure)
-  }
+	draw(p, prop) {
+		draw_paragraph(p, { text: this.text, font_size: s.point(7), ...this.props }, prop.structure)
+	}
 }
 
 let saddle = sig(false)
 let drawpaper = () => saddle() ?
-  paper.draw_saddle(book) :
-  paper.draw_book(book)
+	paper.draw_saddle(book) :
+	paper.draw_book(book)
 
 oninit.push(() => eff_on(saddle, drawpaper))
 let pg = sig(0)
@@ -1269,10 +1347,10 @@ let container = () => {
     <button 
     style="position:fixed;top:0;left:0"
     onclick=${() => {
-    pg(book.current_spread + 1);
-    book.set_spread(pg());
-    drawpaper()
-  }} >
+			pg(book.current_spread + 1);
+			book.set_spread(pg());
+			drawpaper()
+		}} >
       next
     </button>
 
@@ -1281,8 +1359,8 @@ let container = () => {
     <button 
       style="position:fixed;top:2em;left:0"
       onclick=${() => {
-    pg(book.current_spread - 1); book.set_spread(pg()); drawpaper()
-  }} >
+			pg(book.current_spread - 1); book.set_spread(pg()); drawpaper()
+		}} >
       prev
     </button>
 
@@ -1301,37 +1379,37 @@ let container = () => {
 `
 }
 let style = {
-  title: [
-    ["font_family", "GapSansBlack"],
-    ["length", ["column_width", 7]],
-    ["font_size", ["point", 28]],
-    ["leading", ["point", 38]],
-    ["color", "#0000ff"],
-  ],
+	title: [
+		["font_family", "GapSansBlack"],
+		["length", ["column_width", 7]],
+		["font_size", ["point", 28]],
+		["leading", ["point", 38]],
+		["color", "#0000ff"],
+	],
 
-  body: [
-    ["font_family", "Oracle"],
-    ["font_size", ["point", 9]],
-    ["leading", ["point", 12]],
-    ["font_weight", 500],
-    ["color", "black"],
-  ],
+	body: [
+		["font_family", "Oracle"],
+		["font_size", ["point", 9]],
+		["leading", ["point", 12]],
+		["font_weight", 500],
+		["color", "black"],
+	],
 
-  metadata: [
-    ["font_family", "OracleTriple"],
-    ["font_size", ["point", 7]],
-    ["font_weight", 300],
-    ["leading", ["point", 12]],
-    ["color", "#ff00ff"],
-  ],
+	metadata: [
+		["font_family", "OracleTriple"],
+		["font_size", ["point", 7]],
+		["font_weight", 300],
+		["leading", ["point", 12]],
+		["color", "#ff00ff"],
+	],
 
-  label: [
-    ["font_family", "OracleTriple"],
-    ["font_size", ["point", 18]],
-    ["font_weight", 600],
-    ["leading", ["point", 12]],
-    ["color", "#00000066"],
-  ]
+	label: [
+		["font_family", "OracleTriple"],
+		["font_size", ["point", 18]],
+		["font_weight", 600],
+		["leading", ["point", 12]],
+		["color", "#00000066"],
+	]
 }
 let introduction = ``
 
@@ -1339,83 +1417,108 @@ let introduction = ``
 // *Header: Cover
 // x------------------x
 let cover = {
-  title: "",
-  content: [
-    ["Header",
-      ["text", "BOOKLET"],
-      ["height", ["em", 12]],
-      ["x", ["recto", 3, "x"]],
-      ["y", ["hangline", 3]],
-      //["color", "#0000ffaa"]
-    ],
+	title: "",
+	content: [
+		["Header",
+			["text", "BOOKLET"],
+			["height", ["em", 12]],
+			["x", ["recto", 3, "x"]],
+			["y", ["hangline", 3]],
+			//["color", "#0000ffaa"]
+		],
 
-    ["TextFrame",
-      ["text", "as {software}"],
-      ["x", ["recto", 3, "x"]],
-      ["y", ["recto", 0, "y"]],
-      ["height", ["em", 8]],
-      ["length", ["column_width", 3.5]],
-      ["rect", false],
-      ...style.label,
-    ],
+		["TextFrame",
+			["text", "as {software}"],
+			["x", ["recto", 3, "x"]],
+			["y", ["recto", 0, "y"]],
+			["height", ["em", 8]],
+			["length", ["column_width", 3.5]],
+			["rect", false],
+			...style.label,
+		],
 
-    ["TextFrame",
-      ["text", introduction],
-      ["length", ["column_width", 4]],
-      ["height", ["em", 18]],
-      ["x", ["recto", 2, "x"]],
-      ["y", ["hangline", 1]],
-      ...style.body
-    ]
-  ]
+		["TextFrame",
+			["text", introduction],
+			["length", ["column_width", 4]],
+			["height", ["em", 18]],
+			["x", ["recto", 2, "x"]],
+			["y", ["hangline", 1]],
+			...style.body
+		]
+	]
 }
 let colophon = {
-  title: "",
-  content: [
-    ["TextFrame",
-      ["text", `COLOPHON`],
-      ["x", ["verso", 0, "x"]],
-      ["y", ["hangline", 1]],
-      ["length", ["column_width", 3]],
-      ["height", ["em", 25]],
-      ...style.metadata,
-      ["font_weight", 600],
-      ["font_size", ["point", 18]],
-    ],
-    ["TextFrame",
-      ["text", `This booklet was typeset using ABC Dinamo's Oracle Family and GapSans designed by GrandChaos9000. GapSans is a fork of Sani Trixie Sans Typeface.
+	title: "",
+	content: [
+		["TextFrame",
+			["text", `COLOPHON`],
+			["x", ["verso", 0, "x"]],
+			["y", ["hangline", 1]],
+			["length", ["column_width", 3]],
+			["height", ["em", 25]],
+			...style.metadata,
+			["font_weight", 600],
+			["font_size", ["point", 18]],
+		],
+		["TextFrame",
+			["text", `This booklet was typeset using ABC Dinamo's Oracle Family and GapSans designed by GrandChaos9000. GapSans is a fork of Sani Trixie Sans Typeface.
 The booklet was designed in a custom tool developed for an independent study conducted for reasons noted in the contents of the booklet. The tool was written in vanilla javascript.
 `],
-      ["x", ["verso", 3, "x"]],
-      ["y", ["hangline", 1]],
-      ["length", ["column_width", 5]],
-      ["height", ["em", 25]],
-      ...style.body
-    ],
-  ]
+			["x", ["verso", 3, "x"]],
+			["y", ["hangline", 1]],
+			["length", ["column_width", 5]],
+			["height", ["em", 25]],
+			...style.body
+		],
+	]
 }
 
-page = 6
+let page_number_spread = (num) => ({
+	title: "",
+	content: [
+		["TextFrame",
+			["text", "P:" + num],
+			["x", ["verso", 0, "x"]],
+			["y", ["hangline", 1]],
+			["length", ["column_width", 3]],
+			["height", ["em", 25]],
+			...style.title,
+			["font_weight", 600],
+			["font_size", ["point", 18]],
+		],
+
+		["TextFrame",
+			["text", "P:" + (num + 1)],
+			["x", ["recto", 7, "x"]],
+			["y", ["hangline", 1]],
+			["length", ["column_width", 3]],
+			["height", ["em", 25]],
+			...style.title,
+			["font_weight", 600],
+			["font_size", ["point", 18]],
+		],
+	]
+})
+
+page = 1
 
 // x-----------------------x
 // *Header: Data
 // x-----------------------x
 let data = {
-  contents: [
-    cover,
-    colophon,
-    cover,
-    cover,
-    cover,
-    cover,
-    cover,
-    cover,
-    colophon,
-    colophon,
-    colophon,
-    colophon,
-    colophon,
-  ]
+	contents: [
+		cover,
+		page_number_spread(2),
+		page_number_spread(4),
+		page_number_spread(6),
+		page_number_spread(8),
+		page_number_spread(10),
+		page_number_spread(12),
+		page_number_spread(14),
+		page_number_spread(16),
+		page_number_spread(18),
+		page_number_spread(20),
+	]
 }
 
 // x-----------------------x
@@ -1425,36 +1528,36 @@ let data = {
 // ["recto", 2, "x"]
 // ["verso", 2, "x"]
 let process_verso = (prop) => (grid) => {
-  let index = Math.floor(prop[1])
-  let diff = prop[1] - index
-  let offset = s.mul(grid.column_width(1), diff)
-  return s.add(grid.verso_columns()[index][prop[2]], offset)
+	let index = Math.floor(prop[1])
+	let diff = prop[1] - index
+	let offset = s.mul(grid.column_width(1), diff)
+	return s.add(grid.verso_columns()[index][prop[2]], offset)
 }
 let process_recto = (prop) => (grid) => {
-  let index = Math.floor(prop[1])
-  let diff = prop[1] - index
-  let offset = s.mul(grid.column_width(1), diff)
-  return s.add(grid.recto_columns()[index][prop[2]], offset)
+	let index = Math.floor(prop[1])
+	let diff = prop[1] - index
+	let offset = s.mul(grid.column_width(1), diff)
+	return s.add(grid.recto_columns()[index][prop[2]], offset)
 }
 let process_column_width = (prop) => (grid) => grid.column_width(prop[1])
 
 // ["hangline", 2]
 let process_hangline = (prop) =>
-  /**@param {Grid} grid */
-  (grid) => {
-    let index = Math.floor(prop[1])
-    let diff = prop[1] - index
+	/**@param {Grid} grid */
+	(grid) => {
+		let index = Math.floor(prop[1])
+		let diff = prop[1] - index
 
-    let value = grid.hanglines()[index]
-    //let next = grid.hanglines().length - 1 >= index ? grid.props.page_width : grid.hanglines()[index + 1]
-    let next = grid.hanglines()[index + 1]
-    if (!next) next = grid.props.page_width
+		let value = grid.hanglines()[index]
+		//let next = grid.hanglines().length - 1 >= index ? grid.props.page_width : grid.hanglines()[index + 1]
+		let next = grid.hanglines()[index + 1]
+		if (!next) next = grid.props.page_width
 
-    let dist = s.sub(next, value)
-    let offset = s.mul(dist, diff)
+		let dist = s.sub(next, value)
+		let offset = s.mul(dist, diff)
 
-    return s.add(value, offset)
-  }
+		return s.add(value, offset)
+	}
 
 // ["em", 2]
 let process_em = (prop) => s.em(prop[1])
@@ -1472,34 +1575,34 @@ let process_div = (prop) => s.div(prop[1], prop)
  * @param {(any[] | number | string)} property
  */
 let process_property = (property) => {
-  if (Array.isArray(property)) {
-    if (property[0] == "hangline") return process_hangline(property)
-    if (property[0] == "verso") return process_verso(property)
-    if (property[0] == "recto") return process_recto(property)
-    if (property[0] == "column_width") return process_column_width(property)
+	if (Array.isArray(property)) {
+		if (property[0] == "hangline") return process_hangline(property)
+		if (property[0] == "verso") return process_verso(property)
+		if (property[0] == "recto") return process_recto(property)
+		if (property[0] == "column_width") return process_column_width(property)
 
-    // units
-    if (property[0] == "em") return process_em(property)
-    if (property[0] == "inch") return process_inch(property)
-    if (property[0] == "px") return process_px(property)
-    if (property[0] == "pica") return process_pica(property)
-    if (property[0] == "point") return process_point(property)
+		// units
+		if (property[0] == "em") return process_em(property)
+		if (property[0] == "inch") return process_inch(property)
+		if (property[0] == "px") return process_px(property)
+		if (property[0] == "pica") return process_pica(property)
+		if (property[0] == "point") return process_point(property)
 
-    // math
-    if (property[0] == "add") return process_add(property)
-    if (property[0] == "sub") return process_sub(property)
-    if (property[0] == "mul") return process_mul(property)
-    if (property[0] == "div") return process_div(property)
-  }
+		// math
+		if (property[0] == "add") return process_add(property)
+		if (property[0] == "sub") return process_sub(property)
+		if (property[0] == "mul") return process_mul(property)
+		if (property[0] == "div") return process_div(property)
+	}
 
-  else return property
+	else return property
 }
 
 let reduceprops = (props) => props.reduce((acc, tuple) => {
-  let key = tuple[0]
-  let value = tuple[1]
-  acc[key] = process_property(value)
-  return acc
+	let key = tuple[0]
+	let value = tuple[1]
+	acc[key] = process_property(value)
+	return acc
 }, {})
 
 // x-----------------------x
@@ -1517,420 +1620,420 @@ let reduceprops = (props) => props.reduce((acc, tuple) => {
  * }} block 
  * */
 function spread_from_block(block, extensions = []) {
-  /**
-   * @param {Property[]} props
-   * */
-  let process_header = (props) => {
-    let p = reduceprops(props)
-    return Header(p["text"] ? p["text"] : "", p)
-  }
+	/**
+	 * @param {Property[]} props
+	 * */
+	let process_header = (props) => {
+		let p = reduceprops(props)
+		return Header(p["text"] ? p["text"] : "", p)
+	}
 
-  /**
-   * @param {Property[]} props
-   * */
-  let process_textframe = (props) => {
-    let p = reduceprops(props)
-    return new TextFrame(p["text"] ? p["text"] : "", p)
-  }
+	/**
+	 * @param {Property[]} props
+	 * */
+	let process_textframe = (props) => {
+		let p = reduceprops(props)
+		return new TextFrame(p["text"] ? p["text"] : "", p)
+	}
 
-  /**
-   * @param {Property[]} props
-   * */
-  let process_linked = (props) => {
-    let tframes = props.slice(1).map(e => reduceprops(e))
-    return new LinkedFrame(props[0], tframes)
-  }
+	/**
+	 * @param {Property[]} props
+	 * */
+	let process_linked = (props) => {
+		let tframes = props.slice(1).map(e => reduceprops(e))
+		return new LinkedFrame(props[0], tframes)
+	}
 
-  let contents = block.content.map((item) => {
-    if (item[0] == "Header") return process_header(item.slice(1))
-    if (item[0] == "TextFrame") return process_textframe(item.slice(1))
-    if (item[0] == "LinkedFrame") return process_linked(item.slice(1))
-    if (item[0] == "Rect") return rect(reduceprops(item.slice(1)))
-    if (item[0] == "Image") return image(reduceprops(item.slice(1)))
-    if (item[0] == "Circle") return circle(reduceprops(item.slice(1)))
-    if (item[0] == "Arc") return arc(reduceprops(item.slice(1)))
-  })
+	let contents = block.content.map((item) => {
+		if (item[0] == "Header") return process_header(item.slice(1))
+		if (item[0] == "TextFrame") return process_textframe(item.slice(1))
+		if (item[0] == "LinkedFrame") return process_linked(item.slice(1))
+		if (item[0] == "Rect") return rect(reduceprops(item.slice(1)))
+		if (item[0] == "Image") return image(reduceprops(item.slice(1)))
+		if (item[0] == "Circle") return circle(reduceprops(item.slice(1)))
+		if (item[0] == "Arc") return arc(reduceprops(item.slice(1)))
+	})
 
 
-  return new Spread(grid, s, [...contents, ...extensions])
+	return new Spread(grid, s, [...contents, ...extensions])
 }
 
 const image = ({ src, x, y, width, height }) => {
-  return {
-    draw: (p, props) => {
+	return {
+		draw: (p, props) => {
 
-      if (typeof x == "function") x = x(props.structure)
-      if (typeof y == "function") y = y(props.structure)
-      if (typeof width == "function") width = width(props.structure)
-      if (typeof height == "function") height = height(props.structure)
-      p.blendMode("multiply")
-      p.image(src(), x.px, y.px, width.px, height.px)
-      p.blendMode("blend")
-    }
-  }
+			if (typeof x == "function") x = x(props.structure)
+			if (typeof y == "function") y = y(props.structure)
+			if (typeof width == "function") width = width(props.structure)
+			if (typeof height == "function") height = height(props.structure)
+			p.blendMode("multiply")
+			p.image(src(), x.px, y.px, width.px, height.px)
+			p.blendMode("blend")
+		}
+	}
 }
 
 const rect = ({ x, y, length, height, fill, stroke, strokeWeight }) => {
-  return {
-    draw: (p, props) => {
-      fill ? p.fill(fill) : p.noFill()
-      stroke ? p.stroke(stroke) : p.noStroke()
-      strokeWeight ? p.strokeWeight(strokeWeight) : null
+	return {
+		draw: (p, props) => {
+			fill ? p.fill(fill) : p.noFill()
+			stroke ? p.stroke(stroke) : p.noStroke()
+			strokeWeight ? p.strokeWeight(strokeWeight) : null
 
-      if (typeof x == "function") x = x(props.structure)
-      if (typeof y == "function") y = y(props.structure)
-      if (typeof length == "function") length = length(props.structure)
-      if (typeof height == "function") height = height(props.structure)
+			if (typeof x == "function") x = x(props.structure)
+			if (typeof y == "function") y = y(props.structure)
+			if (typeof length == "function") length = length(props.structure)
+			if (typeof height == "function") height = height(props.structure)
 
-      p.rect(x.px, y.px, length.px, height.px)
-    }
-  }
+			p.rect(x.px, y.px, length.px, height.px)
+		}
+	}
 }
 
 const circle = ({ x, y, radius, fill, stroke, strokeWeight }) => {
-  return {
-    draw: (p, props) => {
-      fill ? p.fill(fill) : p.noFill()
-      stroke ? p.stroke(stroke) : p.noStroke()
-      strokeWeight ? p.strokeWeight(strokeWeight) : null
+	return {
+		draw: (p, props) => {
+			fill ? p.fill(fill) : p.noFill()
+			stroke ? p.stroke(stroke) : p.noStroke()
+			strokeWeight ? p.strokeWeight(strokeWeight) : null
 
-      if (typeof x == "function") x = x(props.structure)
-      if (typeof y == "function") y = y(props.structure)
-      if (typeof radius == "function") radius = radius(props.structure)
+			if (typeof x == "function") x = x(props.structure)
+			if (typeof y == "function") y = y(props.structure)
+			if (typeof radius == "function") radius = radius(props.structure)
 
-      p.circle(x.px, y.px, radius.px)
-    }
-  }
+			p.circle(x.px, y.px, radius.px)
+		}
+	}
 }
 
 const arc = ({ x, y, radius, start = 0, stop = 180, fill, stroke, strokeWeight }) => {
-  return {
-    draw: (p, props) => {
-      fill ? p.fill(fill) : p.noFill()
-      stroke ? p.stroke(stroke) : p.noStroke()
-      strokeWeight ? p.strokeWeight(strokeWeight) : null
+	return {
+		draw: (p, props) => {
+			fill ? p.fill(fill) : p.noFill()
+			stroke ? p.stroke(stroke) : p.noStroke()
+			strokeWeight ? p.strokeWeight(strokeWeight) : null
 
-      if (typeof x == "function") x = x(props.structure)
-      if (typeof y == "function") y = y(props.structure)
-      if (typeof radius == "function") radius = radius(props.structure)
+			if (typeof x == "function") x = x(props.structure)
+			if (typeof y == "function") y = y(props.structure)
+			if (typeof radius == "function") radius = radius(props.structure)
 
-      p.arc(x.px, y.px, radius.px, radius.px, start, stop)
-    }
-  }
+			p.arc(x.px, y.px, radius.px, radius.px, start, stop)
+		}
+	}
 }
 
 const graphic = () => {
-  let r = Math.random() * 12
-  let f = Math.random() * 28
-  let at = Math.random() + .5
-  let ot = Math.random()
-  return {
-    draw: (p, props) => {
-      p.noFill()
-      p.stroke(0, 0, 255)
+	let r = Math.random() * 12
+	let f = Math.random() * 28
+	let at = Math.random() + .5
+	let ot = Math.random()
+	return {
+		draw: (p, props) => {
+			p.noFill()
+			p.stroke(0, 0, 255)
 
-      p.strokeWeight(1)
-      p.arc(s.em(18).px
-        , s.em(f + r).px
-        , s.em(r * 2 + 8).px
-        , s.em(r * 2 + 8).px
-        , ot
-        , at
-      )
+			p.strokeWeight(1)
+			p.arc(s.em(18).px
+				, s.em(f + r).px
+				, s.em(r * 2 + 8).px
+				, s.em(r * 2 + 8).px
+				, ot
+				, at
+			)
 
-      p.strokeWeight(.5)
-      p.circle(s.em(8).px,
-        s.em(18).px,
-        s.em(r * at).px,
-      )
-    }
-  }
+			p.strokeWeight(.5)
+			p.circle(s.em(8).px,
+				s.em(18).px,
+				s.em(r * at).px,
+			)
+		}
+	}
 }
 
 function Header(text, para) {
-  text = decodeHTML(text)
-  let propies = reduceprops(style.title)
-  /**@type {Drawable}*/
-  let drawable = {
-    draw: (p, props) => draw_paragraph(p, {
-      text: text,
-      color: "blue",
-      rect: true,
-      hyphenate: false,
+	text = decodeHTML(text)
+	let propies = reduceprops(style.title)
+	/**@type {Drawable}*/
+	let drawable = {
+		draw: (p, props) => draw_paragraph(p, {
+			text: text,
+			color: "blue",
+			rect: true,
+			hyphenate: false,
 
-      ...propies,
-      ...para
-    }, props.structure)
-  }
+			...propies,
+			...para
+		}, props.structure)
+	}
 
-  return drawable
+	return drawable
 }
 
-const decodeHTML = function(str) {
-  var map = {
-    quot: '"',
-    amp: "&",
-    lt: "<",
-    gt: ">",
-    OElig: "Œ",
-    oelig: "œ",
-    Scaron: "Š",
-    scaron: "š",
-    Yuml: "Ÿ",
-    circ: "ˆ",
-    tilde: "˜",
-    ensp: " ",
-    emsp: " ",
-    thinsp: " ",
-    zwnj: "‌",
-    zwj: "‍",
-    lrm: "‎",
-    rlm: "‏",
-    ndash: "–",
-    mdash: "—",
-    lsquo: "‘",
-    rsquo: "’",
-    sbquo: "‚",
-    ldquo: "“",
-    rdquo: "”",
-    bdquo: "„",
-    dagger: "†",
-    Dagger: "‡",
-    permil: "‰",
-    lsaquo: "‹",
-    rsaquo: "›",
-    fnof: "ƒ",
-    Alpha: "Α",
-    Beta: "Β",
-    Gamma: "Γ",
-    Delta: "Δ",
-    Epsilon: "Ε",
-    Zeta: "Ζ",
-    Eta: "Η",
-    Theta: "Θ",
-    Iota: "Ι",
-    Kappa: "Κ",
-    Lambda: "Λ",
-    Mu: "Μ",
-    Nu: "Ν",
-    Xi: "Ξ",
-    Omicron: "Ο",
-    Pi: "Π",
-    Rho: "Ρ",
-    Sigma: "Σ",
-    Tau: "Τ",
-    Upsilon: "Υ",
-    Phi: "Φ",
-    Chi: "Χ",
-    Psi: "Ψ",
-    Omega: "Ω",
-    alpha: "α",
-    beta: "β",
-    gamma: "γ",
-    delta: "δ",
-    epsilon: "ε",
-    zeta: "ζ",
-    eta: "η",
-    theta: "θ",
-    iota: "ι",
-    kappa: "κ",
-    lambda: "λ",
-    mu: "μ",
-    nu: "ν",
-    xi: "ξ",
-    omicron: "ο",
-    pi: "π",
-    rho: "ρ",
-    sigmaf: "ς",
-    sigma: "σ",
-    tau: "τ",
-    upsilon: "υ",
-    phi: "φ",
-    chi: "χ",
-    psi: "ψ",
-    omega: "ω",
-    thetasym: "ϑ",
-    upsih: "ϒ",
-    piv: "ϖ",
-    bull: "•",
-    hellip: "…",
-    prime: "′",
-    Prime: "″",
-    oline: "‾",
-    frasl: "⁄",
-    weierp: "℘",
-    image: "ℑ",
-    real: "ℜ",
-    trade: "™",
-    alefsym: "ℵ",
-    larr: "←",
-    uarr: "↑",
-    rarr: "→",
-    darr: "↓",
-    harr: "↔",
-    crarr: "↵",
-    lArr: "⇐",
-    uArr: "⇑",
-    rArr: "⇒",
-    dArr: "⇓",
-    hArr: "⇔",
-    forall: "∀",
-    part: "∂",
-    exist: "∃",
-    empty: "∅",
-    nabla: "∇",
-    isin: "∈",
-    notin: "∉",
-    ni: "∋",
-    prod: "∏",
-    sum: "∑",
-    minus: "−",
-    lowast: "∗",
-    radic: "√",
-    prop: "∝",
-    infin: "∞",
-    ang: "∠",
-    and: "⊥",
-    or: "⊦",
-    cap: "∩",
-    cup: "∪",
-    int: "∫",
-    there4: "∴",
-    sim: "∼",
-    cong: "≅",
-    asymp: "≈",
-    ne: "≠",
-    equiv: "≡",
-    le: "≤",
-    ge: "≥",
-    sub: "⊂",
-    sup: "⊃",
-    nsub: "⊄",
-    sube: "⊆",
-    supe: "⊇",
-    oplus: "⊕",
-    otimes: "⊗",
-    perp: "⊥",
-    sdot: "⋅",
-    lceil: "⌈",
-    rceil: "⌉",
-    lfloor: "⌊",
-    rfloor: "⌋",
-    lang: "〈",
-    rang: "〉",
-    loz: "◊",
-    spades: "♠",
-    clubs: "♣",
-    hearts: "♥",
-    diams: "♦",
-    nbsp: " ",
-    iexcl: "¡",
-    cent: "¢",
-    pound: "£",
-    curren: "¤",
-    yen: "¥",
-    brvbar: "¦",
-    sect: "§",
-    uml: "¨",
-    copy: "©",
-    ordf: "ª",
-    laquo: "«",
-    not: "¬",
-    shy: "­",
-    reg: "®",
-    macr: "¯",
-    deg: "°",
-    plusmn: "±",
-    sup2: "²",
-    sup3: "³",
-    acute: "´",
-    micro: "µ",
-    para: "¶",
-    middot: "·",
-    cedil: "¸",
-    sup1: "¹",
-    ordm: "º",
-    raquo: "»",
-    frac14: "¼",
-    frac12: "½",
-    frac34: "¾",
-    iquest: "¿",
-    Agrave: "À",
-    Aacute: "Á",
-    Acirc: "Â",
-    Atilde: "Ã",
-    Auml: "Ä",
-    Aring: "Å",
-    AElig: "Æ",
-    Ccedil: "Ç",
-    Egrave: "È",
-    Eacute: "É",
-    Ecirc: "Ê",
-    Euml: "Ë",
-    Igrave: "Ì",
-    Iacute: "Í",
-    Icirc: "Î",
-    Iuml: "Ï",
-    ETH: "Ð",
-    Ntilde: "Ñ",
-    Ograve: "Ò",
-    Oacute: "Ó",
-    Ocirc: "Ô",
-    Otilde: "Õ",
-    Ouml: "Ö",
-    times: "×",
-    Oslash: "Ø",
-    Ugrave: "Ù",
-    Uacute: "Ú",
-    Ucirc: "Û",
-    Uuml: "Ü",
-    Yacute: "Ý",
-    THORN: "Þ",
-    szlig: "ß",
-    agrave: "à",
-    aacute: "á",
-    acirc: "â",
-    atilde: "ã",
-    auml: "ä",
-    aring: "å",
-    aelig: "æ",
-    ccedil: "ç",
-    egrave: "è",
-    eacute: "é",
-    ecirc: "ê",
-    euml: "ë",
-    igrave: "ì",
-    iacute: "í",
-    icirc: "î",
-    iuml: "ï",
-    eth: "ð",
-    ntilde: "ñ",
-    ograve: "ò",
-    oacute: "ó",
-    ocirc: "ô",
-    otilde: "õ",
-    ouml: "ö",
-    divide: "÷",
-    oslash: "ø",
-    ugrave: "ù",
-    uacute: "ú",
-    ucirc: "û",
-    uuml: "ü",
-    yacute: "ý",
-    thorn: "þ",
-    yuml: "ÿ",
-  };
-  return str.replace(/&(#(?:x[0-9a-f]+|\d+)|[a-z]+);?/gi, function($0, $1) {
-    if ($1[0] === "#") {
-      return String.fromCharCode(
-        $1[1].toLowerCase() === "x"
-          ? parseInt($1.substr(2), 16)
-          : parseInt($1.substr(1), 10),
-      );
-    } else {
-      return map.hasOwnProperty($1) ? map[$1] : $0;
-    }
-  });
+const decodeHTML = function (str) {
+	var map = {
+		quot: '"',
+		amp: "&",
+		lt: "<",
+		gt: ">",
+		OElig: "Œ",
+		oelig: "œ",
+		Scaron: "Š",
+		scaron: "š",
+		Yuml: "Ÿ",
+		circ: "ˆ",
+		tilde: "˜",
+		ensp: " ",
+		emsp: " ",
+		thinsp: " ",
+		zwnj: "‌",
+		zwj: "‍",
+		lrm: "‎",
+		rlm: "‏",
+		ndash: "–",
+		mdash: "—",
+		lsquo: "‘",
+		rsquo: "’",
+		sbquo: "‚",
+		ldquo: "“",
+		rdquo: "”",
+		bdquo: "„",
+		dagger: "†",
+		Dagger: "‡",
+		permil: "‰",
+		lsaquo: "‹",
+		rsaquo: "›",
+		fnof: "ƒ",
+		Alpha: "Α",
+		Beta: "Β",
+		Gamma: "Γ",
+		Delta: "Δ",
+		Epsilon: "Ε",
+		Zeta: "Ζ",
+		Eta: "Η",
+		Theta: "Θ",
+		Iota: "Ι",
+		Kappa: "Κ",
+		Lambda: "Λ",
+		Mu: "Μ",
+		Nu: "Ν",
+		Xi: "Ξ",
+		Omicron: "Ο",
+		Pi: "Π",
+		Rho: "Ρ",
+		Sigma: "Σ",
+		Tau: "Τ",
+		Upsilon: "Υ",
+		Phi: "Φ",
+		Chi: "Χ",
+		Psi: "Ψ",
+		Omega: "Ω",
+		alpha: "α",
+		beta: "β",
+		gamma: "γ",
+		delta: "δ",
+		epsilon: "ε",
+		zeta: "ζ",
+		eta: "η",
+		theta: "θ",
+		iota: "ι",
+		kappa: "κ",
+		lambda: "λ",
+		mu: "μ",
+		nu: "ν",
+		xi: "ξ",
+		omicron: "ο",
+		pi: "π",
+		rho: "ρ",
+		sigmaf: "ς",
+		sigma: "σ",
+		tau: "τ",
+		upsilon: "υ",
+		phi: "φ",
+		chi: "χ",
+		psi: "ψ",
+		omega: "ω",
+		thetasym: "ϑ",
+		upsih: "ϒ",
+		piv: "ϖ",
+		bull: "•",
+		hellip: "…",
+		prime: "′",
+		Prime: "″",
+		oline: "‾",
+		frasl: "⁄",
+		weierp: "℘",
+		image: "ℑ",
+		real: "ℜ",
+		trade: "™",
+		alefsym: "ℵ",
+		larr: "←",
+		uarr: "↑",
+		rarr: "→",
+		darr: "↓",
+		harr: "↔",
+		crarr: "↵",
+		lArr: "⇐",
+		uArr: "⇑",
+		rArr: "⇒",
+		dArr: "⇓",
+		hArr: "⇔",
+		forall: "∀",
+		part: "∂",
+		exist: "∃",
+		empty: "∅",
+		nabla: "∇",
+		isin: "∈",
+		notin: "∉",
+		ni: "∋",
+		prod: "∏",
+		sum: "∑",
+		minus: "−",
+		lowast: "∗",
+		radic: "√",
+		prop: "∝",
+		infin: "∞",
+		ang: "∠",
+		and: "⊥",
+		or: "⊦",
+		cap: "∩",
+		cup: "∪",
+		int: "∫",
+		there4: "∴",
+		sim: "∼",
+		cong: "≅",
+		asymp: "≈",
+		ne: "≠",
+		equiv: "≡",
+		le: "≤",
+		ge: "≥",
+		sub: "⊂",
+		sup: "⊃",
+		nsub: "⊄",
+		sube: "⊆",
+		supe: "⊇",
+		oplus: "⊕",
+		otimes: "⊗",
+		perp: "⊥",
+		sdot: "⋅",
+		lceil: "⌈",
+		rceil: "⌉",
+		lfloor: "⌊",
+		rfloor: "⌋",
+		lang: "〈",
+		rang: "〉",
+		loz: "◊",
+		spades: "♠",
+		clubs: "♣",
+		hearts: "♥",
+		diams: "♦",
+		nbsp: " ",
+		iexcl: "¡",
+		cent: "¢",
+		pound: "£",
+		curren: "¤",
+		yen: "¥",
+		brvbar: "¦",
+		sect: "§",
+		uml: "¨",
+		copy: "©",
+		ordf: "ª",
+		laquo: "«",
+		not: "¬",
+		shy: "­",
+		reg: "®",
+		macr: "¯",
+		deg: "°",
+		plusmn: "±",
+		sup2: "²",
+		sup3: "³",
+		acute: "´",
+		micro: "µ",
+		para: "¶",
+		middot: "·",
+		cedil: "¸",
+		sup1: "¹",
+		ordm: "º",
+		raquo: "»",
+		frac14: "¼",
+		frac12: "½",
+		frac34: "¾",
+		iquest: "¿",
+		Agrave: "À",
+		Aacute: "Á",
+		Acirc: "Â",
+		Atilde: "Ã",
+		Auml: "Ä",
+		Aring: "Å",
+		AElig: "Æ",
+		Ccedil: "Ç",
+		Egrave: "È",
+		Eacute: "É",
+		Ecirc: "Ê",
+		Euml: "Ë",
+		Igrave: "Ì",
+		Iacute: "Í",
+		Icirc: "Î",
+		Iuml: "Ï",
+		ETH: "Ð",
+		Ntilde: "Ñ",
+		Ograve: "Ò",
+		Oacute: "Ó",
+		Ocirc: "Ô",
+		Otilde: "Õ",
+		Ouml: "Ö",
+		times: "×",
+		Oslash: "Ø",
+		Ugrave: "Ù",
+		Uacute: "Ú",
+		Ucirc: "Û",
+		Uuml: "Ü",
+		Yacute: "Ý",
+		THORN: "Þ",
+		szlig: "ß",
+		agrave: "à",
+		aacute: "á",
+		acirc: "â",
+		atilde: "ã",
+		auml: "ä",
+		aring: "å",
+		aelig: "æ",
+		ccedil: "ç",
+		egrave: "è",
+		eacute: "é",
+		ecirc: "ê",
+		euml: "ë",
+		igrave: "ì",
+		iacute: "í",
+		icirc: "î",
+		iuml: "ï",
+		eth: "ð",
+		ntilde: "ñ",
+		ograve: "ò",
+		oacute: "ó",
+		ocirc: "ô",
+		otilde: "õ",
+		ouml: "ö",
+		divide: "÷",
+		oslash: "ø",
+		ugrave: "ù",
+		uacute: "ú",
+		ucirc: "û",
+		uuml: "ü",
+		yacute: "ý",
+		thorn: "þ",
+		yuml: "ÿ",
+	};
+	return str.replace(/&(#(?:x[0-9a-f]+|\d+)|[a-z]+);?/gi, function ($0, $1) {
+		if ($1[0] === "#") {
+			return String.fromCharCode(
+				$1[1].toLowerCase() === "x"
+					? parseInt($1.substr(2), 16)
+					: parseInt($1.substr(1), 10),
+			);
+		} else {
+			return map.hasOwnProperty($1) ? map[$1] : $0;
+		}
+	});
 };
 
 // TODO: to Offset
@@ -1948,68 +2051,68 @@ const decodeHTML = function(str) {
 }} Offset
 
 @typedef {{
-  vertical_pos: number,
-  word_count: number,
+	vertical_pos: number,
+	word_count: number,
 }} ParagraphState
 
 @typedef {{
-  line_state: LineState,
-  paragraph_state: ParagraphState,
-  paragraph: Paragraph,
-  p: p5
+	line_state: LineState,
+	paragraph_state: ParagraphState,
+	paragraph: Paragraph,
+	p: p5
 }} ParagraphHookProps
 
 @typedef {{
-  beforeHyphenate?: (props: ParagraphHookProps) => void
-  afterHyphenate?: (props: ParagraphHookProps) => void
-  beforeWord?: (props: ParagraphHookProps) => void
-  afterWord?: (props: ParagraphHookProps) => void
-  beforeLine?: (props: ParagraphHookProps) => void
-  afterLine?: (props: ParagraphHookProps) => void
+	beforeHyphenate?: (props: ParagraphHookProps) => void
+	afterHyphenate?: (props: ParagraphHookProps) => void
+	beforeWord?: (props: ParagraphHookProps) => void
+	afterWord?: (props: ParagraphHookProps) => void
+	beforeLine?: (props: ParagraphHookProps) => void
+	afterLine?: (props: ParagraphHookProps) => void
 }} ParagraphHooks
 
 @typedef {(grid: Grid) => Unit} GridUnit
 
 @typedef {{
-  text: string,
-  length: Unit,
-  font_family: any,
-  font_weight: number,
-  leading: Unit,
-  font_size: Unit,
-  height: Unit,
-  color: string,
-  stroke: string,
-  x: Unit,
-  y: Unit,
-  rect: boolean,
-  hyphenate: boolean,
-  hooks: ParagraphHooks
+	text: string,
+	length: Unit,
+	font_family: any,
+	font_weight: number,
+	leading: Unit,
+	font_size: Unit,
+	height: Unit,
+	color: string,
+	stroke: string,
+	x: Unit,
+	y: Unit,
+	rect: boolean,
+	hyphenate: boolean,
+	hooks: ParagraphHooks
 }} Paragraph
 
 
 @typedef {{
-  hyphenate?: boolean,
-  text?: string,
-  font_family?: any,
-  font_weight?: number,
-  leading?: Unit,
-  font_size?: Unit,
-  length?: Unit | GridUnit,
-  height?: Unit | GridUnit,
-  x?: Unit | GridUnit,
-  y?: Unit | GridUnit,
-  color?: string,
-  stroke?: string,
-  rect?: boolean,
-  hooks?: ParagraphHooks
+	hyphenate?: boolean,
+	text?: string,
+	font_family?: any,
+	font_weight?: number,
+	leading?: Unit,
+	font_size?: Unit,
+	length?: Unit | GridUnit,
+	height?: Unit | GridUnit,
+	x?: Unit | GridUnit,
+	y?: Unit | GridUnit,
+	color?: string,
+	stroke?: string,
+	rect?: boolean,
+	hooks?: ParagraphHooks
 }} ParagraphProps
 
 @typedef {("inch" | "pica" | "point" | "em" | "pixel")} UnitType
 @typedef {{
-  unit?: UnitType,
-  value?: number,
-  px: number
+	unit?: UnitType,
+	value?: number,
+	px: number
 }} Unit
 
 */
