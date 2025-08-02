@@ -900,7 +900,7 @@ class Book {
 			let proportional_width
 
 			if (horizontal_offset) {
-				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op)
+				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
 				proportional_width = new_page_width / width.px
 			}
 
@@ -923,13 +923,13 @@ class Book {
 			let proportional_width
 
 			if (horizontal_offset) {
-				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op)
+				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
 				proportional_width = new_page_width / width.px
 			}
 
 			let spread_num_2 = this.page_to_spread(num2)
 			let img = this.recto_image(p, spread_num_2, "white", horizontal_offset ? proportional_width : .5)
-			let x = horizontal_offset?.axis == "horizontal" ? (horizontal_offset.size.px * (v_offset_direction * op)) : 0
+			let x = horizontal_offset?.axis == "horizontal" ? (horizontal_offset.size.px * (-1 * op * horizontal_offset.direction)) : 0
 			this.draw_img(p, img, p.width/2 + x, 0)
 		}
 
@@ -1057,7 +1057,7 @@ class Paper {
 			let proportional_width
 
 			if (horizontal_offset) {
-				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op)
+				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
 				proportional_width = new_page_width / width.px
 			}
 
@@ -1069,8 +1069,8 @@ class Paper {
 				p.opacity(.8)
 			}
 
-			let x = horizontal_offset?.axis == "horizontal" ? left + (horizontal_offset.size.px * (v_offset_direction * op)) : left
-			let y = vertical_offset ? top + (vertical_offset.size.px * v_offset_direction) : top
+			let x = horizontal_offset?.axis == "horizontal" ? left + (horizontal_offset.size.px * (-1 * op * horizontal_offset.direction)) : left
+			let y = vertical_offset ? top + (vertical_offset.size.px * vertical_offset.direction * -1) : top
 			p.image(verso_image, x, y, verso_image.width, verso_image.height)
 
 			p.opacity(1)
@@ -1096,7 +1096,7 @@ class Paper {
 			let new_page_width
 			let proportional_width
 			if (horizontal_offset) {
-				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op)
+				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
 				proportional_width = new_page_width / width.px
 			}
 
@@ -1111,7 +1111,7 @@ class Paper {
 				recto_image, left + width.px / 2,
 
 				vertical_offset
-					? top + (vertical_offset.size.px * v_offset_direction)
+					? top + (vertical_offset.size.px * -1 * vertical_offset.direction)
 					: top
 
 				, recto_image.width, recto_image.height)
@@ -1224,16 +1224,17 @@ oninit.push(() => {
 
 	// for export
 	if (printing) {
+		// A4 8.27 x 11.69
 		paper = new Paper(p, s, el, {
-			width: s.inch(11),
-			height: s.inch(8.5),
+			width: s.inch(11.69),
+			height: s.inch(8.27),
 		}, true)
 	}
 
 	// for offset
 	else {
 		paper = new Paper(p, s, el, {
-			width: s.inch(5.5 * 2),
+			width: s.inch(6.5 * 2),
 			height: s.inch(9),
 		}, true)
 
@@ -1267,44 +1268,44 @@ let v_offset_direction = -1
 /**@type {Offset[]}*/
 let offsets = [
 	{
-		size: s.em(6),
+		size: s.em(2),
+		axis: "vertical",
+		color: "#9985F7",
+		direction: -1,
+		page: 2
+	},
+	{
+		size: s.em(10),
 		axis: "horizontal",
 		color: "#9985F7",
 		direction: 1,
 		page: 2
 	},
 
-	{
-		size: s.em(4),
-		axis: "horizontal",
-		color: "yellow",
-		direction: 1,
-		page: 4
-	},
 
 	{
-		size: s.em(2),
+		size: s.em(4),
 		axis: "vertical",
 		color: "#BF58CE",
 		direction: 1,
-		page: 6
+		page: 7
 	},
 
 	{
 		size: s.em(4),
-		axis: "vertical",
+		axis: "horizontal",
 		color: "pink",
 		direction: 1,
 		page: 7
 	},
 
-	{
-		size: s.em(2),
-		axis: "horizontal",
-		color: "pink",
-		direction: 1,
-		page: 7
-	}
+	// {
+	// 	size: s.em(2),
+	// 	axis: "horizontal",
+	// 	color: "pink",
+	// 	direction: 1,
+	// 	page: 7
+	// }
 ]
 
 oninit.push(() => {
@@ -1516,8 +1517,8 @@ let data = {
 		page_number_spread(12),
 		page_number_spread(14),
 		page_number_spread(16),
-		page_number_spread(18),
-		page_number_spread(20),
+		// page_number_spread(18),
+		// page_number_spread(20),
 	]
 }
 
