@@ -989,8 +989,14 @@ class Paper {
 			console.log(verso_page, "is before: ", before)
 			let op = before ? -1 : 1
 			// TODO: Replace all offset_size with offset.size
-			let new_page_width = book.structure?.props.page_width.px / 2 + (offset_size.px * op)
-			let proportional_width =  new_page_width / width.px 
+			let new_page_width 
+			let proportional_width 
+
+			if (verso_offset){
+				new_page_width = book.structure?.props.page_width.px / 2 + (offset.offset.px * op)
+				proportional_width =  new_page_width / width.px 
+			}
+
       let verso_image = book.verso_image(graphic, spread, color, verso_offset ? proportional_width : .5)
 
       if ((verso_offset) && draw_behind) {
@@ -998,11 +1004,11 @@ class Paper {
         p.opacity(.95)
       }
 
-			let x = offset?.axis == "horizontal" ? left + (offset_size.px * (v_offset_direction * op)) : left
+			let x = offset?.axis == "horizontal" ? left + (offset.offset.px * (v_offset_direction * op)) : left
 
       p.image(verso_image, x,
 							offset?.axis == "vertical"
-							? top + (offset_size.px * v_offset_direction)
+							? top + (offset.offset.px * v_offset_direction)
 								: top,
 							verso_image.width, verso_image.height)
 
@@ -1024,9 +1030,12 @@ class Paper {
 			console.log(recto_page, "is before: ", before)
 			let op = before ? -1 : 1
 
-			let new_page_width = book.structure?.props.page_width.px / 2 + (offset_size.px * op)
-			let proportional_width =  new_page_width / width.px 
-
+			let new_page_width 
+			let proportional_width 
+			if (recto_offset){
+				new_page_width = book.structure?.props.page_width.px / 2 + (offset.offset.px * op)
+				proportional_width =  new_page_width / width.px 
+			}
       let recto_image = book.recto_image(graphic, spread,color, recto_offset ? proportional_width : .5)
 
       if ((recto_offset) && draw_behind) {
@@ -1038,7 +1047,7 @@ class Paper {
 				recto_image, left + width.px / 2,
 
 				offset?.axis == "vertical"
-					? top + (offset_size.px * v_offset_direction)
+					? top + (offset.offset.px * v_offset_direction)
 					: top
 
 				, recto_image.width, recto_image.height)
@@ -1190,7 +1199,7 @@ let offsets = [
 	},
 
 	{
-		offset: offset_size,
+		offset: s.em(6),
 		axis: "horizontal",
 		page: 4
 	},
