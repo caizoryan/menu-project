@@ -902,6 +902,12 @@ class Paper {
 
     this.draw_crop_marks(book)
 
+		// TODO:
+		// FOR Next visibles,
+		// have to go through spreads,
+		// calculate their rects
+		// then do a bounds check, and when bounds are greater
+		// then collect the page for render
     let nextvisibleverso = (spread) => {
       let verso_page = spread * 2
       let verso_offset = book.page_is_offset(verso_page)
@@ -924,7 +930,6 @@ class Paper {
 
       return found
     }
-
     let nextvisiblerecto = (spread) => {
       let recto_page = spread * 2 + 1
       let recto_offset = book.page_is_offset(recto_page)
@@ -983,6 +988,7 @@ class Paper {
 
 			console.log(verso_page, "is before: ", before)
 			let op = before ? -1 : 1
+			// TODO: Replace all offset_size with offset.size
 			let new_page_width = book.structure?.props.page_width.px / 2 + (offset_size.px * op)
 			let proportional_width =  new_page_width / width.px 
       let verso_image = book.verso_image(graphic, spread, color, verso_offset ? proportional_width : .5)
@@ -1469,7 +1475,6 @@ let reduceprops = (props) => props.reduce((acc, tuple) => {
   return acc
 }, {})
 
-
 // x-----------------------x
 // *Header: Spread from block
 // x-----------------------x
@@ -1522,7 +1527,6 @@ function spread_from_block(block, extensions = []) {
 
   return new Spread(grid, s, [...contents, ...extensions])
 }
-
 
 const image = ({ src, x, y, width, height }) => {
   return {
@@ -1901,6 +1905,11 @@ const decodeHTML = function(str) {
     }
   });
 };
+
+// TODO: to Offset
+// add color
+// add direction
+// future: Maybe make it a generic page/sheet thingie
 
 /**
 @typedef {{
