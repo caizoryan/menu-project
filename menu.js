@@ -684,7 +684,9 @@ class Book {
 				this.offsets.push({
 					page: e,
 					size: offset.size,
-					axis: offset.axis
+					axis: offset.axis,
+					direction: offset.direction,
+					color: offset.color
 				})
 			}
     })
@@ -694,7 +696,9 @@ class Book {
 				this.offsets.push({
 					page: e,
 					size: offset.size,
-					axis: offset.axis
+					axis: offset.axis,
+					direction: offset.direction,
+					color: offset.color
 				})
 			}
     })
@@ -979,16 +983,16 @@ class Paper {
       let verso_page = spread * 2
 			let offset = book.offsets.find((e) => e.page == verso_page)
       let verso_offset = book.page_is_offset(verso_page)
+
 			if (offset) verso_offset = true
 			else if (!verso_offset && verso_offset) console.log("inconsistencey!!!")
-			let color = verso_offset ? "#ABE2F7" : "white"
+
+			let color = verso_offset ? offset.color: "white"
 			let width = book.structure?.props.page_width
 
 			let before = before_spine(verso_page)
 
-			console.log(verso_page, "is before: ", before)
 			let op = before ? -1 : 1
-			// TODO: Replace all offset_size with offset.size
 			let new_page_width 
 			let proportional_width 
 
@@ -997,11 +1001,11 @@ class Paper {
 				proportional_width =  new_page_width / width.px 
 			}
 
-      let verso_image = book.verso_image(graphic, spread, color, verso_offset ? proportional_width : .5)
+      let verso_image = book.verso_image(graphic, spread, color, offset?.axis == "horizontal" ? proportional_width : .5)
 
-      if ((verso_offset) && draw_behind) {
+      if (spread > 0 && draw_behind) {
         draw_verso(graphic, spread - 1)
-        p.opacity(.95)
+        p.opacity(.8)
       }
 
 			let x = offset?.axis == "horizontal" ? left + (offset.size.px * (v_offset_direction * op)) : left
@@ -1023,7 +1027,7 @@ class Paper {
 			if (offset) recto_offset = true
 			else if (!recto_offset && recto_offset) console.log("inconsistencey!!!")
 
-			let color = recto_offset ? "#ABE2F7"  : "white"
+			let color = recto_offset ? offset.color  : "white"
 
 			let width = book.structure?.props.page_width
 			let before = before_spine(recto_page)
@@ -1036,9 +1040,9 @@ class Paper {
 			new_page_width = book.structure?.props.page_width.px / 2 + (offset.size.px * op)
 			proportional_width =  new_page_width / width.px 
 			}
-      let recto_image = book.recto_image(graphic, spread,color, recto_offset ? proportional_width : .5)
+      let recto_image = book.recto_image(graphic, spread,color, offset?.axis == "horizontal" ? proportional_width : .5)
 
-      if ((recto_offset) && draw_behind) {
+      if (spread < book.spreads.length-1 && draw_behind) {
         draw_recto(graphic, spread + 1)
         p.opacity(.8)
       }
@@ -1193,20 +1197,34 @@ let v_offset_direction = -1
 /**@type {Offset[]}*/
 let offsets = [
 	{
-		size: offset_size,
+		size: s.em(14),
 		axis: "horizontal",
-		page: 6
+		color: "#9985F7",
+		direction: 1,
+		page: 2
 	},
 
 	{
-		size: s.em(6),
+		size: offset_size,
 		axis: "horizontal",
+		color: "yellow",
+		direction: 1,
 		page: 4
 	},
 
 	{
+		size: s.em(6),
+		axis: "vertical",
+		color: "#BF58CE",
+		direction: 1,
+		page: 6
+	},
+
+	{
 		size: offset_size,
 		axis: "horizontal",
+		color: "pink",
+		direction: 1,
 		page: 15 
 	}
 ]
@@ -1377,7 +1395,7 @@ The booklet was designed in a custom tool developed for an independent study con
   ]
 }
 
-page = 2
+page = 6
 
 // x-----------------------x
 // *Header: Data
@@ -1925,6 +1943,8 @@ const decodeHTML = function(str) {
 	axis: ("vertical" | "horizontal")
 	size: Unit,
 	page: number,
+	color: string,
+	direction: (1 | -1)
 }} Offset
 
 @typedef {{
