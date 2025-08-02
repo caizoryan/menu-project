@@ -683,7 +683,7 @@ class Book {
       if (this.offsets.findIndex(f => f.page == e) == -1) {
 				this.offsets.push({
 					page: e,
-					offset: offset.offset,
+					size: offset.size,
 					axis: offset.axis
 				})
 			}
@@ -693,7 +693,7 @@ class Book {
       if (this.offsets.findIndex(f => f.page == e) == -1) {
 				this.offsets.push({
 					page: e,
-					offset: offset.offset,
+					size: offset.size,
 					axis: offset.axis
 				})
 			}
@@ -993,7 +993,7 @@ class Paper {
 			let proportional_width 
 
 			if (verso_offset){
-				new_page_width = book.structure?.props.page_width.px / 2 + (offset.offset.px * op)
+				new_page_width = book.structure?.props.page_width.px / 2 + (offset.size.px * op)
 				proportional_width =  new_page_width / width.px 
 			}
 
@@ -1004,11 +1004,11 @@ class Paper {
         p.opacity(.95)
       }
 
-			let x = offset?.axis == "horizontal" ? left + (offset.offset.px * (v_offset_direction * op)) : left
+			let x = offset?.axis == "horizontal" ? left + (offset.size.px * (v_offset_direction * op)) : left
 
       p.image(verso_image, x,
 							offset?.axis == "vertical"
-							? top + (offset.offset.px * v_offset_direction)
+							? top + (offset.size.px * v_offset_direction)
 								: top,
 							verso_image.width, verso_image.height)
 
@@ -1033,8 +1033,8 @@ class Paper {
 			let new_page_width 
 			let proportional_width 
 			if (recto_offset){
-				new_page_width = book.structure?.props.page_width.px / 2 + (offset.offset.px * op)
-				proportional_width =  new_page_width / width.px 
+			new_page_width = book.structure?.props.page_width.px / 2 + (offset.size.px * op)
+			proportional_width =  new_page_width / width.px 
 			}
       let recto_image = book.recto_image(graphic, spread,color, recto_offset ? proportional_width : .5)
 
@@ -1047,7 +1047,7 @@ class Paper {
 				recto_image, left + width.px / 2,
 
 				offset?.axis == "vertical"
-					? top + (offset.offset.px * v_offset_direction)
+					? top + (offset.size.px * v_offset_direction)
 					: top
 
 				, recto_image.width, recto_image.height)
@@ -1193,19 +1193,19 @@ let v_offset_direction = -1
 /**@type {Offset[]}*/
 let offsets = [
 	{
-		offset: offset_size,
+		size: offset_size,
 		axis: "horizontal",
 		page: 6
 	},
 
 	{
-		offset: s.em(6),
+		size: s.em(6),
 		axis: "horizontal",
 		page: 4
 	},
 
 	{
-		offset: offset_size,
+		size: offset_size,
 		axis: "horizontal",
 		page: 15 
 	}
@@ -1923,7 +1923,7 @@ const decodeHTML = function(str) {
 /**
 @typedef {{
 	axis: ("vertical" | "horizontal")
-	offset: Unit,
+	size: Unit,
 	page: number,
 }} Offset
 
