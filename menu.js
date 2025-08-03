@@ -6,45 +6,8 @@ const isOdd = num => num % 2 == 1;
 let dpi = 100
 let viewport = .4
 
-const GlobalStyle = `
-  @font-face {
-    font-family: "Oracle";
-    src: url("/fs/fonts/ABCOracle.ttf");
-  }
+const GlobalStyle = ``
 
-  @font-face {
-    font-family: "OracleTriple";
-    src: url("/fs/fonts/OracleTriple.ttf");
-  }
-
-  @font-face {
-    font-family: "GapSans";
-    src: url("/fs/fonts/GapSans.ttf");
-  }
-
-  @font-face {
-    font-family: "GapSansBold";
-    src: url("/fs/fonts/GapSansBold.ttf");
-  }
-
-  @font-face {
-    font-family: "GapSansBlack";
-    src: url("/fs/fonts/GapSansBlack.ttf");
-  }
-
-  .container{
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #ddd;
-  }
-
-  .q5{
-    width: min-content;
-  }
-`
 let funky_hyphens = false
 let color_hyphens = false
 
@@ -626,9 +589,10 @@ class Book {
 		this.grid = opts.draw_grid
 		this.structure = spreads[0] ? spreads[0].props().structure : undefined
 		this.current_spread = 0
-		/**@type Spread[]*/
 
+		/**@type Spread[]*/
 		this.spreads = spreads
+
 		/** @type {Offset[]}*/
 		this.offsets = []
 	}
@@ -703,26 +667,37 @@ class Book {
 		let pair = spreads[pair_index]
 
 		sheet.forEach((e) => {
-			if (this.offsets.findIndex(f => (f.page == e && f.axis == offset.axis)) == -1) {
-				this.offsets.push({
+			let found = this.offsets.findIndex(f => (f.page == e && f.axis == offset.axis))
+			let topush = {
 					page: e,
 					size: offset.size,
 					axis: offset.axis,
 					direction: offset.direction,
 					color: offset.color
-				})
+			}
+			if (found == -1) {this.offsets.push(topush)}
+			else {
+				this.offsets.splice(found, 1)
+				this.offsets.push(topush)
 			}
 		})
 
 		pair.forEach((e) => {
-			if (this.offsets.findIndex(f => (f.page == e && f.axis == offset.axis)) == -1) {
-				this.offsets.push({
+			let found=this.offsets.findIndex(f => (f.page == e && f.axis == offset.axis))
+			let topush={
 					page: e,
 					size: offset.size,
 					axis: offset.axis,
 					direction: offset.direction,
 					color: offset.color
-				})
+				}
+			if (found == -1) {
+				this.offsets.push(topush)
+			}
+
+			else {
+				this.offsets.splice(found, 1)
+				this.offsets.push(topush)
 			}
 		})
 	}
@@ -1218,6 +1193,13 @@ function init() {
 	oninit.forEach(fn => typeof fn == "function" ? fn() : null)
 }
 
+function update_offsets(){
+	book = new Book(pages)
+	offsets.forEach((o) => book.mark_page_offset(o))
+	book.set_page(page)
+	spreads(book.pages())
+}
+
 oninit.push(() => {
 	let el = document.querySelector(".q5")
 	p = new p5('instance', el);
@@ -1251,7 +1233,8 @@ oninit.push(() => {
 	}
 
 	setTimeout(() => {
-		paper.draw_book(book)
+		drawpaper()
+		// paper.draw_book(book)
 		//paper.draw_saddle(book)
 	}, 100)
 })
@@ -1270,23 +1253,31 @@ let offsets = [
 	{
 		size: s.em(2),
 		axis: "vertical",
-		color: "#9985F7",
+		color: "#E4D1C3",
 		direction: -1,
 		page: 2
 	},
+
 	{
-		size: s.em(10),
+		size: s.em(4),
 		axis: "horizontal",
-		color: "#9985F7",
+		color: "#E4D1C3",
 		direction: 1,
 		page: 2
 	},
-
 
 	{
 		size: s.em(4),
 		axis: "vertical",
-		color: "#BF58CE",
+		color: "#E4D1C3",
+		direction: 1,
+		page: 5
+	},
+
+	{
+		size: s.em(6),
+		axis: "vertical",
+		color: "#eee",
 		direction: 1,
 		page: 7
 	},
@@ -1294,11 +1285,10 @@ let offsets = [
 	{
 		size: s.em(4),
 		axis: "horizontal",
-		color: "pink",
+		color: "#eee",
 		direction: 1,
 		page: 7
-	},
-
+	}
 	// {
 	// 	size: s.em(2),
 	// 	axis: "horizontal",
@@ -1308,16 +1298,11 @@ let offsets = [
 	// }
 ]
 
-oninit.push(() => {
-	book = new Book(pages)
-	offsets.forEach((o) => book.mark_page_offset(o))
-	book.set_page(page)
-})
+oninit.push(update_offsets)
 
 class TextFrame {
 	/**
 	 * @param {ParagraphProps} props 
-	 * @param {Grid} structure 
 	 * */
 	constructor(text, props) {
 		this.text = text
@@ -1336,7 +1321,104 @@ let drawpaper = () => saddle() ?
 
 oninit.push(() => eff_on(saddle, drawpaper))
 let pg = sig(0)
+
+let spreads = sig([])
 let container = () => {
+	let set_page = num  => {
+			pg(num);
+			book.set_spread(pg());
+			drawpaper()
+	}
+
+	window.addEventListener("keydown", (e) => {
+		if (e.key == "ArrowRight") set_page(book.current_spread + 1)
+		if (e.key == "ArrowLeft") set_page(book.current_spread - 1)
+	})
+
+	let next = () => {return html`
+    <button 
+    style="position:fixed;top:0;left:0"
+    onclick=${() => set_page(book.current_spread + 1)} >
+      next
+    </button>
+	`}
+
+	let prev = () => {return html`
+    <button 
+      style="position:fixed;top:2em;left:0"
+      onclick=${() => set_page(book.current_spread - 1)
+		} >
+      prev
+    </button>
+`}
+
+	let add_offset = (page, axis, op = 1) => {
+		let offset = book.offsets.find((e) => (e.page == page && e.axis == axis))
+		let size = offset ? offset.size.value : 0
+		let unit = offset ? offset.size.unit : "em" 
+		let color = offset ? offset.color : "yellow"
+		let new_size = size + op 
+		let direction = offset ? offset.direction : 1
+
+		book.mark_page_offset({
+			size: s.em(new_size),
+			axis: axis,
+			color: color,
+			direction,
+			page: page 
+		})
+		 drawpaper()
+	}
+	let sub_offset = (page, axis) => add_offset(page, axis, -1)
+
+	let page = (num) => {
+		console.log("rendering", num)
+		return html`
+<div class="page" >
+<button onclick=${() => set_page(Math.floor(num / 2))} >${num != 0 ? num : ""}</button>
+
+<div class="controls">
+
+<button style="grid-area: left;"
+onclick=${() => sub_offset(num, "horizontal")}
+> ← </button>
+
+<button style="grid-area: right;"
+onclick=${() => add_offset(num, "horizontal")}
+> → </button>
+
+<button style="grid-area: top;"
+onclick=${() => add_offset(num, "vertical")}
+> ↑ </button>
+
+<button style="grid-area: bottom;"
+onclick=${() => sub_offset(num, "vertical")}
+> ↓ </button>
+
+
+
+</div>
+</div>
+	`}
+
+	let spread = ([a, b]) => {
+		return html`
+<div class="spread">
+	${page(a)}
+	${page(b)}
+</div>
+`
+	}
+
+	let box = mem(() => {return html`
+<div class="layers"
+		 style="position:fixed;top:8em;left:0" >
+
+		${spreads().map(spread)}
+
+</div>
+`})
+
 	return html`
   <style>
     ${GlobalStyle}
@@ -1345,25 +1427,9 @@ let container = () => {
   <div class="container">
     <div class="q5"></div>
 
-    <button 
-    style="position:fixed;top:0;left:0"
-    onclick=${() => {
-			pg(book.current_spread + 1);
-			book.set_spread(pg());
-			drawpaper()
-		}} >
-      next
-    </button>
-
+		${next}
     <p style="position:fixed;top:0;left:3em"> ${pg} </p>
-    
-    <button 
-      style="position:fixed;top:2em;left:0"
-      onclick=${() => {
-			pg(book.current_spread - 1); book.set_spread(pg()); drawpaper()
-		}} >
-      prev
-    </button>
+		${prev}
 
     <button 
       style="position:fixed;top:4em;left:0"
@@ -1376,6 +1442,9 @@ let container = () => {
       onclick=${() => paper.save_saddle_spread(book)} >
       download
     </button>
+
+${box}
+
   </div>
 `
 }
