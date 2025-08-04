@@ -170,7 +170,7 @@ function draw_paragraph(p, paragraph, grid) {
 		height: { px: 100 },
 		length: { px: 100 },
 		leading: { px: 12 },
-
+		rotation: 0,
 		color: p.color("black"),
 		stroke: p.color("black"),
 		font_size: { px: 14 },
@@ -188,6 +188,18 @@ function draw_paragraph(p, paragraph, grid) {
 	let paragraph_state = {
 		vertical_pos: _paragraph.y.px + p.textLeading(),
 		word_count: 0,
+	}
+
+	// _paragraph.rotation=0
+
+	if (_paragraph.rotation != 0) {
+		p.push()
+		p.translate(_paragraph.x.px, _paragraph.y.px)
+		p.angleMode(p.DEGREES)
+		p.rotate(_paragraph.rotation)
+		paragraph_state.vertical_pos = p.textLeading()
+		_paragraph.x = {px: 0}
+		_paragraph.y = {px: 0}
 	}
 
 	if (_paragraph.rect) {
@@ -218,7 +230,9 @@ function draw_paragraph(p, paragraph, grid) {
 		paragraph_state.vertical_pos += _paragraph.leading.px
 	}
 
-
+	if (_paragraph.rotation != 0) {
+		p.pop()
+	}
 
 	return _paragraph.text
 }
@@ -470,7 +484,7 @@ class Grid {
 
 let offset_size = s.em(12)
 let grid = new Grid({
-	page_width: s.add(s.inch(7), s.em(6)),
+	page_width: s.inch(8.5),
 	page_height: s.inch(6),
 
 	margin: {
@@ -1041,7 +1055,7 @@ class Paper {
 			// TODO: add conditionals on whether to draw next or not...
 			if (spread > 0 && draw_behind) {
 				draw_verso(graphic, spread - 1)
-				p.opacity(.8)
+				p.opacity(.9)
 			}
 
 			let x = horizontal_offset?.axis == "horizontal" ? left + (horizontal_offset.size.px * (-1 * op * horizontal_offset.direction)) : left
@@ -1079,7 +1093,7 @@ class Paper {
 
 			if (spread < book.spreads.length - 1 && draw_behind) {
 				draw_recto(graphic, spread + 1)
-				p.opacity(.8)
+				p.opacity(.9)
 			}
 
 			p.image(
@@ -1215,9 +1229,10 @@ oninit.push(() => {
 
 	// for offset
 	else {
+		// 8x5.5 wood
 		paper = new Paper(p, s, el, {
-			width: s.inch(6.5 * 2),
-			height: s.inch(9),
+			width: s.inch(5.5 * 2),
+			height: s.inch(8),
 		}, true)
 
 		// paper = new Paper(p, s, el, {
@@ -1251,10 +1266,10 @@ let v_offset_direction = -1
 /**@type {Offset[]}*/
 let offsets = [
 	{
-		size: s.em(2),
+		size: s.em(-2),
 		axis: "vertical",
 		color: "#E4D1C3",
-		direction: -1,
+		direction: 1,
 		page: 2
 	},
 
@@ -1331,8 +1346,12 @@ let container = () => {
 	}
 
 	window.addEventListener("keydown", (e) => {
-		if (e.key == "ArrowRight") set_page(book.current_spread + 1)
-		if (e.key == "ArrowLeft") set_page(book.current_spread - 1)
+		if (e.key == "ArrowRight" && e.shiftKey) add_offset(Math.floor(book.current_spread * 2+1), "horizontal")
+		else if (e.key == "ArrowLeft" && e.shiftKey) sub_offset(Math.floor(book.current_spread * 2+1), "horizontal")
+		else if (e.key == "ArrowUp" && e.shiftKey) add_offset(Math.floor(book.current_spread * 2+1), "vertical")
+		else if (e.key == "ArrowDown" && e.shiftKey) sub_offset(Math.floor(book.current_spread * 2+1), "vertical")
+		else if (e.key == "ArrowRight") set_page(book.current_spread + 1)
+		else if (e.key == "ArrowLeft") set_page(book.current_spread - 1)
 	})
 
 	let next = () => {return html`
@@ -1356,7 +1375,7 @@ let container = () => {
 		let offset = book.offsets.find((e) => (e.page == page && e.axis == axis))
 		let size = offset ? offset.size.value : 0
 		let unit = offset ? offset.size.unit : "em" 
-		let color = offset ? offset.color : "yellow"
+		let color = offset ? offset.color : "pink"
 		let new_size = size + op 
 		let direction = offset ? offset.direction : 1
 
@@ -1492,8 +1511,9 @@ let cover = {
 		["Header",
 			["text", "BOOKLET"],
 			["height", ["em", 12]],
-			["x", ["recto", 3, "x"]],
+			["x", ["em", 12*4.2]],
 			["y", ["hangline", 3]],
+			["rotation", 90]
 			//["color", "#0000ffaa"]
 		],
 
@@ -1557,6 +1577,24 @@ let page_number_spread = (num) => ({
 			["font_size", ["point", 18]],
 		],
 
+		["Header",
+		 ["text", "PAGE: " + (num)],
+			["height", ["em", 12]],
+			["x", ["em", 3]],
+			["y", ["hangline", 3]],
+			["rotation", 90]
+			//["color", "#0000ffaa"]
+		],
+
+		["Header",
+		 ["text", "PAGE: " + (num+1)],
+			["height", ["em", 12]],
+			["x", ["em", 12*4.2]],
+			["y", ["hangline", 3]],
+			["rotation", 90]
+			//["color", "#0000ffaa"]
+		],
+
 		["TextFrame",
 			["text", "P:" + (num + 1)],
 			["x", ["recto", 7, "x"]],
@@ -1586,8 +1624,8 @@ let data = {
 		page_number_spread(12),
 		page_number_spread(14),
 		page_number_spread(16),
-		// page_number_spread(18),
-		// page_number_spread(20),
+		page_number_spread(18),
+		page_number_spread(20),
 	]
 }
 
@@ -2151,6 +2189,7 @@ const decodeHTML = function (str) {
 	leading: Unit,
 	font_size: Unit,
 	height: Unit,
+	rotation: number,
 	color: string,
 	stroke: string,
 	x: Unit,
