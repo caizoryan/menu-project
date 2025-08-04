@@ -1,6 +1,8 @@
-import { sig, mem, render, HTML as html, eff_on } from "/lib/chowk/monke.js"
-import { hyphenateSync } from "/lib/hyphenator/hyphenate.js"
-import { Q5 as p5 } from "/lib/q5/q5.js"
+setTimeout(init, 10)
+
+import { sig, mem, render, HTML as html, eff_on } from "./lib/chowk/monke.js"
+import { hyphenateSync } from "./lib/hyphenator/hyphenate.js"
+import { Q5 as p5 } from "./lib/q5/q5.js"
 
 const isOdd = num => num % 2 == 1;
 let dpi = 100
@@ -345,8 +347,8 @@ class Scale {
 		}
 	}
 }
-
 let s = new Scale(dpi)
+
 class LinkedFrame {
 	/**
 	@param {ParagraphProps[]} [frames=[]] 
@@ -481,8 +483,6 @@ class Grid {
 		}
 	}
 }
-
-let offset_size = s.em(12)
 let grid = new Grid({
 	page_width: s.inch(8.5),
 	page_height: s.inch(6),
@@ -553,7 +553,7 @@ class Spread {
 			this.structure.verso_columns()[0].x.px,
 			this.structure.recto_columns()[3].y.px)
 		p.text("[ PAGE " + (no[1]) + " ]",
-			this.structure.recto_columns()[0].x.px,
+			this.structure.recto_columns()[7].x.px,
 			this.structure.recto_columns()[3].y.px)
 
 		p.noFill()
@@ -929,6 +929,7 @@ class Book {
 	}
 }
 
+// TODO: Rename this, to like board, canvas,context or smth, paper doesnt make sense...
 class Paper {
 	/**
 	 * @param {{width: Unit, height: Unit}} size 
@@ -1024,7 +1025,6 @@ class Paper {
 
 			return found
 		}
-
 
 		let draw_verso = (graphic, spread, draw_behind = true) => {
 			let verso_page = spread * 2
@@ -1181,19 +1181,10 @@ class Paper {
 	}
 }
 
-
 /**@type {p5}*/
 let p
 
-
-fetch("./quick.json")
-	// .then((res) => res.json())
-	//.then((res) => data = res)
-	.then(_ => init())
-
-
 let oninit = []
-
 
 /** @type {Paper} */
 let paper
@@ -1261,7 +1252,6 @@ oninit.push(() => {
 /**@type {Book}*/
 let book
 let page = 1
-let v_offset_direction = -1
 
 /**@type {Offset[]}*/
 let offsets = [
@@ -1375,7 +1365,7 @@ let container = () => {
 		let offset = book.offsets.find((e) => (e.page == page && e.axis == axis))
 		let size = offset ? offset.size.value : 0
 		let unit = offset ? offset.size.unit : "em" 
-		let color = offset ? offset.color : "pink"
+		let color = offset ? offset.color : "white"
 		let new_size = size + op 
 		let direction = offset ? offset.direction : 1
 
@@ -1780,7 +1770,6 @@ const image = ({ src, x, y, width, height }) => {
 		}
 	}
 }
-
 const rect = ({ x, y, length, height, fill, stroke, strokeWeight }) => {
 	return {
 		draw: (p, props) => {
@@ -1797,7 +1786,6 @@ const rect = ({ x, y, length, height, fill, stroke, strokeWeight }) => {
 		}
 	}
 }
-
 const circle = ({ x, y, radius, fill, stroke, strokeWeight }) => {
 	return {
 		draw: (p, props) => {
@@ -1813,7 +1801,6 @@ const circle = ({ x, y, radius, fill, stroke, strokeWeight }) => {
 		}
 	}
 }
-
 const arc = ({ x, y, radius, start = 0, stop = 180, fill, stroke, strokeWeight }) => {
 	return {
 		draw: (p, props) => {
@@ -1829,7 +1816,6 @@ const arc = ({ x, y, radius, start = 0, stop = 180, fill, stroke, strokeWeight }
 		}
 	}
 }
-
 const graphic = () => {
 	let r = Math.random() * 12
 	let f = Math.random() * 28
@@ -2145,8 +2131,6 @@ const decodeHTML = function (str) {
 };
 
 // TODO: to Offset
-// add color
-// add direction
 // future: Maybe make it a generic page/sheet thingie
 
 /**
