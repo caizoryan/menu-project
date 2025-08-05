@@ -1,5 +1,41 @@
 setTimeout(init, 10)
 
+let menu = [
+	[
+		"Three Cheese & Jalapeno Panini",
+		"mozzarella, cheddar, and pepper jack cheese with pickled jalapeños and herbed butter."],
+	[
+		"Truffle Mushroom Cro’wich",
+		"Buttery croissant stuffed with wild mushrooms sautéed in garlic butter and finished with truffle oil and cream cheese."
+	],
+	[
+		"Grilled Cheese & Tomato Toastie",
+		"A comforting toastie with mature cheddar and slow-roasted tomatoes."
+	],
+	[
+		"Olive & Sundried Tomato Focaccia",
+		"Served warm with dips like whipped feta or roasted pepper hummus."
+	],
+	[
+		"BRICKHAUS SPECIAL SANDWICH",
+		"Triple-decker with lettuce, tomato, cheese"
+	],
+	["Peri-Peri Chicken Croswich", "grilled chicken tossed in spicy peri-peri sauce, with lettuce, cheese, and garlic mayo."]
+	,
+	["Ham & Cheese chicken Sandwich", "Thinly sliced gammon ham, scrambled egg, chicken, cheese and English mustard mayo in soft white bread."]
+	,
+	["Smoky grilled Chicken Club", "Grilled chicken, lettuce, tomato, fried egg, smoky mayo on multigrain toast"]
+	,
+	["Chicken Tikka Toastie", "Spiced chicken tikka chunks with cheese, green chutney, grilled to perfection"]
+	,
+	["BBQ Pulled Chicken panini", "Slow-cooked BBQ chicken, caramelized onions, and coleslaw"]
+	,
+	["Smoked Turkey & Cranberry (cold sandwich)", "Sliced turkey, cranberry sauce, cream cheese, leafy greens"]
+	,
+	["Egg Salad Sandwich (cold sandwich)", "Creamy chopped egg, mayo, English mustard, spring onions on milk bread"]
+
+]
+
 import { sig, mem, render, HTML as html, eff_on } from "./lib/chowk/monke.js"
 import { hyphenateSync } from "./lib/hyphenator/hyphenate.js"
 import { Q5 as p5 } from "./lib/q5/q5.js"
@@ -23,11 +59,13 @@ let color_hyphens = false
 @param {p5} p
 
 Takes text and length, and returns overflowed text.
+TODO: Return amount to skip/add or smth + text...
 */
 function draw_line(p, text, x, y, length, state, hooks) {
 	if (text.charAt(0) == `\n`) {
 		return text.slice(1)
 	}
+
 	let lines = text.split(`\n`)
 	let words = lines.shift().split(" ")
 	let end_lines = `\n` + lines.join(`\n`)
@@ -44,7 +82,6 @@ function draw_line(p, text, x, y, length, state, hooks) {
 
 	let try_hyphenation = (word) => {
 		if (word.includes("-")) return false
-
 
 		let hyphenated
 		if (funky_hyphens) {
@@ -116,6 +153,7 @@ function draw_line(p, text, x, y, length, state, hooks) {
 				skip = true
 				return
 			}
+			
 			let _leftover = try_hyphenation(word)
 			if (_leftover) {
 				line_state.hyphen_leftover = _leftover
@@ -200,8 +238,8 @@ function draw_paragraph(p, paragraph, grid) {
 		p.angleMode(p.DEGREES)
 		p.rotate(_paragraph.rotation)
 		paragraph_state.vertical_pos = p.textLeading()
-		_paragraph.x = {px: 0}
-		_paragraph.y = {px: 0}
+		_paragraph.x = { px: 0 }
+		_paragraph.y = { px: 0 }
 	}
 
 	if (_paragraph.rect) {
@@ -215,8 +253,16 @@ function draw_paragraph(p, paragraph, grid) {
 	p.fill(_paragraph.color)
 	let start_length = _paragraph.text.length
 
-	while (_paragraph.text.length > 0 && paragraph_state.vertical_pos < _paragraph.y.px + _paragraph.height.px) {
+	while (
+		// text is there
+		_paragraph.text.length > 0
+
+		// vertical pos hasnt exited bounding box
+		&& paragraph_state.vertical_pos < _paragraph.y.px + _paragraph.height.px
+	) {
+
 		paragraph_state.word_count = start_length - _paragraph.text.length
+
 		_paragraph.text = draw_line(
 			p,
 			_paragraph.text,
@@ -229,6 +275,7 @@ function draw_paragraph(p, paragraph, grid) {
 			},
 			_paragraph.hooks
 		)
+		
 		paragraph_state.vertical_pos += _paragraph.leading.px
 	}
 
@@ -412,20 +459,23 @@ class LinkedFrame {
 */
 class Grid {
 	/**
-	@param {GridProps} props
+	@param {[GridProps, GridProps]} props
 	@param {Scale} s
 	*/
 	constructor(props, s) {
-		this.props = props
+		// TODO: clean?
+		this.props = JSON.parse(JSON.stringify(props))
 		this.s = s
 	}
 
 	hanglines() {
-		return this.props.hanglines
+		// TODO: update for hanglines verso/recto
+		return this.props[0].hanglines
 	}
 
 	set_margin(margin) {
-		this.props.margin = margin
+		this.props[0].margin = margin
+		this.props[1].margin = margin
 	}
 
 	/**@returns {{x:Unit, y:Unit, w:Unit, h: Unit}[]}*/
@@ -433,13 +483,13 @@ class Grid {
 		/**@type {{x:Unit, y:Unit, w:Unit, h: Unit}[]}*/
 		const cols = []
 
-		for (let i = 0; i < this.props.columns; i++) {
-			const y = this.props.margin.top
-			const w = this.column_width()
+		for (let i = 0; i < this.props[1].columns; i++) {
+			const y = this.props[1].margin.top
+			const w = this.column_width_recto()
 
 			// outside + gutters + size
-			const x = s.px_raw(this.half_page().x.px + this.props.margin.inside.px + i * this.props.gutter.px + i * this.column_width().px);
-			const h = s.px_raw(this.props.page_height.px - (this.props.margin.top.px + this.props.margin.bottom.px))
+			const x = s.px_raw(this.half_page().x.px + this.props[1].margin.inside.px + i * this.props[1].gutter.px + i * this.column_width_recto().px);
+			const h = s.px_raw(this.props[1].page_height.px - (this.props[1].margin.top.px + this.props[1].margin.bottom.px))
 
 			cols.push({ x, y, w, h })
 		}
@@ -452,13 +502,13 @@ class Grid {
 		/**@type {{x:Unit, y:Unit, w:Unit, h: Unit}[]}*/
 		const cols = []
 
-		for (let i = 0; i < this.props.columns; i++) {
-			const y = this.props.margin.top
-			const w = this.column_width()
+		for (let i = 0; i < this.props[0].columns; i++) {
+			const y = this.props[0].margin.top
+			const w = this.column_width_verso()
 
 			// outside + gutters + size
-			const x = s.px_raw(this.props.margin.outside.px + i * this.props.gutter.px + i * this.column_width().px);
-			const h = s.px_raw(this.props.page_height.px - (this.props.margin.top.px + this.props.margin.bottom.px))
+			const x = s.px_raw(this.props[0].margin.outside.px + i * this.props[0].gutter.px + i * this.column_width_verso().px);
+			const h = s.px_raw(this.props[0].page_height.px - (this.props[0].margin.top.px + this.props[0].margin.bottom.px))
 
 			cols.push({ x, y, w, h })
 		}
@@ -469,21 +519,29 @@ class Grid {
 	columns() { return [this.verso_columns(), this.recto_columns()] }
 
 	/**@returns {Unit}*/
-	column_width(n = 1) {
-		let w = this.half_page().x.px - (this.props.margin.inside.px + this.props.margin.outside.px);
-		let g = (n - 1) * this.props.gutter.px
-		return s.px_raw(((w - (this.props.gutter.px * (this.props.columns - 1))) / this.props.columns) * n + g);
+	column_width_verso(n = 1) {
+		let w = this.half_page().x.px - (this.props[0].margin.inside.px + this.props[0].margin.outside.px);
+		let g = (n - 1) * this.props[0].gutter.px
+		return s.px_raw(((w - (this.props[0].gutter.px * (this.props[0].columns - 1))) / this.props[0].columns) * n + g);
+	}
+
+	column_width_recto(n = 1) {
+		// TODO: make for recto/verso
+		let w = this.half_page().x.px - (this.props[1].margin.inside.px + this.props[1].margin.outside.px);
+		let g = (n - 1) * this.props[1].gutter.px
+		return s.px_raw(((w - (this.props[1].gutter.px * (this.props[1].columns - 1))) / this.props[1].columns) * n + g);
 	}
 
 	/**@returns {{x: Unit, y: Unit}}*/
 	half_page() {
+		// TODO: make use of where spine is...
 		return {
-			x: s.px_raw(this.props.page_width.px / 2),
-			y: s.px_raw(this.props.page_height.px / 2)
+			x: s.px_raw(this.props[0].page_width.px / 2),
+			y: s.px_raw(this.props[0].page_height.px / 2)
 		}
 	}
 }
-let grid = new Grid({
+let g_prop={
 	page_width: s.inch(8.5),
 	page_height: s.inch(6),
 
@@ -506,7 +564,33 @@ let grid = new Grid({
 		s.em(24),
 		s.em(24.5),
 	],
-}, s)
+}
+let g_prop2={
+	page_width: s.inch(8.5),
+	page_height: s.inch(6),
+
+	margin: {
+		top: s.em(2),
+		bottom: s.em(3),
+		inside: s.em(1),
+		outside: s.em(4),
+	},
+
+	columns: 8,
+	gutter: s.point(6),
+	hanglines: [
+		s.em(6),
+		s.em(6.5),
+		s.em(12),
+		s.em(12.5),
+		s.em(18),
+		s.em(18.5),
+		s.em(24),
+		s.em(24.5),
+	],
+}
+let grid = new Grid([g_prop, g_prop2], s)
+let grid2 = new Grid([g_prop, g_prop], s)
 
 /**
 @typedef Drawable
@@ -541,10 +625,7 @@ class Spread {
 	}
 
 	draw_grid(p, no) {
-		// -----------
-		// draw grid
-		// -----------
-		let [recto, verso] = grid.columns()
+		let [recto, verso] = this.structure.columns()
 		p.fill(0)
 		p.textSize(this.s.point(9).px)
 		p.textFont("monospace")
@@ -560,14 +641,12 @@ class Spread {
 		p.stroke(200, 0, 250)
 		p.strokeWeight(.2)
 
-
-
 		recto.forEach((col) => { p.rect(col.x.px, col.y.px, col.w.px, col.h.px) })
 		verso.forEach((col) => { p.rect(col.x.px, col.y.px, col.w.px, col.h.px) })
 
 		p.stroke(0, 0, 255)
 		p.strokeWeight(.2)
-		grid.hanglines().forEach(y => {
+		this.structure.hanglines().forEach(y => {
 			p.line(0, y.px, p.width, y.px)
 		})
 	}
@@ -680,40 +759,25 @@ class Book {
 		let pair_index = isOdd(index) ? index - 1 : index + 1
 		let pair = spreads[pair_index]
 
-		sheet.forEach((e) => {
+		let mark_with_num = (e) => {
 			let found = this.offsets.findIndex(f => (f.page == e && f.axis == offset.axis))
 			let topush = {
-					page: e,
-					size: offset.size,
-					axis: offset.axis,
-					direction: offset.direction,
-					color: offset.color
+				page: e,
+				size: offset.size,
+				axis: offset.axis,
+				direction: offset.direction,
+				color: offset.color
 			}
-			if (found == -1) {this.offsets.push(topush)}
-			else {
-				this.offsets.splice(found, 1)
-				this.offsets.push(topush)
-			}
-		})
-
-		pair.forEach((e) => {
-			let found=this.offsets.findIndex(f => (f.page == e && f.axis == offset.axis))
-			let topush={
-					page: e,
-					size: offset.size,
-					axis: offset.axis,
-					direction: offset.direction,
-					color: offset.color
-				}
-			if (found == -1) {
-				this.offsets.push(topush)
-			}
+			if (found == -1) { this.offsets.push(topush) }
 
 			else {
 				this.offsets.splice(found, 1)
 				this.offsets.push(topush)
 			}
-		})
+		}
+
+		sheet.forEach((e) => mark_with_num(e))
+		pair.forEach((e) => mark_with_num(e))
 	}
 
 	// Will take page number and convert to sheet then mark it.
@@ -871,13 +935,13 @@ class Book {
 
 	draw_page_set(p, num1, num2) {
 
-			// let verso_image = book.verso_image(graphic, spread, color, horizontal_offset ? proportional_width : .5)
+		// let verso_image = book.verso_image(graphic, spread, color, horizontal_offset ? proportional_width : .5)
 
-			// let x = horizontal_offset?.axis == "horizontal" ? left + (horizontal_offset.size.px * (v_offset_direction * op)) : left
-			// let y = vertical_offset ? top + (vertical_offset.size.px * v_offset_direction) : top
-			// p.image(verso_image, x, y, verso_image.width, verso_image.height)
+		// let x = horizontal_offset?.axis == "horizontal" ? left + (horizontal_offset.size.px * (v_offset_direction * op)) : left
+		// let y = vertical_offset ? top + (vertical_offset.size.px * v_offset_direction) : top
+		// p.image(verso_image, x, y, verso_image.width, verso_image.height)
 
-		if (num1){
+		if (num1) {
 			let offset = book.offsets.filter((e) => e.page == num1)
 			let horizontal_offset = offset.find((e) => e.axis == "horizontal")
 			let width = book.structure?.props.page_width
@@ -919,7 +983,7 @@ class Book {
 			let spread_num_2 = this.page_to_spread(num2)
 			let img = this.recto_image(p, spread_num_2, "white", horizontal_offset ? proportional_width : .5)
 			let x = horizontal_offset?.axis == "horizontal" ? (horizontal_offset.size.px * (-1 * op * horizontal_offset.direction)) : 0
-			this.draw_img(p, img, p.width/2 + x, 0)
+			this.draw_img(p, img, p.width / 2 + x, 0)
 		}
 
 	}
@@ -966,8 +1030,8 @@ class Paper {
 		let p = this.p5
 		p.background(200);
 
-		let width = book.structure?.props.page_width
-		let height = book.structure?.props.page_height
+		let width = book.structure?.props[0].page_width
+		let height = book.structure?.props[0].page_height
 		let left = (this.size.width.px - width.px) / 2
 		let top = (this.size.height.px - height.px) / 2
 
@@ -1037,7 +1101,7 @@ class Paper {
 			else if (!verso_offset && verso_offset) console.log("inconsistencey!!!")
 
 			let color = offset[0] ? offset[0].color : "white"
-			let width = book.structure?.props.page_width
+			let width = book.structure?.props[0].page_width
 
 			let before = book.before_spine(verso_page)
 
@@ -1046,7 +1110,7 @@ class Paper {
 			let proportional_width
 
 			if (horizontal_offset) {
-				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
+				new_page_width = width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
 				proportional_width = new_page_width / width.px
 			}
 
@@ -1078,14 +1142,14 @@ class Paper {
 
 			let color = offset[0] ? offset[0].color : "white"
 
-			let width = book.structure?.props.page_width
+			let width = book.structure?.props[0].page_width
 			let before = book.before_spine(recto_page)
 			let op = before ? -1 : 1
 
 			let new_page_width
 			let proportional_width
 			if (horizontal_offset) {
-				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
+				new_page_width = width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
 				proportional_width = new_page_width / width.px
 			}
 
@@ -1123,8 +1187,8 @@ class Paper {
 	draw_crop_marks(book, page) {
 		let p = this.p5
 
-		let width = book.structure?.props.page_width
-		let height = book.structure?.props.page_height
+		let width = book.structure?.props[0].page_width
+		let height = book.structure?.props[0].page_height
 		let left = (this.size.width.px - width.px) / 2
 		let top = (this.size.height.px - height.px) / 2
 
@@ -1155,8 +1219,8 @@ class Paper {
 		} else {
 			p.background(200);
 		}
-		let width = book.structure?.props.page_width
-		let height = book.structure?.props.page_height
+		let width = book.structure?.props[0].page_width
+		let height = book.structure?.props[0].page_height
 
 		let graphic = p.createGraphics(width.px, height.px)
 		graphic.background(255)
@@ -1198,7 +1262,7 @@ function init() {
 	oninit.forEach(fn => typeof fn == "function" ? fn() : null)
 }
 
-function update_offsets(){
+function update_offsets() {
 	book = new Book(pages)
 	offsets.forEach((o) => book.mark_page_offset(o))
 	book.set_page(page)
@@ -1255,45 +1319,45 @@ let page = 1
 
 /**@type {Offset[]}*/
 let offsets = [
-	{
-		size: s.em(-2),
-		axis: "vertical",
-		color: "#E4D1C3",
-		direction: 1,
-		page: 2
-	},
+	// {
+	// 	size: s.em(-2),
+	// 	axis: "vertical",
+	// 	color: "#E4D1C3",
+	// 	direction: 1,
+	// 	page: 2
+	// },
 
-	{
-		size: s.em(4),
-		axis: "horizontal",
-		color: "#E4D1C3",
-		direction: 1,
-		page: 2
-	},
+	// {
+	// 	size: s.em(4),
+	// 	axis: "horizontal",
+	// 	color: "#E4D1C3",
+	// 	direction: 1,
+	// 	page: 2
+	// },
 
-	{
-		size: s.em(4),
-		axis: "vertical",
-		color: "#E4D1C3",
-		direction: 1,
-		page: 5
-	},
+	// {
+	// 	size: s.em(4),
+	// 	axis: "vertical",
+	// 	color: "#E4D1C3",
+	// 	direction: 1,
+	// 	page: 5
+	// },
 
-	{
-		size: s.em(6),
-		axis: "vertical",
-		color: "#eee",
-		direction: 1,
-		page: 7
-	},
+	// {
+	// 	size: s.em(6),
+	// 	axis: "vertical",
+	// 	color: "#eee",
+	// 	direction: 1,
+	// 	page: 7
+	// },
 
-	{
-		size: s.em(4),
-		axis: "horizontal",
-		color: "#eee",
-		direction: 1,
-		page: 7
-	}
+	// {
+	// 	size: s.em(4),
+	// 	axis: "horizontal",
+	// 	color: "#eee",
+	// 	direction: 1,
+	// 	page: 7
+	// }
 	// {
 	// 	size: s.em(2),
 	// 	axis: "horizontal",
@@ -1329,22 +1393,23 @@ let pg = sig(0)
 
 let spreads = sig([])
 let container = () => {
-	let set_page = num  => {
-			pg(num);
-			book.set_spread(pg());
-			drawpaper()
+	let set_page = num => {
+		pg(num);
+		book.set_spread(pg());
+		drawpaper()
 	}
 
 	window.addEventListener("keydown", (e) => {
-		if (e.key == "ArrowRight" && e.shiftKey) add_offset(Math.floor(book.current_spread * 2+1), "horizontal")
-		else if (e.key == "ArrowLeft" && e.shiftKey) sub_offset(Math.floor(book.current_spread * 2+1), "horizontal")
-		else if (e.key == "ArrowUp" && e.shiftKey) add_offset(Math.floor(book.current_spread * 2+1), "vertical")
-		else if (e.key == "ArrowDown" && e.shiftKey) sub_offset(Math.floor(book.current_spread * 2+1), "vertical")
+		if (e.key == "ArrowRight" && e.shiftKey) add_offset(Math.floor(book.current_spread * 2 + 1), "horizontal")
+		else if (e.key == "ArrowLeft" && e.shiftKey) sub_offset(Math.floor(book.current_spread * 2 + 1), "horizontal")
+		else if (e.key == "ArrowUp" && e.shiftKey) add_offset(Math.floor(book.current_spread * 2 + 1), "vertical")
+		else if (e.key == "ArrowDown" && e.shiftKey) sub_offset(Math.floor(book.current_spread * 2 + 1), "vertical")
 		else if (e.key == "ArrowRight") set_page(book.current_spread + 1)
 		else if (e.key == "ArrowLeft") set_page(book.current_spread - 1)
 	})
 
-	let next = () => {return html`
+	let next = () => {
+		return html`
     <button 
     style="position:fixed;top:0;left:0"
     onclick=${() => set_page(book.current_spread + 1)} >
@@ -1352,11 +1417,12 @@ let container = () => {
     </button>
 	`}
 
-	let prev = () => {return html`
+	let prev = () => {
+		return html`
     <button 
       style="position:fixed;top:2em;left:0"
       onclick=${() => set_page(book.current_spread - 1)
-		} >
+			} >
       prev
     </button>
 `}
@@ -1364,9 +1430,9 @@ let container = () => {
 	let add_offset = (page, axis, op = 1) => {
 		let offset = book.offsets.find((e) => (e.page == page && e.axis == axis))
 		let size = offset ? offset.size.value : 0
-		let unit = offset ? offset.size.unit : "em" 
+		let unit = offset ? offset.size.unit : "em"
 		let color = offset ? offset.color : "white"
-		let new_size = size + op 
+		let new_size = size + op
 		let direction = offset ? offset.direction : 1
 
 		book.mark_page_offset({
@@ -1374,9 +1440,9 @@ let container = () => {
 			axis: axis,
 			color: color,
 			direction,
-			page: page 
+			page: page
 		})
-		 drawpaper()
+		drawpaper()
 	}
 	let sub_offset = (page, axis) => add_offset(page, axis, -1)
 
@@ -1419,7 +1485,8 @@ onclick=${() => sub_offset(num, "vertical")}
 `
 	}
 
-	let box = mem(() => {return html`
+	let box = mem(() => {
+		return html`
 <div class="layers"
 		 style="position:fixed;top:8em;left:0" >
 
@@ -1501,7 +1568,7 @@ let cover = {
 		["Header",
 			["text", "BOOKLET"],
 			["height", ["em", 12]],
-			["x", ["em", 12*4.2]],
+			["x", ["em", 12 * 4.2]],
 			["y", ["hangline", 3]],
 			["rotation", 90]
 			//["color", "#0000ffaa"]
@@ -1567,8 +1634,18 @@ let page_number_spread = (num) => ({
 			["font_size", ["point", 18]],
 		],
 
+		// ["TextFrame",
+		//  ["text", menu.map(([title, description], i) => title + "\n" + description).join("\n")],
+		// 	["x", ["verso", 0, "x"]],
+		// 	["y", ["em", 1]],
+		// 	["length", ["column_width", 7]],
+		// 	["height", ["em", 85]],
+		// 	...style.body,
+		// 	["font_weight", 300],
+		// ],
+
 		["Header",
-		 ["text", "PAGE: " + (num)],
+			["text", "PAGE: " + (num)],
 			["height", ["em", 12]],
 			["x", ["em", 3]],
 			["y", ["hangline", 3]],
@@ -1577,9 +1654,9 @@ let page_number_spread = (num) => ({
 		],
 
 		["Header",
-		 ["text", "PAGE: " + (num+1)],
+			["text", "PAGE: " + (num + 1)],
 			["height", ["em", 12]],
-			["x", ["em", 12*4.2]],
+			["x", ["em", 12 * 4.2]],
 			["y", ["hangline", 3]],
 			["rotation", 90]
 			//["color", "#0000ffaa"]
@@ -1628,16 +1705,20 @@ let data = {
 let process_verso = (prop) => (grid) => {
 	let index = Math.floor(prop[1])
 	let diff = prop[1] - index
-	let offset = s.mul(grid.column_width(1), diff)
+	// TODO: Figure out column width
+	let offset = s.mul(grid.column_width_verso(1), diff)
 	return s.add(grid.verso_columns()[index][prop[2]], offset)
 }
 let process_recto = (prop) => (grid) => {
 	let index = Math.floor(prop[1])
 	let diff = prop[1] - index
-	let offset = s.mul(grid.column_width(1), diff)
+	// TODO: Figure out column width
+	let offset = s.mul(grid.column_width_recto(1), diff)
 	return s.add(grid.recto_columns()[index][prop[2]], offset)
 }
-let process_column_width = (prop) => (grid) => grid.column_width(prop[1])
+
+// TODO: Figure out column width
+let process_column_width = (prop) => (grid) => grid.column_width_verso(prop[1])
 
 // ["hangline", 2]
 let process_hangline = (prop) =>
@@ -1752,8 +1833,12 @@ function spread_from_block(block, extensions = []) {
 		if (item[0] == "Arc") return arc(reduceprops(item.slice(1)))
 	})
 
+	let grid = new Grid([g_prop, g_prop2], s)
+	return  new Spread(grid, s, [...contents, ...extensions])
 
-	return new Spread(grid, s, [...contents, ...extensions])
+	// return Math.random()  > .5
+	// 	? new Spread(grid, s, [...contents, ...extensions])
+	// 	: new Spread(grid2, s, [...contents, ...extensions])  
 }
 
 const image = ({ src, x, y, width, height }) => {
