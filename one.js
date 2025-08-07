@@ -46,6 +46,14 @@ export let tag_hooks = {
 		leading: s.point(8),
 	},
 
+	"+:additional-italic": {
+		font_weight: 300,
+		font_family: "freight-macro-pro",
+		font_size: s.point(9),
+		leading: s.point(8),
+		font_style: "ITALIC",
+	},
+
 	"+:price": {
 		font_family: "aktiv-grotesk",
 		font_weight: "500",
@@ -219,13 +227,28 @@ let introduction = ``
 let cover = {
 	title: "",
 	content: [
-		["Header",
-			["text", "Menu"],
+
+		["TextFrame",
+		 ["text", "+:additional-italic 7am to 12pm"
+		 ],
 			["height", ["em", 12]],
-			["x", ["em", 12 * 4]],
-			["y", ["hangline", 3]],
-			["rotation", 90]
-			//["color", "#0000ffaa"]
+			["length", ["em", 12]],
+			["x", ["inch", 5.5]],
+			["y", ["hangline", 6]],
+		 ["rotation", 90],
+		],
+
+		["TextFrame",
+		 ["text",
+			"+:title Brickhaus Cafe "
+			+ "+:subtitle-big breakfast menu"
+		 ],
+			["height", ["em", 12]],
+			["length", ["em", 12]],
+			["x", ["inch", 7.5]],
+			["y", ["hangline", 6]],
+		 ["rotation", 90],
+			["color", "#444"]
 		],
 	]
 }
@@ -478,7 +501,7 @@ let toast = (num) => ({
 			["height", ["em", 38]],
 			["x", ["recto", 2, 'x']],
 			["y", ["hangline", 2]],
-			["length", ["column_width", 6]]
+			["length", ["column_width", 5.3]]
 		],
 	]
 })
