@@ -1,5 +1,5 @@
 import { Scale, DPI } from "./scale.js"
-import { BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES, BURGETS } from "./menu_items.js"
+import { BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES, BURGETS, SUPERBOWLS, MAIN_PLATTERS } from "./menu_items.js"
 import * as Type from "./menu.js"
 
 let fonts = {
@@ -525,7 +525,6 @@ let burger = (num) => ({
 	]
 })
 
-
 let mains = (num) => ({
 	title: "",
 	content: [
@@ -538,8 +537,36 @@ let mains = (num) => ({
 			["y", ["hangline", 3]],
 			["rotation", 90]
 		],
+
+		["TextFrame",
+			["text",
+				"+:title " + MAIN_PLATTERS.title
+			],
+			["height", ["em", 24]],
+			["x", ["verso", 0, 'x']],
+			["y", ["hangline", 2.5]],
+			["length", ["column_width", 4.5]]
+		],
+
+		["TextFrame",
+		 ["text", MAIN_PLATTERS.items.slice(0,3).map(format_item).join("\n\n")],
+			["height", ["em", 28]],
+			["x", ["verso", 0, 'x']],
+			["length", ["column_width", 5.7]],
+			["y", ["hangline", 4.8]],
+		],
+
+		["TextFrame",
+		 ["text", MAIN_PLATTERS.items.slice(3).map(format_item).join("\n\n")],
+			["height", ["em", 28]],
+			["x", ["recto", 0.5, 'x']],
+			["length", ["column_width", 5.5]],
+			["y", ["hangline", 3.8]],
+		],
+
 	]
 })
+
 let superbowls = (num) => ({
 	title: "",
 	content: [
@@ -550,6 +577,34 @@ let superbowls = (num) => ({
 			["length", ["em", 22]],
 			["x", ["recto", 2, "x"]],
 			["y", ["hangline", 10.5]],
+		],
+
+		["TextFrame",
+			["text",
+				"+:title " + SUPERBOWLS.title
+				+ " +:additional " + SUPERBOWLS.additional
+			],
+			["height", ["em", 24]],
+			["x", ["verso", 2, 'x']],
+			["y", ["hangline", 3.5]],
+			["length", ["column_width", 4.5]]
+		],
+
+
+		["TextFrame",
+		 ["text", SUPERBOWLS.items.slice(0,4).map(format_item).join("\n\n")],
+			["height", ["em", 28]],
+			["x", ["verso", 2, 'x']],
+			["length", ["column_width", 5.7]],
+			["y", ["hangline", 4.8]],
+		],
+
+		["TextFrame",
+		 ["text", SUPERBOWLS.items.slice(4).map(format_item).join("\n\n")],
+			["height", ["em", 28]],
+			["x", ["recto", 2, 'x']],
+			["length", ["column_width", 5.5]],
+			["y", ["hangline", 4.8]],
 		],
 	]
 })

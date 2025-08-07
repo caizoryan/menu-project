@@ -190,3 +190,68 @@ export let BURGETS = {
 	]
 }
 
+export let MAIN_PLATTERS = {
+	title: "MAIN CHARACTER (PLATTERS)",
+	items: [
+		{ title: "	Lebanese Board", description: "Sambousek, falafel, Hummus, tabbouleh, olives, grilled halloumi, lavash, pita bread, Mukhalal." },
+		{ title: "Grazing Board", description: "Includes fresh fruits, pastries, cheeses, mini croissants, jam, and crackers." },
+		{ title: "CHIPS & DIPS PLATTER", description: "finger chips, Doritos, wafers, hash browns, cheese corn nuggets, avocado mash, chipotle dip, garlic dip, tomato salsa,& lime" },
+
+		{ title: "Mezze Board ", description: "Shish Tawook, kefta bebab, Chicken Fatayer, Sumac fish, olives, falafel, pita bread, thee typs dips & Mukhalal." },
+		{ title: "The Londoner Plate", description: "Poached eggs, hash browns, crispy chicken wings , grilled sausage, crispy bacon,avocado smash, cherry tomato confit, sourdough." },
+		{ title: "Smoked Salmon Platter", description: "Salmon, cream cheese, capers, olives,cucumber ribbons, lavash,rye or bagel." },
+		{ title: "Smoked Haddock & Bacon", description: "Lightly smoked haddock filet with spinach, grilled bacon, finger chips, baked bean, and mustard cream sauce." },
+		{
+			title: "Classic Red Shakshuka"
+			, description: "Eggs poached in a rich tomato, garlic, and red pepper sauce seasoned with paprika and cumin."
+		},
+	]
+}
+
+export let SUPERBOWLS = {
+	title: 'SUPERBOWLS',
+	additional: 'add chicken @99 | add prawns @149',
+	items: [
+		{ title: "Tex-Mex Burrito Bowl", description: "seasoned rice, pinto beans, tangy salsa roja, sour cream, and lettuce." },
+		{ title: "Guacamole Power Bowl", description: "quinoa, avocado mash, chipotle kidney beans, grilled corn, lettuce, tomato salsa & lime" },
+		{ title: "Freekeh Grain Bowl", description: "Warm freekeh, marinated feta, olives, roasted veggies, herby vinaigrette." },
+		{ title: "Mediterranean Black Rice Bowl", description: "lack rice topped with fire-roasted bell peppers, zucchini, cherry tomatoes, hummus, olives, and crumbled feta. Finished with lemon-tahini dressing." },
+		{ title: "Granola Parfait", description: "Greek yogurt, berries, granola, honey." },
+		{ title: "Matcha Green Bowl", description: "Matcha smoothie with kiwi, granola, coconut flakes, and sunflower seeds" },
+		{ title: "Peanut Butter Banana Bowl", description: "Creamy yogurt or almond milk base, banana slices, peanut butter drizzle, oats" },
+		{ title: "Fig & Pistachio Greek Yogurt Bowl", description: "Greek yogurt, fresh figs, honey, toasted pistachios." },
+	]
+}
+
+export let PANCAKES = {
+	title: "PANCAKES & WAFFLES – STACKED FOR THE FEED",
+	subtitle: "Fluffy stacks. Big snacks",
+
+	items: [
+		{ title: "	Nutella Banana Waffle", description: "creamy Nutella and caramelized banana on a warm waffle, topped with roasted nuts and a dusting of cocoa." },
+		{ title: "Red Velvet Cream Cheese Wiffle", description: "Red velvet waffle topped with cream cheese frosting and berry compote" },
+		{ title: "Classic Maple Butter Wiffle", description: "Buttery waffle served with maple syrup and whipped cream" },
+
+		{ title: "Lotus Biscoff Pancake", description: "Buttery pancakes smothered in creamy Biscoff spread and biscuit crumbles, topped with whipped cream and a caramel." },
+		{ title: "Semolina & Olive Oil Pancake", description: "Mini pancakes topped with berry compote, mascarpone, and sesame brittle." },
+		{ title: "CHEF'S SPECIAL- Berry Blast Pancake", description: "Loaded with blueberries, strawberries & berry compote, topped with cream" },
+	]
+}
+
+export let DESSERTS = {
+	title: "DESSERTS (for Breakfast?)",
+	subtitle: "Because who’s judging?",
+	items: [
+		{title: "Classic New York Cheesecake" ,description: "Rich, dense, and creamy with a buttery graham cracker crust."
+		},
+		{title: "Chocolate Hazelnut Cheesecake" ,description: "luscious chocolate cheesecake topped with roasted hazelnuts and dark chocolate ganache."},
+		{title: "Blueberry Bliss Cheesecake" ,description: "Classic vanilla cheesecake topped with homemade blueberry sauce and whole berries."},
+		{title: "Classic Italian Tiramisu" ,description: "Layers of espresso-soaked ladyfingers and creamy mascarpone, dusted with rich cocoa powder."
+		},
+		{title: "Churros" ,description: "Cinnamon sugar fried dough, served with chocolate dip."},
+			{title: "Matcha Basque Cheesecake" ,description: "Earthy green tea flavor blended in, balanced with a sweet crusty top."},
+		{title: "Tres Leches Cake" ,description: "soft sponge cake soaked in a luxurious blend of three milks – evaporated, condensed, and fresh cream"},
+	]
+}
+	
+

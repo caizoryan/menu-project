@@ -1393,7 +1393,7 @@ onclick=${() => sub_offset(num, "vertical")}
 `
 }
 
-page =14 
+page =12 
 
 
 // x-----------------------x
