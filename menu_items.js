@@ -176,3 +176,17 @@ export let TOASTS = {
 	]
 }
 
+export let BURGETS = {
+	title: "BURGERS – BITE ME",
+	subtitle: "Yes, it’s 10AM. No, I won’t apologize.",
+
+	items: [
+		{ title: "The Truffle Mushroom Melt", description: "Buttered bun with sautéed mushrooms, cheese, and truffle aioli" },
+		{ title: "Chilly Bean Burger", description: "Fire bean patty, jalapeños, chipotle drip, melty cheddar. For the spicy babes only." },
+		{ title: "Classic vegetables patty burger", description: "Crisp mixed veggie patty with lettuce, tomato, onions, and mayo" },
+		{ title: "Baby in the city ", description: "Lamb patty, creamy cheese, caramelized onions & sriracha drizzle." },
+		{ title: "ranch chicken burger", description: "Grilled chicken breast with ranch dressing, iceberg lettuce, and pepperjack cheese in a sesame bun." },
+		{ title: "Classic grilled chicken burger", description: "Herb-marinated chicken Patty  with fresh greens, tomato, and garlic aioli." },
+	]
+}
+

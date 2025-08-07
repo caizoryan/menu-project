@@ -1,5 +1,5 @@
 import { Scale, DPI } from "./scale.js"
-import { BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES } from "./menu_items.js"
+import { BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES, BURGETS } from "./menu_items.js"
 import * as Type from "./menu.js"
 
 let fonts = {
@@ -494,6 +494,33 @@ let burger = (num) => ({
 			["x", ["em", 12 * 4]],
 			["y", ["hangline", 3]],
 			["rotation", 90]
+		],
+
+		["TextFrame",
+		 ["text",
+			"+:title " + BURGETS.title+
+			" +:subtitle-big " + BURGETS.subtitle
+		 ],
+			["height", ["em", 38]],
+			["x", ["verso", 0, "x"]],
+			["y", ["em", 5.5]],
+			["length", ["column_width", 6]]
+		],
+
+		["TextFrame",
+		 ["text", BURGETS.items.slice(0,3).map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["verso", 0, 'x']],
+			["length", ["column_width", 5.5]],
+			["y", ["hangline", 6]],
+		],
+
+		["TextFrame",
+		 ["text", BURGETS.items.slice(3).map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["recto", 0, 'x']],
+			["y", ["hangline", 6]],
+			["length", ["column_width", 5.5]]
 		],
 	]
 })
