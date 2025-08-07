@@ -4,6 +4,7 @@ import { Q5 as p5 } from "./lib/q5/q5.js"
 import {Scale, DPI} from "./scale.js"
 import {tag_hooks, structure, offsets, data, style} from "./one.js"
 
+const full_render = DPI < 101
 const isOdd = num => num % 2 == 1;
 let viewport = .55
 
@@ -22,7 +23,7 @@ let color_hyphens = false
 @param {LineHooks=} hooks
 @param {ParentState} state
 @param {p5} p
-@returns {{leading: Unit, text: string}} 
+@returns {{leading: number, text: string}} 
 
 Takes text and length, and returns overflowed text.
 TODO: Return amount to skip/add or smth + text...
@@ -30,10 +31,10 @@ TODO: Return amount to skip/add or smth + text...
 function draw_line(p, text, x, y, length, state, hooks) {
 	if (text.charAt(0) == `\n`) {
 		if (text.charAt(1) == `\n`) {
-			return {text: text.slice(1), leading: s.mul(state.paragraph.leading, 1.1)}
+			return {text: text.slice(2), leading: 1.1}
 		}
 
-		return {text: text.slice(1), leading: s.mul(state.paragraph.leading, .5)}
+		return {text: text.slice(1), leading: .4}
 	}
 
 	let leading = state.paragraph.leading
@@ -161,7 +162,7 @@ function draw_line(p, text, x, y, length, state, hooks) {
 	let t =  line_state.hyphen_leftover ? line_state.hyphen_leftover + " " + words + end_lines : words + end_lines
 	if (words.length > 0) t = tagged + t
 
-	return {text: t, leading}
+	return {text: t, leading: 1}
 }
 
 /**
@@ -268,8 +269,9 @@ function draw_paragraph(p, paragraph, grid) {
 		)
 
 		_paragraph.text = text
-		paragraph_state.vertical_pos += leading.px
-			//p.textLeading()
+		paragraph_state.vertical_pos +=p.textLeading()*leading
+			//leading.px
+			//
 			//
 	}
 
@@ -942,7 +944,7 @@ class Paper {
 			return found
 		}
 
-		let draw_verso = (graphic, spread, draw_behind = true) => {
+		let draw_verso = (graphic, spread, draw_behind = full_render) => {
 			let verso_page = spread * 2
 			let offset = book.offsets.filter((e) => e.page == verso_page)
 			let vertical_offset = offset.find((e) => e.axis == "vertical")
@@ -980,9 +982,7 @@ class Paper {
 
 			p.opacity(1)
 		}
-
-
-		let draw_recto = (graphic, spread, draw_behind = true) => {
+		let draw_recto = (graphic, spread, draw_behind = full_render) => {
 			let recto_page = spread * 2 + 1
 			let offset = book.offsets.filter((e) => e.page == recto_page)
 			let vertical_offset = offset.find((e) => e.axis == "vertical")

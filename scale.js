@@ -1,8 +1,9 @@
-export const DPI = 150
+export const DPI = 100
 export class Scale {
 	constructor(scale = 1) {
 		this.dpi = window.devicePixelRatio * 96
 		this.scale = scale / this.dpi
+		console.log("dpr", window.devicePixelRatio)
 	}
 
 	/**
