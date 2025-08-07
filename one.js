@@ -1,11 +1,12 @@
 import {Scale,dpi} from "./scale.js"
+import {JARS} from "./menu_items.js"
 import * as Type from "./menu.js"
 
 let s = new Scale(dpi)
 
 export let structure={
-	page_width: s.inch(8.5),
-	page_height: s.inch(6),
+	page_width: s.inch(8),
+	page_height: s.inch(5.5),
 
 	margin: {
 		top: s.em(2),
@@ -17,14 +18,20 @@ export let structure={
 	columns: 8,
 	gutter: s.point(6),
 	hanglines: [
+		s.em(.5),
+		s.em(1),
+		s.em(3),
 		s.em(6),
-		s.em(6.5),
+		s.em(9),
 		s.em(12),
-		s.em(12.5),
+		s.em(15),
 		s.em(18),
-		s.em(18.5),
+		s.em(21),
 		s.em(24),
-		s.em(24.5),
+		s.em(27),
+		s.em(30),
+		s.em(31),
+		s.em(31.5),
 	],
 }
 
@@ -38,7 +45,7 @@ export let offsets = [
 		page: 1
 	},
 	{
-		size: s.em(-7),
+		size: s.em(-4.5),
 		axis: "vertical",
 		color: "#eee",
 		direction: 1,
@@ -52,7 +59,7 @@ export let offsets = [
 		page: 3
 	},
 	{
-		size: s.em(-4),
+		size: s.em(-3),
 		axis: "vertical",
 		color: "#E4D1C3",
 		direction: 1,
@@ -80,7 +87,7 @@ export let offsets = [
 		page: 7
 	},
 	{
-		size: s.em(6),
+		size: s.em(4.5),
 		axis: "vertical",
 		color: "#E4D1C3",
 		direction: 1,
@@ -108,7 +115,6 @@ export let style = {
 		["length", ["column_width", 7]],
 		["font_size", ["point", 28]],
 		["leading", ["point", 38]],
-		["color", "#0000ff"],
 	],
 
 	body: [
@@ -146,20 +152,11 @@ let cover = {
 		["Header",
 			["text", "Menu"],
 			["height", ["em", 12]],
-			["x", ["em", 12 * 4.2]],
+			["x", ["em", 12 * 4]],
 			["y", ["hangline", 3]],
 			["rotation", 90]
 			//["color", "#0000ffaa"]
 		],
-
-		["TextFrame",
-			["text", "+:Tag ass fucker" + "\n" + "horra"],
-			["height", ["em", 12]],
-			["x", ["em", 12 * 3.2]],
-			["y", ["hangline", 3]],
-			//["color", "#0000ffaa"]
-		],
-
 	]
 }
 let colophon = {
@@ -191,54 +188,44 @@ The booklet was designed in a custom tool developed for an independent study con
 let page_number_spread = (num) => ({
 	title: "",
 	content: [
-		["TextFrame",
-			["text", "P:" + num],
-			["x", ["verso", 0, "x"]],
-			["y", ["hangline", 1]],
-			["length", ["column_width", 3]],
-			["height", ["em", 25]],
-			...style.title,
-			["font_weight", 600],
-			["font_size", ["point", 18]],
-		],
-
 		// ["TextFrame",
-		//  ["text", menu.map(([title, description], i) => title + "\n" + description).join("\n")],
+		// 	["text", "P:" + num],
 		// 	["x", ["verso", 0, "x"]],
-		// 	["y", ["em", 1]],
-		// 	["length", ["column_width", 7]],
-		// 	["height", ["em", 85]],
-		// 	...style.body,
-		// 	["font_weight", 300],
+		// 	["y", ["hangline", 1]],
+		// 	["length", ["column_width", 3]],
+		// 	["height", ["em", 25]],
+		// 	...style.title,
+		// 	["font_weight", 600],
+		// 	["font_size", ["point", 18]],
 		// ],
 
-		["TextFrame",
-			["text", "PAGE: " + (num)],
-			["height", ["em", 12]],
-			["x", ["em", 3]],
-			["y", ["hangline", 3]],
-			["rotation", 90]
-		],
+		// ["TextFrame",
+		// 	["text", "PAGE: " + (num)],
+		// 	["height", ["em", 12]],
+		// 	["x", ["em", 3]],
+		// 	["y", ["hangline", 3]],
+		// 	["rotation", 90]
+		// ],
 
-		["TextFrame",
-			["text", "PAGE: " + (num + 1)],
-			["height", ["em", 12]],
-			["x", ["em", 12 * 4.2]],
-			["y", ["hangline", 3]],
-			["rotation", 90]
-			//["color", "#0000ffaa"]
-		],
+		// ["TextFrame",
+		// 	["text", "PAGE: " + (num + 1)],
+		// 	["height", ["em", 12]],
+		// 	["x", ["em", 12 * 4]],
+		// 	["y", ["hangline", 3]],
+		// 	["rotation", 90]
+		// 	//["color", "#0000ffaa"]
+		// ],
 
-		["TextFrame",
-			["text", "P:" + (num + 1)],
-			["x", ["recto", 7, "x"]],
-			["y", ["hangline", 1]],
-			["length", ["column_width", 3]],
-			["height", ["em", 25]],
-			...style.title,
-			["font_weight", 600],
-			["font_size", ["point", 18]],
-		],
+		// ["TextFrame",
+		// 	["text", "P:" + (num + 1)],
+		// 	["x", ["recto", 7, "x"]],
+		// 	["y", ["hangline", 1]],
+		// 	["length", ["column_width", 3]],
+		// 	["height", ["em", 25]],
+		// 	...style.title,
+		// 	["font_weight", 600],
+		// 	["font_size", ["point", 18]],
+		// ],
 	]
 })
 let jars = (num) => ({
@@ -248,10 +235,18 @@ let jars = (num) => ({
 		["Header",
 			["text", "Jars"],
 			["height", ["em", 12]],
-			["x", ["em", 12 * 4.2]],
+			["x", ["em", 12 * 4]],
 			["y", ["hangline", 3]],
 			["rotation", 90]
 		],
+
+		["TextFrame",
+		 ["text", JARS.items.map((item) => "+:item " + item.title + "\n" + "+:description " + item.description).join("\n\n")],
+			["height", ["em", 24]],
+			["x", ["recto", 1, 'x']],
+			["y", ["hangline", 3]],
+			["length", ["column_width", 6]]
+		]
 	]
 })
 
@@ -263,6 +258,18 @@ let eggs = (num) => ({
 			["text", "Eggs"],
 			["height", ["em", 12]],
 			["x", ["em", 12*3]],
+			["y", ["em", 1]],
+		],
+	]
+})
+let sandwiches = (num) => ({
+	title: "",
+	content: [
+		...page_number_spread(num).content,
+		["Header",
+			["text", "Sandwiches"],
+			["height", ["em", 12]],
+			["x", ["em", 12*2.8]],
 			["y", ["em", 1]],
 		],
 	]
@@ -288,7 +295,7 @@ let burger = (num) => ({
 		["Header",
 			["text", "Burgers & Toasts"],
 			["height", ["em", 22]],
-			["x", ["em", 12 * 4.2]],
+			["x", ["em", 12 * 4]],
 			["y", ["hangline", 3]],
 			["rotation", 90]
 		],
@@ -304,7 +311,7 @@ export let data = {
 		cover,
 		jars(2),
 		eggs(4),
-		page_number_spread(6),
+		sandwiches(6),
 		page_number_spread(8),
 		burger(10),
 		mains(12),

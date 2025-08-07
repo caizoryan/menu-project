@@ -13,6 +13,33 @@ const GlobalStyle = ``
 let funky_hyphens = false
 let color_hyphens = false
 
+let tag_hooks = {
+	"+:title": {
+		font_weight: 600,
+		color: "red",
+	},
+
+	"+:comment": {
+		
+	},
+
+	"+:subtitle": {
+		
+	},
+
+	"+:item": {
+		font_weight: 100,
+		font_family: "GapSans",
+		color: "brown",
+		font_size: 20,
+	},
+
+	"+:description": {
+		
+	}
+
+}
+
 /**
 @param {string} text
 @param {Unit} length
@@ -21,17 +48,34 @@ let color_hyphens = false
 @param {LineHooks=} hooks
 @param {ParentState} state
 @param {p5} p
+@returns {{leading: Unit, text: string}} 
 
 Takes text and length, and returns overflowed text.
 TODO: Return amount to skip/add or smth + text...
 */
 function draw_line(p, text, x, y, length, state, hooks) {
 	if (text.charAt(0) == `\n`) {
-		return text.slice(1)
+		if (text.charAt(1) == `\n`) {
+			return {text: text.slice(1), leading: {px: state.paragraph.leading.px * 2}}
+		}
+		return {text: text.slice(1), leading: {px: state.paragraph.leading.px / 2}}
 	}
 
+	let leading = state.paragraph.leading
 	let lines = text.split(`\n`)
 	let words = lines.shift().split(" ")
+	let tag = tag_hooks[words[0].toLowerCase()]
+
+	if(tag){
+		if(tag.color)  p.fill(tag.color) 
+		if(tag.leading)  leading = tag.leading 
+		if(tag.font_size)  p.textSize(tag.font_size) 
+		if(tag.font_weight)  p.textWeight(tag.font_weight)
+		if(tag.font_family)  p.textFont(tag.font_family) 
+
+		words.shift()
+	}
+
 	let end_lines = `\n` + lines.join(`\n`)
 
 	let skip = false
@@ -132,7 +176,9 @@ function draw_line(p, text, x, y, length, state, hooks) {
 	p.opacity(1)
 	words = words.slice(line_state.word_count).join(" ")
 
-	return line_state.hyphen_leftover ? line_state.hyphen_leftover + " " + words + end_lines : words + end_lines
+
+	let t =  line_state.hyphen_leftover ? line_state.hyphen_leftover + " " + words + end_lines : words + end_lines
+	return {text: t, leading}
 }
 
 /**
@@ -215,9 +261,17 @@ function draw_paragraph(p, paragraph, grid) {
 		&& paragraph_state.vertical_pos < _paragraph.y.px + _paragraph.height.px
 	) {
 
+		// reset every iter
+		p.noStroke();
+		p.textSize(_paragraph.font_size.px)
+		p.textFont(_paragraph.font_family)
+		p.textWeight(_paragraph.font_weight)
+		p.fill(_paragraph.color)
+
 		paragraph_state.word_count = start_length - _paragraph.text.length
 
-		_paragraph.text = draw_line(
+
+		let {text, leading} = draw_line(
 			p,
 			_paragraph.text,
 			_paragraph.x,
@@ -229,14 +283,26 @@ function draw_paragraph(p, paragraph, grid) {
 			},
 			_paragraph.hooks
 		)
-		
-		paragraph_state.vertical_pos += _paragraph.leading.px
+
+		_paragraph.text = text
+		paragraph_state.vertical_pos += leading.px
 	}
 
 	if (_paragraph.rotation != 0) {
 		p.pop()
 	}
 
+	// OVERFLOW MARKER
+	if (_paragraph.text.length > 0) {
+			// draw red rectangle
+			p.noFill();
+			p.strokeWeight(2)
+			p.stroke("red");
+			let xx = _paragraph.x.px + _paragraph.length.px-10
+			let yy = _paragraph.y.px + _paragraph.height.px-10
+			p.text("X", xx+10, yy+10)
+			p.rect(xx, yy, 20, 20);
+	}
 	return _paragraph.text
 }
 
@@ -1092,7 +1158,7 @@ oninit.push(() => {
 		// 8x5.5 wood
 		paper = new Paper(p, s, el, {
 			width: s.inch(5.5 * 2),
-			height: s.inch(8),
+			height: s.inch(7),
 		}, true)
 
 		// paper = new Paper(p, s, el, {
@@ -1185,6 +1251,18 @@ let container = () => {
     </button>
 `}
 
+	let grid = () => {
+		return html`
+    <button 
+      style="position:fixed;top:8em;left:0"
+      onclick=${() => {
+				book.grid = !book.grid
+				drawpaper()
+			}} >
+      grid
+    </button>
+`}
+
 	let h_offset = sig(0)
 	let v_offset = sig(0)
 
@@ -1203,7 +1281,7 @@ let container = () => {
 		let size = offset ? offset.size.value : 0
 		let unit = offset ? offset.size.unit : "em"
 		let color = offset ? offset.color : "white"
-		let new_size = size + op
+		let new_size = size + (op/2)
 		let direction = offset ? offset.direction : 1
 
 
@@ -1294,8 +1372,10 @@ onclick=${() => sub_offset(num, "vertical")}
       download
     </button>
 
+		${grid}
+
 		<div
-			style="position:fixed;top:8em;left:0" >
+			style="position:fixed;top:10em;left:0" >
 				<p>H: ${h_offset}</p>
 				<p>V: ${v_offset}</p>
 		</div>
@@ -1559,8 +1639,6 @@ function Header(text, para) {
 	let drawable = {
 		draw: (p, props) => draw_paragraph(p, {
 			text: text,
-			color: "blue",
-			rect: true,
 			hyphenate: false,
 
 			...propies,
