@@ -163,9 +163,9 @@ export let TOASTS = {
 		{ title: "Tomato & Basil Baked Beans on Toast", description: "House-made beans with a herby tomato twist, topped with cheddar." },
 		{ title: "Crispy Corn Mayo Toast", description: "Toasted bread topped with creamy spiced corn and herbs" },
 		{ title: "Chili Cheese Toast", description: "Spicy cheese blend with chopped chilies, grilled golden" },
-		{ title: "Zaatar Lebneh & avo with brioche" },
 
 		{ title: "Berry Mascarpone French Toast", description: "Stuffed with mascarpone, topped with seasonal berries and berry compote." },
+		{ title: "Zaatar Lebneh & avo with brioche" },
 		{ title: "Red Velvet French Toast", description: "Red velvet-style toast filled with cream cheese and topped with berries" },
 		{ title: "Eggless French Toast", description: "No eggs, no stress. Just thick golden toast soaked in vanilla dreams." },
 		{ title: "Vegan Coconut Toast ", description: "Made with coconut milk and nutmeg, finished with toasted coconut flakes." },

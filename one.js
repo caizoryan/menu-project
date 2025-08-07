@@ -106,7 +106,7 @@ export let structure = {
 /**@type {Type.Offset[]}*/
 export let offsets = [
 	{
-		size: s.em(7),
+		size: s.em(6),
 		axis: "horizontal",
 		color: "#eee",
 		direction: 1,
@@ -120,7 +120,7 @@ export let offsets = [
 		page: 1
 	},
 	{
-		size: s.em(1),
+		size: s.em(2),
 		axis: "horizontal",
 		color: "#E4D1C3",
 		direction: 1,
@@ -134,7 +134,7 @@ export let offsets = [
 		page: 3
 	},
 	{
-		size: s.em(1),
+		size: s.em(2),
 		axis: "horizontal",
 		color: "#Eee",
 		direction: 1,
@@ -148,7 +148,7 @@ export let offsets = [
 		page: 5
 	},
 	{
-		size: s.em(7),
+		size: s.em(6),
 		axis: "horizontal",
 		color: "#E4D1C3",
 		direction: 1,
@@ -162,7 +162,7 @@ export let offsets = [
 		page: 7
 	},
 	{
-		size: s.em(3),
+		size: s.em(2),
 		axis: "horizontal",
 		color: "#eee",
 		direction: 1,
@@ -466,19 +466,19 @@ let toast = (num) => ({
 		],
 
 		["TextFrame",
-		 ["text", TOASTS.items.slice(0,6).map(format_item).join("\n\n")],
-			["height", ["em", 24]],
+		 ["text", TOASTS.items.slice(0,7).map(format_item).join("\n\n")],
+			["height", ["em", 28]],
 			["x", ["verso", 0, 'x']],
-			["y", ["hangline", 3.5]],
+			["y", ["hangline", 3]],
 			["length", ["column_width", 5.5]]
 		],
 
 		["TextFrame",
-		 ["text", TOASTS.items.slice(6).map(format_item).join("\n\n")],
+		 ["text", TOASTS.items.slice(7).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
 			["x", ["recto", 2, 'x']],
 			["y", ["hangline", 2]],
-			["length", ["column_width", 5.5]]
+			["length", ["column_width", 6]]
 		],
 	]
 })
@@ -512,15 +512,15 @@ let burger = (num) => ({
 			["height", ["em", 38]],
 			["x", ["verso", 0, 'x']],
 			["length", ["column_width", 5.5]],
-			["y", ["hangline", 6]],
+			["y", ["hangline", 5.8]],
 		],
 
 		["TextFrame",
 		 ["text", BURGETS.items.slice(3).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
-			["x", ["recto", 0, 'x']],
+			["x", ["recto", 1, 'x']],
 			["y", ["hangline", 6]],
-			["length", ["column_width", 5.5]]
+			["length", ["column_width", 4.5]]
 		],
 	]
 })
@@ -540,6 +540,48 @@ let mains = (num) => ({
 		],
 	]
 })
+let superbowls = (num) => ({
+	title: "",
+	content: [
+		...page_number_spread(num).content,
+		["Header",
+			["text", "SUPERBOWLS"],
+			["height", ["em", 22]],
+			["length", ["em", 22]],
+			["x", ["recto", 2, "x"]],
+			["y", ["hangline", 10.5]],
+		],
+	]
+})
+let pancakes = (num) => ({
+	title: "",
+	content: [
+		...page_number_spread(num).content,
+		["Header",
+			["text", "PANCAKES & WAFFLES"],
+			["height", ["em", 22]],
+			["length", ["em", 28]],
+			["font_size", ["em", 1.8]],
+			["x", ["recto", .5, "x"]],
+			["y", ["hangline", 10.5]],
+		],
+	]
+})
+let desserts = (num) => ({
+	title: "",
+	content: [
+		...page_number_spread(num).content,
+		["Header",
+			["text", "DESSERT"],
+			["height", ["em", 22]],
+			["length", ["em", 22]],
+			["x", ["inch", 7.8]],
+			["font_size", ["em", 1.8]],
+			["y", ["hangline", 9.2]],
+			["rotation", 90]
+		],
+	]
+})
 // x-----------------------x
 // *Header: Data
 // x-----------------------x
@@ -552,9 +594,9 @@ export let data = {
 		toast(8),
 		burger(10),
 		mains(12),
-		page_number_spread(14),
-		page_number_spread(16),
-		page_number_spread(18),
+		superbowls(14),
+		pancakes(16),
+		desserts(18),
 		page_number_spread(20),
 	]
 }
