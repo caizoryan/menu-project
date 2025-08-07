@@ -2,7 +2,7 @@ import { sig, mem, render, HTML as html, eff_on } from "./lib/chowk/monke.js"
 import { hyphenateSync } from "./lib/hyphenator/hyphenate.js"
 import { Q5 as p5 } from "./lib/q5/q5.js"
 import {Scale, dpi} from "./scale.js"
-import {structure, offsets, data, style} from "./one.js"
+import {tag_hooks, structure, offsets, data, style} from "./one.js"
 
 const isOdd = num => num % 2 == 1;
 let viewport = .4
@@ -13,32 +13,6 @@ const GlobalStyle = ``
 let funky_hyphens = false
 let color_hyphens = false
 
-let tag_hooks = {
-	"+:title": {
-		font_weight: 600,
-		color: "red",
-	},
-
-	"+:comment": {
-		
-	},
-
-	"+:subtitle": {
-		
-	},
-
-	"+:item": {
-		font_weight: 100,
-		font_family: "GapSans",
-		color: "brown",
-		font_size: 20,
-	},
-
-	"+:description": {
-		
-	}
-
-}
 
 /**
 @param {string} text
@@ -56,7 +30,7 @@ TODO: Return amount to skip/add or smth + text...
 function draw_line(p, text, x, y, length, state, hooks) {
 	if (text.charAt(0) == `\n`) {
 		if (text.charAt(1) == `\n`) {
-			return {text: text.slice(1), leading: {px: state.paragraph.leading.px * 2}}
+			return {text: text.slice(1), leading: {px: state.paragraph.leading.px * 1.5}}
 		}
 		return {text: text.slice(1), leading: {px: state.paragraph.leading.px / 2}}
 	}
@@ -65,6 +39,7 @@ function draw_line(p, text, x, y, length, state, hooks) {
 	let lines = text.split(`\n`)
 	let words = lines.shift().split(" ")
 	let tag = tag_hooks[words[0].toLowerCase()]
+	let tagged = ""
 
 	if(tag){
 		if(tag.color)  p.fill(tag.color) 
@@ -73,6 +48,7 @@ function draw_line(p, text, x, y, length, state, hooks) {
 		if(tag.font_weight)  p.textWeight(tag.font_weight)
 		if(tag.font_family)  p.textFont(tag.font_family) 
 
+		tagged = words[0] + " "
 		words.shift()
 	}
 
@@ -174,10 +150,12 @@ function draw_line(p, text, x, y, length, state, hooks) {
 	})
 
 	p.opacity(1)
-	words = words.slice(line_state.word_count).join(" ")
+	words =  words.slice(line_state.word_count).join(" ")
 
 
 	let t =  line_state.hyphen_leftover ? line_state.hyphen_leftover + " " + words + end_lines : words + end_lines
+	if (words.length > 0) t = tagged + t
+
 	return {text: t, leading}
 }
 

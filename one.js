@@ -2,7 +2,34 @@ import {Scale,dpi} from "./scale.js"
 import {JARS} from "./menu_items.js"
 import * as Type from "./menu.js"
 
+let fonts = {
+	aktiv: "aktiv-grotesk",
+	ouma: "ouma-devanagari"
+}
+
 let s = new Scale(dpi)
+
+export let tag_hooks = {
+	"+:title": {
+		font_weight: 600,
+		color: "red",
+	},
+	"+:comment": {
+		
+	},
+	"+:subtitle": {
+		
+	},
+	"+:item": {
+		font_family: "ouma-devanagari",
+		font_weight: "600",
+		font_size: 20,
+	},
+	"+:description": {
+		font_family: "aktiv-grotesk",
+	}
+
+}
 
 export let structure={
 	page_width: s.inch(8),
@@ -94,7 +121,7 @@ export let offsets = [
 		page: 7
 	},
 	{
-		size: s.em(7),
+		size: s.em(3),
 		axis: "horizontal",
 		color: "#eee",
 		direction: 1,
@@ -111,7 +138,7 @@ export let offsets = [
 
 export let style = {
 	title: [
-		["font_family", "GapSansBlack"],
+		["font_family", fonts.ouma],
 		["length", ["column_width", 7]],
 		["font_size", ["point", 28]],
 		["leading", ["point", 38]],
@@ -258,7 +285,7 @@ let eggs = (num) => ({
 			["text", "Eggs"],
 			["height", ["em", 12]],
 			["x", ["em", 12*3]],
-			["y", ["em", 1]],
+			["y", ["em", -.5]],
 		],
 	]
 })
@@ -281,9 +308,11 @@ let mains = (num) => ({
 		...page_number_spread(num).content,
 		["Header",
 			["text", "Mains"],
-			["height", ["em", 12]],
-			["x", ["em", 12*3]],
-			["y", ["em", 1]],
+			["height", ["em", 22]],
+			["length", ["em", 22]],
+			["x", ["em", 12 * 4]],
+			["y", ["hangline", 3]],
+			["rotation", 90]
 		],
 	]
 })
@@ -295,6 +324,7 @@ let burger = (num) => ({
 		["Header",
 			["text", "Burgers & Toasts"],
 			["height", ["em", 22]],
+			["length", ["em", 22]],
 			["x", ["em", 12 * 4]],
 			["y", ["hangline", 3]],
 			["rotation", 90]

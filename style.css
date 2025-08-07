@@ -1,9 +1,17 @@
 
 	iframe {all: unset;}
 	.group {padding: 10px;}
+
   @font-face {
     font-family: "Oracle";
 		src: url("/fs/fonts/ABCOracle.ttf");
+	}
+
+	* {
+		font-family: "ouma-devanagari", sans-serif;
+		font-weight: 400;
+		/* font-style: normal; */
+		/* font-style: italic; */
 	}
 
   @font-face {
@@ -27,7 +35,7 @@
     src: url("/fs/fonts/GapSansBlack.ttf");
   }
 
-*{font-family: "GapSans"}
+/* *{font-family: "GapSans"} */
 
 button {
 	all: unset;
