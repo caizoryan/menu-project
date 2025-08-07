@@ -193,9 +193,9 @@ export let BURGETS = {
 export let MAIN_PLATTERS = {
 	title: "MAIN CHARACTER (PLATTERS)",
 	items: [
-		{ title: "	Lebanese Board", description: "Sambousek, falafel, Hummus, tabbouleh, olives, grilled halloumi, lavash, pita bread, Mukhalal." },
+		{ title: "Lebanese Board", description: "Sambousek, falafel, Hummus, tabbouleh, olives, grilled halloumi, lavash, pita bread, Mukhalal." },
 		{ title: "Grazing Board", description: "Includes fresh fruits, pastries, cheeses, mini croissants, jam, and crackers." },
-		{ title: "CHIPS & DIPS PLATTER", description: "finger chips, Doritos, wafers, hash browns, cheese corn nuggets, avocado mash, chipotle dip, garlic dip, tomato salsa,& lime" },
+		{ title: "Chips & Dips Platter", description: "finger chips, Doritos, wafers, hash browns, cheese corn nuggets, avocado mash, chipotle dip, garlic dip, tomato salsa,& lime" },
 
 		{ title: "Mezze Board ", description: "Shish Tawook, kefta bebab, Chicken Fatayer, Sumac fish, olives, falafel, pita bread, thee typs dips & Mukhalal." },
 		{ title: "The Londoner Plate", description: "Poached eggs, hash browns, crispy chicken wings , grilled sausage, crispy bacon,avocado smash, cherry tomato confit, sourdough." },
@@ -228,7 +228,7 @@ export let PANCAKES = {
 	subtitle: "Fluffy stacks. Big snacks",
 
 	items: [
-		{ title: "	Nutella Banana Waffle", description: "creamy Nutella and caramelized banana on a warm waffle, topped with roasted nuts and a dusting of cocoa." },
+		{ title: "Nutella Banana Waffle", description: "creamy Nutella and caramelized banana on a warm waffle, topped with roasted nuts and a dusting of cocoa." },
 		{ title: "Red Velvet Cream Cheese Wiffle", description: "Red velvet waffle topped with cream cheese frosting and berry compote" },
 		{ title: "Classic Maple Butter Wiffle", description: "Buttery waffle served with maple syrup and whipped cream" },
 

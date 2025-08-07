@@ -1,5 +1,5 @@
 import { Scale, DPI } from "./scale.js"
-import { BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES, BURGETS, SUPERBOWLS, MAIN_PLATTERS } from "./menu_items.js"
+import { BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES, BURGETS, SUPERBOWLS, MAIN_PLATTERS, PANCAKES, DESSERTS } from "./menu_items.js"
 import * as Type from "./menu.js"
 
 let fonts = {
@@ -608,6 +608,7 @@ let superbowls = (num) => ({
 		],
 	]
 })
+
 let pancakes = (num) => ({
 	title: "",
 	content: [
@@ -619,6 +620,33 @@ let pancakes = (num) => ({
 			["font_size", ["em", 1.8]],
 			["x", ["recto", .5, "x"]],
 			["y", ["hangline", 10.5]],
+		],
+
+		["TextFrame",
+			["text",
+				"+:title " + PANCAKES.title +
+			 " +:hide >>>>>>>>>>> +:subtitle-big " + PANCAKES.subtitle],
+		 ["height", ["em", 24]],
+			["x", ["verso", 0.5, 'x']],
+			["y", ["hangline", 3]],
+			["length", ["column_width", 6.5]]
+		],
+
+
+		["TextFrame",
+		 ["text", PANCAKES.items.slice(0,3).map(format_item).join("\n\n")],
+			["height", ["em", 28]],
+			["x", ["verso", 1, 'x']],
+			["length", ["column_width", 5.7]],
+			["y", ["hangline", 5.8]],
+		],
+
+		["TextFrame",
+		 ["text", PANCAKES.items.slice(3).map(format_item).join("\n\n")],
+			["height", ["em", 28]],
+			["x", ["recto", 1, 'x']],
+			["length", ["column_width", 5.5]],
+			["y", ["hangline", 4.8]],
 		],
 	]
 })
@@ -634,6 +662,33 @@ let desserts = (num) => ({
 			["font_size", ["em", 1.8]],
 			["y", ["hangline", 9.2]],
 			["rotation", 90]
+		],
+
+		["TextFrame",
+			["text",
+			 "+:title " + DESSERTS.title.split("(").join(" +:symbol (") +
+			 " +:hide >>>>>>>>>>> >>>>>>>> +:subtitle-big " + DESSERTS.subtitle],
+		 ["height", ["em", 24]],
+			["x", ["verso", 0.5, 'x']],
+			["length", ["column_width", 8.5]],
+			["y", ["hangline", 5-1]],
+		],
+
+
+		["TextFrame",
+		 ["text", DESSERTS.items.slice(0,4).map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["verso", .5, 'x']],
+			["length", ["column_width", 5.5]],
+			["y", ["hangline", 6.4-1]],
+		],
+
+		["TextFrame",
+		 ["text", DESSERTS.items.slice(4).map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["recto", .5, 'x']],
+			["length", ["column_width", 5.5]],
+			["y", ["hangline", 6.65-1]],
 		],
 	]
 })
