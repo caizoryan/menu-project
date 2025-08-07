@@ -4,16 +4,26 @@ import { Q5 as p5 } from "./lib/q5/q5.js"
 import {Scale, DPI} from "./scale.js"
 import {tag_hooks, structure, offsets, data, style} from "./one.js"
 
+let ws = new WebSocket("ws://localhost:7462/data")
+
+ws.onopen = () => {
+	console.log("connected")
+}
+
+ws.onmessage = (e) => {
+	console.log(e)
+	window.location.reload()
+}
+
 const full_render = DPI < 101
 const isOdd = num => num % 2 == 1;
-let viewport = .55
+let viewport = .35
 
 setTimeout(init, 10)
 const GlobalStyle = ``
 
 let funky_hyphens = false
 let color_hyphens = false
-
 
 /**
 @param {string} text
@@ -157,6 +167,8 @@ function draw_line(p, text, x, y, length, state, hooks) {
 			p.fill(p.color("red"))
 		}
 
+		word = word.replace("//", "/ ")
+
 		p.text(word, x.px + line_state.horizontal_pos, y.px)
 		p.fill(_fill)
 		line_state.horizontal_pos += word_len
@@ -209,7 +221,7 @@ function draw_paragraph(p, paragraph, grid) {
 		font_size: { px: 14 },
 		rect: false,
 		hooks: {},
-		hyphenate: true
+		hyphenate: false
 	}, paragraph)
 
 
@@ -1381,7 +1393,7 @@ onclick=${() => sub_offset(num, "vertical")}
 `
 }
 
-page = 2
+page = 4
 
 function set_title(t){ 
 	// cover.content[0] = ["Header",

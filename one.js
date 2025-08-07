@@ -1,5 +1,5 @@
-import {Scale, DPI} from "./scale.js"
-import {JARS} from "./menu_items.js"
+import { Scale, DPI } from "./scale.js"
+import { BENEDICTS, EGGS, JARS } from "./menu_items.js"
 import * as Type from "./menu.js"
 
 let fonts = {
@@ -17,6 +17,15 @@ export let tag_hooks = {
 		leading: s.point(18)
 	},
 	"+:comment": {},
+
+	"+:subtitle-big": {
+		font_weight: 300,
+		font_family: "freight-macro-pro",
+		font_size: s.point(15),
+		leading: s.point(16),
+		font_style: "ITALIC",
+		color: "#222"
+	},
 	"+:subtitle": {
 		font_weight: 600,
 		font_family: "freight-macro-pro",
@@ -45,7 +54,7 @@ export let tag_hooks = {
 	},
 
 	"+:hide": {
-		color: "white",
+		color: "#ffffff00",
 	},
 
 	"+:description": {
@@ -57,7 +66,7 @@ export let tag_hooks = {
 
 }
 
-export let structure={
+export let structure = {
 	page_width: s.inch(8),
 	page_height: s.inch(5.5),
 
@@ -284,13 +293,19 @@ let page_number_spread = (num) => ({
 	]
 })
 let format_item = (item) => "+:item " +
-				 item.title
-				 + "\n"
-				 + "+:description "
-				 + item.description
-				 + "\n"
-				 +  "+:price / " + random_price()
-				 + "\n"
+	item.title
+	+ 
+	(
+		item.description ?
+			"\n" +
+			"+:description "
+			+ item.description
+			+ " "
+			// + "\n"
+			: " "
+	)
+	+ "+:price //" + random_price()
+	+ "\n"
 
 let jars = (num) => ({
 	title: "",
@@ -305,12 +320,12 @@ let jars = (num) => ({
 		],
 
 		["TextFrame",
-		 ["text",
-			"+:title " + JARS.title
-			+" "
-			+ "+:hide >>>>>>> >>>>>>> +:subtitle " + JARS.subtitle + "\n\n"
-			+ "+:additional " + JARS.additional
-		 ],
+			["text",
+				"+:title " + JARS.title
+				+ " "
+				+ "+:hide >>>>>>> >>>>>>> +:subtitle " + JARS.subtitle + "\n\n"
+				+ "+:additional " + JARS.additional
+			],
 			["height", ["em", 24]],
 			["x", ["verso", 0, 'x']],
 			["y", ["hangline", 6.5]],
@@ -322,7 +337,7 @@ let jars = (num) => ({
 			["height", ["em", 24]],
 			["x", ["recto", 1, 'x']],
 			["y", ["hangline", 3]],
-			["length", ["column_width", 5]]
+			["length", ["column_width", 5.5]]
 		]
 	]
 })
@@ -334,9 +349,41 @@ let eggs = (num) => ({
 		["Header",
 			["text", "Eggs"],
 			["height", ["em", 12]],
-			["x", ["em", 12*3]],
+			["x", ["em", 12 * 3]],
 			["y", ["em", -.5]],
 		],
+
+		["TextFrame",
+		 ["text", "+:title "+EGGS.title+ " +:hide >>>>>>>>>>>> +:subtitle-big " + EGGS.subtitle],
+			["height", ["em", 38]],
+			["x", ["verso", 0, 'x']],
+			["y", ["hangline", 2]],
+			["length", ["column_width", 6]]
+		],
+
+		["TextFrame",
+			["text", EGGS.items.map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["verso", 0, 'x']],
+			["y", ["hangline", 3]],
+			["length", ["column_width", 6]]
+		],
+
+		["TextFrame",
+			["text", "+:title " + BENEDICTS.title],
+			["height", ["em", 24]],
+			["x", ["recto", 1, 'x']],
+			["y", ["hangline", 4.5]],
+			["length", ["column_width", 5.5]]
+		],
+
+		["TextFrame",
+			["text", BENEDICTS.items.map(format_item).join("\n\n")],
+			["height", ["em", 24]],
+			["x", ["recto", 1, 'x']],
+			["y", ["hangline", 6]],
+			["length", ["column_width", 5.5]]
+		]
 	]
 })
 let sandwiches = (num) => ({
@@ -346,7 +393,7 @@ let sandwiches = (num) => ({
 		["Header",
 			["text", "Sandwiches"],
 			["height", ["em", 12]],
-			["x", ["em", 12*2.8]],
+			["x", ["em", 12 * 2.8]],
 			["y", ["em", 1]],
 		],
 	]
