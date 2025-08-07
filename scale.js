@@ -1,4 +1,6 @@
+import * as Type from "./menu.js"
 export const DPI = 100
+
 export class Scale {
 	constructor(scale = 1) {
 		this.dpi = window.devicePixelRatio * 96
@@ -7,23 +9,23 @@ export class Scale {
 	}
 
 	/**
-	@param {Unit} unit1 
-	@param {Unit} unit2 
+	@param {Type.Unit} unit1 
+	@param {Type.Unit} unit2 
 	*/
 	add(unit1, unit2) {
 		return this.px_raw(unit1.px + unit2.px)
 	}
 
 	/**
-	@param {Unit} unit1 
-	@param {Unit} unit2 
+	@param {Type.Unit} unit1 
+	@param {Type.Unit} unit2 
 	*/
 	sub(unit1, unit2) {
 		return this.px_raw(unit1.px - unit2.px)
 	}
 
 	/**
-	@param {Unit} unit1 
+	@param {Type.Unit} unit1 
 	@param {number} unit2 
 	*/
 	mul(unit1, unit2) {
@@ -31,8 +33,8 @@ export class Scale {
 	}
 
 	/**
-	@param {Unit} unit1 
-	@param {Unit} unit2 
+	@param {Type.Unit} unit1 
+	@param {Type.Unit} unit2 
 	*/
 	div(unit1, unit2) {
 		return this.px_raw(unit1.px / unit2.px)
@@ -40,7 +42,7 @@ export class Scale {
 
 	/**
 	@param {number} value 
-	@returns {Unit} 
+	@returns {Type.Unit} 
 	*/
 	em(value) {
 		return {
@@ -52,7 +54,7 @@ export class Scale {
 
 	/**
 	@param {number} value 
-	@returns {Unit} 
+	@returns {Type.Unit} 
 	*/
 	px(value) {
 		return {
@@ -64,7 +66,7 @@ export class Scale {
 
 	/**
 	@param {number} value 
-	@returns {Unit} 
+	@returns {Type.Unit} 
 	*/
 	px_raw(value) {
 		return {
@@ -78,7 +80,7 @@ export class Scale {
 
 	/**
 	@param {number} value 
-	@returns {Unit} 
+	@returns {Type.Unit} 
 	*/
 	inch(value) {
 		return {
@@ -90,7 +92,7 @@ export class Scale {
 
 	/**
 	@param {number} value 
-	@returns {Unit} 
+	@returns {Type.Unit} 
 	*/
 	pica(value) { return this.em(value) }
 	picas(value) { return this.pica(value) }
@@ -98,7 +100,7 @@ export class Scale {
 
 	/**
 	@param {number} value 
-	@returns {Unit} 
+	@returns {Type.Unit} 
 	*/
 	point(value) {
 		return {

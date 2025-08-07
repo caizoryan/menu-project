@@ -12,27 +12,47 @@ let s = new Scale(DPI)
 export let tag_hooks = {
 	"+:title": {
 		font_weight: 600,
-		color: "red",
+		font_family: "stolzl",
+		font_size: s.point(16),
+		leading: s.point(18)
 	},
 	"+:comment": {},
-	"+:subtitle": {},
+	"+:subtitle": {
+		font_weight: 600,
+		font_family: "freight-macro-pro",
+		font_size: s.point(10),
+		leading: s.point(12),
+		font_style: "ITALIC",
+	},
+	"+:additional": {
+		font_weight: 300,
+		font_family: "freight-macro-pro",
+		font_size: s.point(8),
+		leading: s.point(8),
+	},
 
 	"+:price": {
 		font_family: "aktiv-grotesk",
-		font_weight: "700",
-		leading: s.point(14)
+		font_weight: "500",
+		leading: s.point(9)
 	},
 
 	"+:item": {
-		font_family: "ouma-devanagari",
-		font_weight: "600",
-		font_size: s.point(12),
+		font_family: "stolzl",
+		font_weight: "500",
+		font_size: s.point(10),
 		leading: s.point(8)
 	},
 
+	"+:hide": {
+		color: "white",
+	},
+
 	"+:description": {
-		font_family: "aktiv-grotesk",
-		leading: s.point(8)
+		font_family: "freight-micro-pro",
+		font_size: s.point(7.5),
+		color: "#444",
+		leading: s.point(9.2)
 	}
 
 }
@@ -43,9 +63,9 @@ export let structure={
 
 	margin: {
 		top: s.em(2),
-		bottom: s.em(3),
+		bottom: s.em(2),
 		inside: s.em(1),
-		outside: s.em(4),
+		outside: s.em(2),
 	},
 
 	columns: 8,
@@ -269,7 +289,8 @@ let format_item = (item) => "+:item " +
 				 + "+:description "
 				 + item.description
 				 + "\n"
-				 +  "+:price " + random_price()
+				 +  "+:price / " + random_price()
+				 + "\n"
 
 let jars = (num) => ({
 	title: "",
@@ -279,8 +300,21 @@ let jars = (num) => ({
 			["text", "Jars"],
 			["height", ["em", 12]],
 			["x", ["em", 12 * 4]],
-			["y", ["hangline", 3]],
+			["y", ["hangline", 2]],
 			["rotation", 90]
+		],
+
+		["TextFrame",
+		 ["text",
+			"+:title " + JARS.title
+			+" "
+			+ "+:hide >>>>>>> >>>>>>> +:subtitle " + JARS.subtitle + "\n\n"
+			+ "+:additional " + JARS.additional
+		 ],
+			["height", ["em", 24]],
+			["x", ["verso", 0, 'x']],
+			["y", ["hangline", 6.5]],
+			["length", ["column_width", 5]]
 		],
 
 		["TextFrame",
@@ -288,7 +322,7 @@ let jars = (num) => ({
 			["height", ["em", 24]],
 			["x", ["recto", 1, 'x']],
 			["y", ["hangline", 3]],
-			["length", ["column_width", 6]]
+			["length", ["column_width", 5]]
 		]
 	]
 })

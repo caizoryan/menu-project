@@ -1,7 +1,7 @@
 export let JARS = {
 	title: "SOFT LAUNCH – HEALTHY JARS",
 	subtitle: "aka “I wanna feel light but still slay”",
-	additional: "Add Chicken +₹128 | Prawns +₹158 | Stack up the health, not the stress.",
+	additional: "Add Chicken +128 | Prawns +158 | Stack up the health, not the stress.",
 
 	items: [{
 		title: "Apple Feta Jar",

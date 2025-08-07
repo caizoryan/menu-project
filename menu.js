@@ -37,7 +37,7 @@ function draw_line(p, text, x, y, length, state, hooks) {
 		return {text: text.slice(1), leading: .4}
 	}
 
-	let leading = state.paragraph.leading
+	let break_ratio = 1
 	let lines = text.split(`\n`)
 	let words = lines.shift().split(" ")
 	let tagged = ""
@@ -113,11 +113,20 @@ function draw_line(p, text, x, y, length, state, hooks) {
 
 		let tag = tag_hooks[word.toLowerCase()]
 		if(tag){
+			p.noStroke();
+			p.textSize(state.paragraph.font_size.px)
+			p.textFont(state.paragraph.font_family)
+			p.textWeight(state.paragraph.font_weight)
+			p.fill(state.paragraph.color)
+			p.textStyle(p.NORMAL) 
+
 			if(tag.color)  p.fill(tag.color) 
-			if(tag.leading)  { leading = tag.leading; p.textLeading(tag.leading.px) }
+			if(tag.leading)  { p.textLeading(tag.leading.px) }
+			if(tag.break_ratio) {break_ratio = tag.break_ratio}
 			if(tag.font_size)  p.textSize(tag.font_size.px) 
 			if(tag.font_weight)  p.textWeight(tag.font_weight)
 			if(tag.font_family)  p.textFont(tag.font_family) 
+			if(tag.font_style)  p.textStyle(p[tag.font_style]) 
 
 			tagged = word + " "
 			line_state.space_size = p.textWidth(" "),
@@ -251,6 +260,9 @@ function draw_paragraph(p, paragraph, grid) {
 		p.textFont(_paragraph.font_family)
 		p.textWeight(_paragraph.font_weight)
 		p.fill(_paragraph.color)
+		p.textStyle(p.NORMAL) 
+
+
 
 		paragraph_state.word_count = start_length - _paragraph.text.length
 
