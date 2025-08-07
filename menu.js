@@ -1,49 +1,13 @@
-setTimeout(init, 10)
-
-let menu = [
-	[
-		"Three Cheese & Jalapeno Panini",
-		"mozzarella, cheddar, and pepper jack cheese with pickled jalapeños and herbed butter."],
-	[
-		"Truffle Mushroom Cro’wich",
-		"Buttery croissant stuffed with wild mushrooms sautéed in garlic butter and finished with truffle oil and cream cheese."
-	],
-	[
-		"Grilled Cheese & Tomato Toastie",
-		"A comforting toastie with mature cheddar and slow-roasted tomatoes."
-	],
-	[
-		"Olive & Sundried Tomato Focaccia",
-		"Served warm with dips like whipped feta or roasted pepper hummus."
-	],
-	[
-		"BRICKHAUS SPECIAL SANDWICH",
-		"Triple-decker with lettuce, tomato, cheese"
-	],
-	["Peri-Peri Chicken Croswich", "grilled chicken tossed in spicy peri-peri sauce, with lettuce, cheese, and garlic mayo."]
-	,
-	["Ham & Cheese chicken Sandwich", "Thinly sliced gammon ham, scrambled egg, chicken, cheese and English mustard mayo in soft white bread."]
-	,
-	["Smoky grilled Chicken Club", "Grilled chicken, lettuce, tomato, fried egg, smoky mayo on multigrain toast"]
-	,
-	["Chicken Tikka Toastie", "Spiced chicken tikka chunks with cheese, green chutney, grilled to perfection"]
-	,
-	["BBQ Pulled Chicken panini", "Slow-cooked BBQ chicken, caramelized onions, and coleslaw"]
-	,
-	["Smoked Turkey & Cranberry (cold sandwich)", "Sliced turkey, cranberry sauce, cream cheese, leafy greens"]
-	,
-	["Egg Salad Sandwich (cold sandwich)", "Creamy chopped egg, mayo, English mustard, spring onions on milk bread"]
-
-]
-
 import { sig, mem, render, HTML as html, eff_on } from "./lib/chowk/monke.js"
 import { hyphenateSync } from "./lib/hyphenator/hyphenate.js"
 import { Q5 as p5 } from "./lib/q5/q5.js"
+import {Scale, dpi} from "./scale.js"
+import {structure, offsets, data, style} from "./one.js"
 
 const isOdd = num => num % 2 == 1;
-let dpi = 100
 let viewport = .4
 
+setTimeout(init, 10)
 const GlobalStyle = ``
 
 let funky_hyphens = false
@@ -121,16 +85,6 @@ function draw_line(p, text, x, y, length, state, hooks) {
 			p.fill(_fill)
 			return remainder
 		}
-
-		// if (line_state.horizontal_pos + word_len < length.px) {
-		//   let _fill = p.ctx.fillStyle
-		//   // hook to change color of hyphenated
-		//   p.fill(p.color("red"))
-		//   p.text(lexeme + "-",
-		//     x.px + line_state.horizontal_pos, y.px)
-		//   p.fill(_fill)
-		//   return hyphenated.join("")
-		// }
 
 		return false
 	}
@@ -214,7 +168,7 @@ function draw_paragraph(p, paragraph, grid) {
 		color: p.color("black"),
 		stroke: p.color("black"),
 		font_size: { px: 14 },
-		rect: true,
+		rect: false,
 		hooks: {},
 		hyphenate: true
 	}, paragraph)
@@ -286,114 +240,6 @@ function draw_paragraph(p, paragraph, grid) {
 	return _paragraph.text
 }
 
-class Scale {
-	constructor(scale = 1) {
-		this.dpi = window.devicePixelRatio * 96
-		this.scale = scale / this.dpi
-	}
-
-	/**
-	@param {Unit} unit1 
-	@param {Unit} unit2 
-	*/
-	add(unit1, unit2) {
-		return this.px_raw(unit1.px + unit2.px)
-	}
-
-	/**
-	@param {Unit} unit1 
-	@param {Unit} unit2 
-	*/
-	sub(unit1, unit2) {
-		return this.px_raw(unit1.px - unit2.px)
-	}
-
-	/**
-	@param {Unit} unit1 
-	@param {number} unit2 
-	*/
-	mul(unit1, unit2) {
-		return this.px_raw(unit1.px * unit2)
-	}
-
-	/**
-	@param {Unit} unit1 
-	@param {Unit} unit2 
-	*/
-	div(unit1, unit2) {
-		return this.px_raw(unit1.px / unit2.px)
-	}
-
-	/**
-	@param {number} value 
-	@returns {Unit} 
-	*/
-	em(value) {
-		return {
-			unit: "em",
-			value,
-			px: this.inch(value / 6).px
-		}
-	}
-
-	/**
-	@param {number} value 
-	@returns {Unit} 
-	*/
-	px(value) {
-		return {
-			unit: "pixel",
-			value,
-			px: value * this.scale
-		}
-	}
-
-	/**
-	@param {number} value 
-	@returns {Unit} 
-	*/
-	px_raw(value) {
-		return {
-			unit: "pixel",
-			value,
-			px: value
-		}
-	}
-
-	pixel(value) { return this.px(value) }
-
-	/**
-	@param {number} value 
-	@returns {Unit} 
-	*/
-	inch(value) {
-		return {
-			unit: "inch",
-			value,
-			px: value * this.dpi * this.scale
-		}
-	}
-
-	/**
-	@param {number} value 
-	@returns {Unit} 
-	*/
-	pica(value) { return this.em(value) }
-	picas(value) { return this.pica(value) }
-
-
-	/**
-	@param {number} value 
-	@returns {Unit} 
-	*/
-	point(value) {
-		return {
-			unit: "point",
-			value,
-			px: this.pica(value).px / 12
-		}
-	}
-}
 let s = new Scale(dpi)
 
 class LinkedFrame {
@@ -541,56 +387,7 @@ class Grid {
 		}
 	}
 }
-let g_prop={
-	page_width: s.inch(8.5),
-	page_height: s.inch(6),
 
-	margin: {
-		top: s.em(2),
-		bottom: s.em(3),
-		inside: s.em(1),
-		outside: s.em(4),
-	},
-
-	columns: 8,
-	gutter: s.point(6),
-	hanglines: [
-		s.em(6),
-		s.em(6.5),
-		s.em(12),
-		s.em(12.5),
-		s.em(18),
-		s.em(18.5),
-		s.em(24),
-		s.em(24.5),
-	],
-}
-let g_prop2={
-	page_width: s.inch(8.5),
-	page_height: s.inch(6),
-
-	margin: {
-		top: s.em(2),
-		bottom: s.em(3),
-		inside: s.em(1),
-		outside: s.em(4),
-	},
-
-	columns: 8,
-	gutter: s.point(6),
-	hanglines: [
-		s.em(6),
-		s.em(6.5),
-		s.em(12),
-		s.em(12.5),
-		s.em(18),
-		s.em(18.5),
-		s.em(24),
-		s.em(24.5),
-	],
-}
-let grid = new Grid([g_prop, g_prop2], s)
-let grid2 = new Grid([g_prop, g_prop], s)
 
 /**
 @typedef Drawable
@@ -944,7 +741,8 @@ class Book {
 		if (num1) {
 			let offset = book.offsets.filter((e) => e.page == num1)
 			let horizontal_offset = offset.find((e) => e.axis == "horizontal")
-			let width = book.structure?.props.page_width
+			// TODO: update structure
+			let width = book.structure?.props[0].page_width
 
 			let before = book.before_spine(num1)
 
@@ -953,7 +751,8 @@ class Book {
 			let proportional_width
 
 			if (horizontal_offset) {
-				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
+			// TODO: update structure
+				new_page_width = book.structure?.props[0].page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
 				proportional_width = new_page_width / width.px
 			}
 
@@ -967,7 +766,8 @@ class Book {
 			let offset = book.offsets.filter((e) => e.page == num2)
 			let horizontal_offset = offset.find((e) => e.axis == "horizontal")
 
-			let width = book.structure?.props.page_width
+			// TODO: update structure
+			let width = book.structure?.props[0].page_width
 
 			let before = book.before_spine(num2)
 
@@ -976,7 +776,8 @@ class Book {
 			let proportional_width
 
 			if (horizontal_offset) {
-				new_page_width = book.structure?.props.page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
+			// TODO: update structure
+				new_page_width = book.structure?.props[0].page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
 				proportional_width = new_page_width / width.px
 			}
 
@@ -1258,11 +1059,15 @@ let foldline = true
 
 function init() {
 	render(container, document.body)
-	pages = data.contents.map((e) => spread_from_block(e, []))
+	update_pages()
 	oninit.forEach(fn => typeof fn == "function" ? fn() : null)
 }
 
-function update_offsets() {
+function update_pages(){
+	pages = data.contents.map((e) => spread_from_block(e, []))
+}
+
+function update() {
 	book = new Book(pages)
 	offsets.forEach((o) => book.mark_page_offset(o))
 	book.set_page(page)
@@ -1317,57 +1122,7 @@ oninit.push(() => {
 let book
 let page = 1
 
-/**@type {Offset[]}*/
-let offsets = [
-	// {
-	// 	size: s.em(-2),
-	// 	axis: "vertical",
-	// 	color: "#E4D1C3",
-	// 	direction: 1,
-	// 	page: 2
-	// },
-
-	// {
-	// 	size: s.em(4),
-	// 	axis: "horizontal",
-	// 	color: "#E4D1C3",
-	// 	direction: 1,
-	// 	page: 2
-	// },
-
-	// {
-	// 	size: s.em(4),
-	// 	axis: "vertical",
-	// 	color: "#E4D1C3",
-	// 	direction: 1,
-	// 	page: 5
-	// },
-
-	// {
-	// 	size: s.em(6),
-	// 	axis: "vertical",
-	// 	color: "#eee",
-	// 	direction: 1,
-	// 	page: 7
-	// },
-
-	// {
-	// 	size: s.em(4),
-	// 	axis: "horizontal",
-	// 	color: "#eee",
-	// 	direction: 1,
-	// 	page: 7
-	// }
-	// {
-	// 	size: s.em(2),
-	// 	axis: "horizontal",
-	// 	color: "pink",
-	// 	direction: 1,
-	// 	page: 7
-	// }
-]
-
-oninit.push(update_offsets)
+oninit.push(update)
 
 class TextFrame {
 	/**
@@ -1392,10 +1147,12 @@ oninit.push(() => eff_on(saddle, drawpaper))
 let pg = sig(0)
 
 let spreads = sig([])
+let randoms = ["ass", "monkey", "dhickkyao", "ragavesh"]
 let container = () => {
 	let set_page = num => {
 		pg(num);
 		book.set_spread(pg());
+		update_offset(num * 2 + 1)
 		drawpaper()
 	}
 
@@ -1406,6 +1163,7 @@ let container = () => {
 		else if (e.key == "ArrowDown" && e.shiftKey) sub_offset(Math.floor(book.current_spread * 2 + 1), "vertical")
 		else if (e.key == "ArrowRight") set_page(book.current_spread + 1)
 		else if (e.key == "ArrowLeft") set_page(book.current_spread - 1)
+		else if (e.key == "l") set_title(randoms[Math.floor(Math.random() * randoms.length)])
 	})
 
 	let next = () => {
@@ -1427,6 +1185,19 @@ let container = () => {
     </button>
 `}
 
+	let h_offset = sig(0)
+	let v_offset = sig(0)
+
+	let update_offset= (page) => {
+		let h_off = book.offsets.find((e) => (e.page == page && e.axis == "horizontal"))
+		let v_off = book.offsets.find((e) => (e.page == page && e.axis == "vertical"))
+		let h_size = h_off ? h_off.size.value : 0
+		let v_size = v_off ? v_off.size.value : 0
+
+		h_offset(h_size)
+		v_offset(v_size)
+	}
+
 	let add_offset = (page, axis, op = 1) => {
 		let offset = book.offsets.find((e) => (e.page == page && e.axis == axis))
 		let size = offset ? offset.size.value : 0
@@ -1435,6 +1206,7 @@ let container = () => {
 		let new_size = size + op
 		let direction = offset ? offset.direction : 1
 
+
 		book.mark_page_offset({
 			size: s.em(new_size),
 			axis: axis,
@@ -1442,8 +1214,11 @@ let container = () => {
 			direction,
 			page: page
 		})
+
+		update_offset(page)
 		drawpaper()
 	}
+
 	let sub_offset = (page, axis) => add_offset(page, axis, -1)
 
 	let page = (num) => {
@@ -1519,182 +1294,30 @@ onclick=${() => sub_offset(num, "vertical")}
       download
     </button>
 
-${box}
+		<div
+			style="position:fixed;top:8em;left:0" >
+				<p>H: ${h_offset}</p>
+				<p>V: ${v_offset}</p>
+		</div>
 
   </div>
 `
 }
-let style = {
-	title: [
-		["font_family", "GapSansBlack"],
-		["length", ["column_width", 7]],
-		["font_size", ["point", 28]],
-		["leading", ["point", 38]],
-		["color", "#0000ff"],
-	],
-
-	body: [
-		["font_family", "Oracle"],
-		["font_size", ["point", 9]],
-		["leading", ["point", 12]],
-		["font_weight", 500],
-		["color", "black"],
-	],
-
-	metadata: [
-		["font_family", "OracleTriple"],
-		["font_size", ["point", 7]],
-		["font_weight", 300],
-		["leading", ["point", 12]],
-		["color", "#ff00ff"],
-	],
-
-	label: [
-		["font_family", "OracleTriple"],
-		["font_size", ["point", 18]],
-		["font_weight", 600],
-		["leading", ["point", 12]],
-		["color", "#00000066"],
-	]
-}
-let introduction = ``
-
-// x------------------x
-// *Header: Cover
-// x------------------x
-let cover = {
-	title: "",
-	content: [
-		["Header",
-			["text", "BOOKLET"],
-			["height", ["em", 12]],
-			["x", ["em", 12 * 4.2]],
-			["y", ["hangline", 3]],
-			["rotation", 90]
-			//["color", "#0000ffaa"]
-		],
-
-		["TextFrame",
-			["text", "as {software}"],
-			["x", ["recto", 3, "x"]],
-			["y", ["recto", 0, "y"]],
-			["height", ["em", 8]],
-			["length", ["column_width", 3.5]],
-			["rect", false],
-			...style.label,
-		],
-
-		["TextFrame",
-			["text", introduction],
-			["length", ["column_width", 4]],
-			["height", ["em", 18]],
-			["x", ["recto", 2, "x"]],
-			["y", ["hangline", 1]],
-			...style.body
-		]
-	]
-}
-let colophon = {
-	title: "",
-	content: [
-		["TextFrame",
-			["text", `COLOPHON`],
-			["x", ["verso", 0, "x"]],
-			["y", ["hangline", 1]],
-			["length", ["column_width", 3]],
-			["height", ["em", 25]],
-			...style.metadata,
-			["font_weight", 600],
-			["font_size", ["point", 18]],
-		],
-		["TextFrame",
-			["text", `This booklet was typeset using ABC Dinamo's Oracle Family and GapSans designed by GrandChaos9000. GapSans is a fork of Sani Trixie Sans Typeface.
-The booklet was designed in a custom tool developed for an independent study conducted for reasons noted in the contents of the booklet. The tool was written in vanilla javascript.
-`],
-			["x", ["verso", 3, "x"]],
-			["y", ["hangline", 1]],
-			["length", ["column_width", 5]],
-			["height", ["em", 25]],
-			...style.body
-		],
-	]
-}
-
-let page_number_spread = (num) => ({
-	title: "",
-	content: [
-		["TextFrame",
-			["text", "P:" + num],
-			["x", ["verso", 0, "x"]],
-			["y", ["hangline", 1]],
-			["length", ["column_width", 3]],
-			["height", ["em", 25]],
-			...style.title,
-			["font_weight", 600],
-			["font_size", ["point", 18]],
-		],
-
-		// ["TextFrame",
-		//  ["text", menu.map(([title, description], i) => title + "\n" + description).join("\n")],
-		// 	["x", ["verso", 0, "x"]],
-		// 	["y", ["em", 1]],
-		// 	["length", ["column_width", 7]],
-		// 	["height", ["em", 85]],
-		// 	...style.body,
-		// 	["font_weight", 300],
-		// ],
-
-		["Header",
-			["text", "PAGE: " + (num)],
-			["height", ["em", 12]],
-			["x", ["em", 3]],
-			["y", ["hangline", 3]],
-			["rotation", 90]
-			//["color", "#0000ffaa"]
-		],
-
-		["Header",
-			["text", "PAGE: " + (num + 1)],
-			["height", ["em", 12]],
-			["x", ["em", 12 * 4.2]],
-			["y", ["hangline", 3]],
-			["rotation", 90]
-			//["color", "#0000ffaa"]
-		],
-
-		["TextFrame",
-			["text", "P:" + (num + 1)],
-			["x", ["recto", 7, "x"]],
-			["y", ["hangline", 1]],
-			["length", ["column_width", 3]],
-			["height", ["em", 25]],
-			...style.title,
-			["font_weight", 600],
-			["font_size", ["point", 18]],
-		],
-	]
-})
 
 page = 1
 
-// x-----------------------x
-// *Header: Data
-// x-----------------------x
-let data = {
-	contents: [
-		cover,
-		page_number_spread(2),
-		page_number_spread(4),
-		page_number_spread(6),
-		page_number_spread(8),
-		page_number_spread(10),
-		page_number_spread(12),
-		page_number_spread(14),
-		page_number_spread(16),
-		page_number_spread(18),
-		page_number_spread(20),
-	]
+function set_title(t){ 
+	// cover.content[0] = ["Header",
+	// 		["text", t],
+	// 		["height", ["em", 12]],
+	// 		["x", ["em", 12 * 4.2]],
+	// 		["y", ["hangline", 3]],
+	// 		["rotation", 90]]
+	// update_pages()
+	// update()
+	// drawpaper()
 }
+
 
 // x-----------------------x
 // *Header: Instruction sheet
@@ -1833,7 +1456,7 @@ function spread_from_block(block, extensions = []) {
 		if (item[0] == "Arc") return arc(reduceprops(item.slice(1)))
 	})
 
-	let grid = new Grid([g_prop, g_prop2], s)
+	let grid = new Grid([structure, structure], s)
 	return  new Spread(grid, s, [...contents, ...extensions])
 
 	// return Math.random()  > .5

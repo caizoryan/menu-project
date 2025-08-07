@@ -1,0 +1,107 @@
+
+	iframe {all: unset;}
+	.group {padding: 10px;}
+  @font-face {
+    font-family: "Oracle";
+		src: url("/fs/fonts/ABCOracle.ttf");
+	}
+
+  @font-face {
+    font-family: "OracleTriple";
+		src: url("/fs/fonts/OracleTriple.ttf");
+	}
+
+
+  @font-face {
+    font-family: "GapSans";
+    src: url("/fs/fonts/GapSans.ttf");
+  }
+
+  @font-face {
+    font-family: "GapSansBold";
+    src: url("/fs/fonts/GapSansBold.ttf");
+  }
+
+  @font-face {
+    font-family: "GapSansBlack";
+    src: url("/fs/fonts/GapSansBlack.ttf");
+  }
+
+*{font-family: "GapSans"}
+
+button {
+	all: unset;
+	cursor: pointer;  
+	border: .7px solid black;
+	padding: .3em;
+	background: white;
+}
+
+button:hover{
+	background: #ddd;
+}
+
+  .container{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ddd;
+  }
+
+  .q5{
+    width: min-content;
+  }
+
+	.layers {
+		height: 60vh;
+		background: #eee;
+		padding: 1em;
+		overflow-y: scroll;
+		overflow-x: visible;
+	}
+
+	.layers .spread{
+		display: grid;
+		width: 80%;
+		height: 4em;
+		padding: .1em;
+		grid-template-columns: 100px 100px;
+	}
+
+	.spread .page {
+		background: white;
+		margin: .1em;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		position: relative;
+	}
+
+	.page:hover {
+		background: #ccc;
+		cursor : pointer;
+	}
+
+	.controls {
+		display: none;
+		position: absolute;
+		top: 3em;
+		left: 1em;
+		background: white;
+		padding: .3em;
+		border: .5px solid black;
+		z-index: 9;
+		grid-gap: .3em;
+
+		grid-template-areas:
+			". top ." 
+			"left . right" 
+			". bottom ." 
+	}
+
+	.page:hover .controls {
+		display: grid;
+	}
