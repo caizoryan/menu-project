@@ -1,5 +1,5 @@
 import { Scale, DPI } from "./scale.js"
-import { BENEDICTS, EGGS, JARS } from "./menu_items.js"
+import { BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES } from "./menu_items.js"
 import * as Type from "./menu.js"
 
 let fonts = {
@@ -17,6 +17,12 @@ export let tag_hooks = {
 		leading: s.point(20)
 	},
 	"+:comment": {},
+	"+:symbol": {
+		font_weight: 100,
+		font_family: "stolzl",
+		font_size: s.point(9),
+		leading: s.point(10)
+	},
 
 	"+:subtitle-big": {
 		font_weight: 300,
@@ -50,7 +56,7 @@ export let tag_hooks = {
 		font_family: "stolzl",
 		font_weight: "500",
 		font_size: s.point(9),
-		leading: s.point(8)
+		leading: s.point(10)
 	},
 
 	"+:hide": {
@@ -121,7 +127,7 @@ export let offsets = [
 		page: 3
 	},
 	{
-		size: s.em(-3),
+		size: s.em(-4.5),
 		axis: "vertical",
 		color: "#E4D1C3",
 		direction: 1,
@@ -163,7 +169,7 @@ export let offsets = [
 		page: 9
 	},
 	{
-		size: s.em(2),
+		size: s.em(0),
 		axis: "vertical",
 		color: "#eee",
 		direction: 1,
@@ -176,6 +182,8 @@ export let style = {
 		["font_family", fonts.ouma],
 		["length", ["column_width", 7]],
 		["font_size", ["point", 28]],
+		["color", "#444"],
+		["color", "#666"],
 		["leading", ["point", 38]],
 	],
 
@@ -302,6 +310,12 @@ let page_number_spread = (num) => ({
 })
 let format_item = (item) => "+:item " +
 	item.title
+	+
+(item.symbols ?
+			" +:symbol "
+			+ item.symbols.map(e => "("+e+")").join(" ")
+			+ "\n" 
+			: " ")
 	+ 
 	(
 		item.description ?
@@ -413,20 +427,58 @@ let sandwiches = (num) => ({
 			["x", ["em", 12 * 2.8]],
 			["y", ["em", 1]],
 		],
+
+		["TextFrame",
+		 ["text", "+:subtitle-big " + SANDWICHES.subtitle],
+			["height", ["em", 38]],
+			["x", ["recto", 3, "x"]],
+			["y", ["em", 5.5]],
+			["length", ["column_width", 4]]
+		],
+		["TextFrame",
+		 ["text", SANDWICHES.non_items.map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["verso", 2, 'x']],
+			["y", ["hangline", 2]],
+			["length", ["column_width", 5.5]]
+		],
+
+		["TextFrame",
+			["text", SANDWICHES.veg_items.map(format_item).join("\n\n")],
+			["height", ["em", 24]],
+			["x", ["recto", 3, 'x']],
+			["y", ["hangline", 5.5]],
+			["length", ["column_width", 5.5]]
+		]
 	]
 })
 
-let mains = (num) => ({
+let toast = (num) => ({
 	title: "",
 	content: [
 		...page_number_spread(num).content,
 		["Header",
-			["text", "Mains"],
+			["text", "Toasts"],
 			["height", ["em", 22]],
 			["length", ["em", 22]],
-			["x", ["em", 12 * 4]],
-			["y", ["hangline", 3]],
-			["rotation", 90]
+			["x", ["verso", 0, "x"]],
+			["y", ["hangline", 1]],
+		],
+
+		["TextFrame",
+		 ["text", TOASTS.items.slice(0,6).map(format_item).join("\n\n")],
+			["height", ["em", 24]],
+			["x", ["verso", 0, 'x']],
+			["y", ["hangline", 3.5]],
+			["length", ["column_width", 5.5]]
+		],
+
+		["TextFrame",
+		 ["text", TOASTS.items.slice(6).map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["recto", 2, 'x']],
+			["y", ["hangline", 2]],
+			["length", ["column_width", 5.5]]
 		],
 	]
 })
@@ -447,6 +499,20 @@ let burger = (num) => ({
 })
 
 
+let mains = (num) => ({
+	title: "",
+	content: [
+		...page_number_spread(num).content,
+		["Header",
+			["text", "Mains"],
+			["height", ["em", 22]],
+			["length", ["em", 22]],
+			["x", ["em", 12 * 4]],
+			["y", ["hangline", 3]],
+			["rotation", 90]
+		],
+	]
+})
 // x-----------------------x
 // *Header: Data
 // x-----------------------x
@@ -456,7 +522,7 @@ export let data = {
 		jars(2),
 		eggs(4),
 		sandwiches(6),
-		page_number_spread(8),
+		toast(8),
 		burger(10),
 		mains(12),
 		page_number_spread(14),

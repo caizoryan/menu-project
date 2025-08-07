@@ -95,3 +95,84 @@ export let EGGS = {
 	]
 }
 
+export let SANDWICHES = {
+	title: "SLAY THE DAY – SANDWICHES",
+	subtitle: "Toastie? Panini? Cro’wich? Pick your love language.",
+	veg_items: [
+		{
+			title: "Three Cheese & Jalapeno Panini",
+			description: "mozzarella, cheddar, and pepper jack cheese with pickled jalapeños and herbed butter."
+		},
+		{
+			title: "Truffle Mushroom Cro’wich",
+			description: "Buttery croissant stuffed with wild mushrooms sautéed in garlic butter and finished with truffle oil and cream cheese."
+		},
+		{
+			title: "Grilled Cheese & Tomato Toastie",
+			description: "A comforting toastie with mature cheddar and slow-roasted tomatoes."
+		},
+		{
+			title: "Olive & Sundried Tomato Focaccia",
+			description: "Served warm with dips like whipped feta or roasted pepper hummus."
+		},
+		{
+			title: "BRICKHAUS SPECIAL SANDWICH",
+			description: "Triple-decker with lettuce, tomato, cheese"
+		},
+	],
+
+	non_items: [
+		{
+			title: "Peri-Peri Chicken Croswich",
+			description: "grilled chicken tossed in spicy peri-peri sauce, with lettuce, cheese, and garlic mayo."
+		},
+		{
+			title: "Ham & Cheese chicken Sandwich",
+			description: "Thinly sliced gammon ham, scrambled egg, chicken, cheese and English mustard mayo in soft white bread."
+		},
+		{
+			title: "Smoky grilled Chicken Club",
+			description: "Grilled chicken, lettuce, tomato, fried egg, smoky mayo on multigrain toast"
+		},
+		{
+			title: "Chicken Tikka Toastie",
+			description: "Spiced chicken tikka chunks with cheese, green chutney, grilled to perfection"
+		},
+		{
+			title: "BBQ Pulled Chicken panini",
+			description: "Slow-cooked BBQ chicken, caramelized onions, and coleslaw"
+		},
+		{
+			title: "Smoked Turkey & Cranberry",
+			description: "Sliced turkey, cranberry sauce, cream cheese, leafy greens",
+			symbols: ["c"]
+		},
+		{
+			title: "Egg Salad Sandwich",
+			description: "Creamy chopped egg, mayo, English mustard, spring onions on milk bread",
+			symbols: ["c"]
+		},
+	]
+}
+
+export let TOASTS = {
+	title: "TOAST ME UP",
+	items: [
+		{ title: "Mushroom Medley on Toast", description: "Sauteed wild mushrooms with garlic on toasted sourdough, finished with truffle oil." },
+		{ title: "Beetroot Hummus Toast", description: "Vibrant beet hummus, pickled radish, crumbled goat cheese, and microgreens." },
+		{ title: "Tomato & Basil Baked Beans on Toast", description: "House-made beans with a herby tomato twist, topped with cheddar." },
+		{ title: "Crispy Corn Mayo Toast", description: "Toasted bread topped with creamy spiced corn and herbs" },
+		{ title: "Chili Cheese Toast", description: "Spicy cheese blend with chopped chilies, grilled golden" },
+		{ title: "Zaatar Lebneh & avo with brioche" },
+
+		{ title: "Berry Mascarpone French Toast", description: "Stuffed with mascarpone, topped with seasonal berries and berry compote." },
+		{ title: "Red Velvet French Toast", description: "Red velvet-style toast filled with cream cheese and topped with berries" },
+		{ title: "Eggless French Toast", description: "No eggs, no stress. Just thick golden toast soaked in vanilla dreams." },
+		{ title: "Vegan Coconut Toast ", description: "Made with coconut milk and nutmeg, finished with toasted coconut flakes." },
+		{ title: "Slice bread with Jam & Butter", description: "Rustic toast served with homemade preserves." },
+		{ title: "Chickpea Pancake (Socca)", description: "Served warm with sauteed greens, tomato sauce, and lemon-dill yogurt" },
+		{ title: "Smoke & Sizzle Sausage", description: "Char-grilled sausages bursting with juicy flavor, served with caramelized onions, garlic mash, and house mustard" },
+		{ title: "Spinach & Feta Puff Pastry", description: "Greek-style spanakopita." },
+	]
+}
+

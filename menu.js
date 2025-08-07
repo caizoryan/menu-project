@@ -762,8 +762,8 @@ class Book {
 		if (number == this.spreads.length - 1) _p.background(200)
 
 		if (foldline) {
-			_p.stroke(0)
-			_p.strokeWeight(3)
+			_p.stroke(127)
+			_p.strokeWeight(.5)
 			_p.line(_p.width * from, 0, _p.width * from, _p.height)
 		}
 
@@ -1393,19 +1393,7 @@ onclick=${() => sub_offset(num, "vertical")}
 `
 }
 
-page = 4
-
-function set_title(t){ 
-	// cover.content[0] = ["Header",
-	// 		["text", t],
-	// 		["height", ["em", 12]],
-	// 		["x", ["em", 12 * 4.2]],
-	// 		["y", ["hangline", 3]],
-	// 		["rotation", 90]]
-	// update_pages()
-	// update()
-	// drawpaper()
-}
+page = 8
 
 
 // x-----------------------x
