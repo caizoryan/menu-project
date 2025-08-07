@@ -11,10 +11,10 @@ let s = new Scale(DPI)
 
 export let tag_hooks = {
 	"+:title": {
-		font_weight: 600,
+		font_weight: 400,
 		font_family: "stolzl",
-		font_size: s.point(16),
-		leading: s.point(18)
+		font_size: s.point(18),
+		leading: s.point(20)
 	},
 	"+:comment": {},
 
@@ -49,7 +49,7 @@ export let tag_hooks = {
 	"+:item": {
 		font_family: "stolzl",
 		font_weight: "500",
-		font_size: s.point(10),
+		font_size: s.point(9),
 		leading: s.point(8)
 	},
 
@@ -263,13 +263,21 @@ let page_number_spread = (num) => ({
 		// 	["font_size", ["point", 18]],
 		// ],
 
-		// ["TextFrame",
-		// 	["text", "PAGE: " + (num)],
-		// 	["height", ["em", 12]],
-		// 	["x", ["em", 3]],
-		// 	["y", ["hangline", 3]],
-		// 	["rotation", 90]
-		// ],
+		["TextFrame",
+			["font_family", fonts.ouma],
+			["text", "" + (num)],
+			["height", ["em", 12]],
+			["x", ["em",  1]],
+			["y", ["hangline", 1]],
+		],
+
+		["TextFrame",
+			["font_family", fonts.ouma],
+			["text", "" + (num+1)],
+			["height", ["em", 12]],
+			["x", ["recto",  7, "x"]],
+			["y", ["hangline", 0]],
+		],
 
 		// ["TextFrame",
 		// 	["text", "PAGE: " + (num + 1)],
@@ -323,7 +331,7 @@ let jars = (num) => ({
 			["text",
 				"+:title " + JARS.title
 				+ " "
-				+ "+:hide >>>>>>> >>>>>>> +:subtitle " + JARS.subtitle + "\n\n"
+				+ "+:hide >>>>>>> +:subtitle-big " + JARS.subtitle + "\n\n"
 				+ "+:additional " + JARS.additional
 			],
 			["height", ["em", 24]],
@@ -362,26 +370,35 @@ let eggs = (num) => ({
 		],
 
 		["TextFrame",
-			["text", EGGS.items.map(format_item).join("\n\n")],
+		 ["text", EGGS.items.slice(0,6).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
 			["x", ["verso", 0, 'x']],
-			["y", ["hangline", 3]],
+			["y", ["hangline", 3.5]],
 			["length", ["column_width", 6]]
 		],
+
+		["TextFrame",
+		 ["text", EGGS.items.slice(6).map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["recto", 2, 'x']],
+			["y", ["hangline", 2.9]],
+			["length", ["column_width", 6]]
+		],
+
 
 		["TextFrame",
 			["text", "+:title " + BENEDICTS.title],
 			["height", ["em", 24]],
 			["x", ["recto", 1, 'x']],
-			["y", ["hangline", 4.5]],
-			["length", ["column_width", 5.5]]
+			["y", ["hangline", 5.5]],
+			["length", ["column_width", 6.3]]
 		],
 
 		["TextFrame",
 			["text", BENEDICTS.items.map(format_item).join("\n\n")],
 			["height", ["em", 24]],
 			["x", ["recto", 1, 'x']],
-			["y", ["hangline", 6]],
+			["y", ["hangline", 6.5]],
 			["length", ["column_width", 5.5]]
 		]
 	]
