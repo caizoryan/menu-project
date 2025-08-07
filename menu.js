@@ -1,11 +1,11 @@
 import { sig, mem, render, HTML as html, eff_on } from "./lib/chowk/monke.js"
 import { hyphenateSync } from "./lib/hyphenator/hyphenate.js"
 import { Q5 as p5 } from "./lib/q5/q5.js"
-import {Scale, dpi} from "./scale.js"
+import {Scale, DPI} from "./scale.js"
 import {tag_hooks, structure, offsets, data, style} from "./one.js"
 
 const isOdd = num => num % 2 == 1;
-let viewport = .4
+let viewport = .55
 
 setTimeout(init, 10)
 const GlobalStyle = ``
@@ -30,27 +30,17 @@ TODO: Return amount to skip/add or smth + text...
 function draw_line(p, text, x, y, length, state, hooks) {
 	if (text.charAt(0) == `\n`) {
 		if (text.charAt(1) == `\n`) {
-			return {text: text.slice(1), leading: {px: state.paragraph.leading.px * 1.5}}
+			return {text: text.slice(1), leading: s.mul(state.paragraph.leading, 1.1)}
 		}
-		return {text: text.slice(1), leading: {px: state.paragraph.leading.px / 2}}
+
+		return {text: text.slice(1), leading: s.mul(state.paragraph.leading, .5)}
 	}
 
 	let leading = state.paragraph.leading
 	let lines = text.split(`\n`)
 	let words = lines.shift().split(" ")
-	let tag = tag_hooks[words[0].toLowerCase()]
 	let tagged = ""
-
-	if(tag){
-		if(tag.color)  p.fill(tag.color) 
-		if(tag.leading)  leading = tag.leading 
-		if(tag.font_size)  p.textSize(tag.font_size) 
-		if(tag.font_weight)  p.textWeight(tag.font_weight)
-		if(tag.font_family)  p.textFont(tag.font_family) 
-
-		tagged = words[0] + " "
-		words.shift()
-	}
+	let tag
 
 	let end_lines = `\n` + lines.join(`\n`)
 
@@ -119,6 +109,21 @@ function draw_line(p, text, x, y, length, state, hooks) {
 	words.forEach(word => {
 		if (skip) return
 		let word_len = p.textWidth(word)
+
+		let tag = tag_hooks[word.toLowerCase()]
+		if(tag){
+			if(tag.color)  p.fill(tag.color) 
+			if(tag.leading)  { leading = tag.leading; p.textLeading(tag.leading.px) }
+			if(tag.font_size)  p.textSize(tag.font_size.px) 
+			if(tag.font_weight)  p.textWeight(tag.font_weight)
+			if(tag.font_family)  p.textFont(tag.font_family) 
+
+			tagged = word + " "
+			line_state.space_size = p.textWidth(" "),
+			line_state.word_count++
+			// words.shift()
+			return
+		}
 
 		//if (typeof hooks?.beforeWord == "function") hooks?.beforeWord(props())
 		if (line_state.horizontal_pos + word_len > length.px) {
@@ -264,6 +269,8 @@ function draw_paragraph(p, paragraph, grid) {
 
 		_paragraph.text = text
 		paragraph_state.vertical_pos += leading.px
+			//p.textLeading()
+			//
 	}
 
 	if (_paragraph.rotation != 0) {
@@ -284,7 +291,7 @@ function draw_paragraph(p, paragraph, grid) {
 	return _paragraph.text
 }
 
-let s = new Scale(dpi)
+let s = new Scale(DPI)
 
 class LinkedFrame {
 	/**
@@ -519,7 +526,7 @@ class Book {
 	@param {Spread[]} [spreads=[]] 
 	@param {{draw_grid: boolean}=} opts
 	*/
-	constructor(spreads = [], opts = { draw_grid: true }) {
+	constructor(spreads = [], opts = { draw_grid: false }) {
 		this.grid = opts.draw_grid
 		this.structure = spreads[0] ? spreads[0].props().structure : undefined
 		this.current_spread = 0
@@ -1362,7 +1369,7 @@ onclick=${() => sub_offset(num, "vertical")}
 `
 }
 
-page = 1
+page = 2
 
 function set_title(t){ 
 	// cover.content[0] = ["Header",

@@ -1,4 +1,4 @@
-import {Scale,dpi} from "./scale.js"
+import {Scale, DPI} from "./scale.js"
 import {JARS} from "./menu_items.js"
 import * as Type from "./menu.js"
 
@@ -7,26 +7,32 @@ let fonts = {
 	ouma: "ouma-devanagari"
 }
 
-let s = new Scale(dpi)
+let s = new Scale(DPI)
 
 export let tag_hooks = {
 	"+:title": {
 		font_weight: 600,
 		color: "red",
 	},
-	"+:comment": {
-		
+	"+:comment": {},
+	"+:subtitle": {},
+
+	"+:price": {
+		font_family: "aktiv-grotesk",
+		font_weight: "700",
+		leading: s.point(14)
 	},
-	"+:subtitle": {
-		
-	},
+
 	"+:item": {
 		font_family: "ouma-devanagari",
 		font_weight: "600",
-		font_size: 20,
+		font_size: s.point(12),
+		leading: s.point(8)
 	},
+
 	"+:description": {
 		font_family: "aktiv-grotesk",
+		leading: s.point(8)
 	}
 
 }
@@ -211,6 +217,8 @@ The booklet was designed in a custom tool developed for an independent study con
 		],
 	]
 }
+let prices = [399, 599, 587, 289, 499]
+let random_price = () => prices[Math.floor(Math.random() * prices.length)]
 
 let page_number_spread = (num) => ({
 	title: "",
@@ -255,6 +263,14 @@ let page_number_spread = (num) => ({
 		// ],
 	]
 })
+let format_item = (item) => "+:item " +
+				 item.title
+				 + "\n"
+				 + "+:description "
+				 + item.description
+				 + "\n"
+				 +  "+:price " + random_price()
+
 let jars = (num) => ({
 	title: "",
 	content: [
@@ -268,7 +284,7 @@ let jars = (num) => ({
 		],
 
 		["TextFrame",
-		 ["text", JARS.items.map((item) => "+:item " + item.title + "\n" + "+:description " + item.description).join("\n\n")],
+			["text", JARS.items.map(format_item).join("\n\n")],
 			["height", ["em", 24]],
 			["x", ["recto", 1, 'x']],
 			["y", ["hangline", 3]],
