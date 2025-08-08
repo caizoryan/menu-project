@@ -26,7 +26,7 @@ export let JARS = {
 }
 
 export let BENEDICTS = {
-	title: "BENEDICTS – EXTRA, JUST LIKE YOU",
+	title: "BENEDICTS (EXTRA, JUST LIKE YOU)",
 	subtitle: "served on sourdough or english muffins",
 	items: [
 		{
@@ -184,8 +184,8 @@ export let BURGETS = {
 		{ title: "The Truffle Mushroom Melt", description: "Buttered bun with sautéed mushrooms, cheese, and truffle aioli" },
 		{ title: "Chilly Bean Burger", description: "Fire bean patty, jalapeños, chipotle drip, melty cheddar. For the spicy babes only." },
 		{ title: "Classic vegetables patty burger", description: "Crisp mixed veggie patty with lettuce, tomato, onions, and mayo" },
-		{ title: "Baby in the city ", description: "Lamb patty, creamy cheese, caramelized onions & sriracha drizzle." },
-		{ title: "ranch chicken burger", description: "Grilled chicken breast with ranch dressing, iceberg lettuce, and pepperjack cheese in a sesame bun." },
+		{ title: "Baby in the City ", description: "Lamb patty, creamy cheese, caramelized onions & sriracha drizzle." },
+		{ title: "Ranch Chicken Burger", description: "Grilled chicken breast with ranch dressing, iceberg lettuce, and pepperjack cheese in a sesame bun." },
 		{ title: "Classic grilled chicken burger", description: "Herb-marinated chicken Patty  with fresh greens, tomato, and garlic aioli." },
 	]
 }
@@ -229,8 +229,8 @@ export let PANCAKES = {
 
 	items: [
 		{ title: "Nutella Banana Waffle", description: "creamy Nutella and caramelized banana on a warm waffle, topped with roasted nuts and a dusting of cocoa." },
-		{ title: "Red Velvet Cream Cheese Wiffle", description: "Red velvet waffle topped with cream cheese frosting and berry compote" },
-		{ title: "Classic Maple Butter Wiffle", description: "Buttery waffle served with maple syrup and whipped cream" },
+		{ title: "Red Velvet Cream Cheese Waffle", description: "Red velvet waffle topped with cream cheese frosting and berry compote" },
+		{ title: "Classic Maple Butter Waffle", description: "Buttery waffle served with maple syrup and whipped cream" },
 
 		{ title: "Lotus Biscoff Pancake", description: "Buttery pancakes smothered in creamy Biscoff spread and biscuit crumbles, topped with whipped cream and a caramel." },
 		{ title: "Semolina & Olive Oil Pancake", description: "Mini pancakes topped with berry compote, mascarpone, and sesame brittle." },

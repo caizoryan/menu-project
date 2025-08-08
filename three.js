@@ -12,15 +12,15 @@ let fonts = {
 let s = new Scale(DPI)
 
 export let wood = {
-	width: s.inch(10 * 2),
+	width: s.inch(7.5 * 2),
 	height: s.inch(4.3),
 }
 
 export let tag_hooks = {
 	"+:title": {
-		font_weight: 400,
+		font_weight: 200,
 		font_family: "stolzl",
-		font_size: s.point(18),
+		font_size: s.point(16),
 		leading: s.point(20)
 	},
 	"+:comment": {},
@@ -28,7 +28,7 @@ export let tag_hooks = {
 		font_weight: 100,
 		font_family: "stolzl",
 		font_size: s.point(9),
-		leading: s.point(10)
+		leading: s.point(9.5)
 	},
 
 	"+:subtitle-big": {
@@ -69,9 +69,9 @@ export let tag_hooks = {
 
 	"+:item": {
 		font_family: "stolzl",
-		font_weight: "500",
-		font_size: s.point(9),
-		leading: s.point(10)
+		font_weight: "400",
+		font_size: s.point(8.5),
+		leading: s.point(9.5)
 	},
 
 	"+:hide": {
@@ -121,21 +121,21 @@ export let structure = {
 /**@type {Type.Offset[]}*/
 export let offsets = [
 	{
-		size: s.em(25),
+		size: s.em(14),
 		axis: "horizontal",
-		color: "#eee",
+		color: "#B46A50",
 		direction: 1,
 		page: 1
 	},
 	{
-		size: s.em(12),
+		size: s.em(11),
 		axis: "horizontal",
 		color: "#E4D1C3",
 		direction: 1,
 		page: 3
 	},
 	{
-		size: s.em(9),
+		size: s.em(7.5),
 		axis: "horizontal",
 		color: "#Eee",
 		direction: 1,
@@ -143,7 +143,7 @@ export let offsets = [
 	},
 	
 	{
-		size: s.em(6),
+		size: s.em(4),
 		axis: "horizontal",
 		color: "#E4D1C3",
 		direction: 1,
@@ -151,7 +151,7 @@ export let offsets = [
 	},
 	
 	{
-		size: s.em(3),
+		size: s.em(0),
 		axis: "horizontal",
 		color: "#eee",
 		direction: 1,
@@ -220,8 +220,8 @@ let cover = {
 		 ],
 			["height", ["em", 12]],
 			["length", ["em", 12]],
-			["x", ["inch", 7.5]],
-			["y", ["hangline", 6]],
+			["x", ["recto", 7.8, "x"]],
+			["y", ["hangline", 4]],
 		 ["rotation", 90],
 			["color", "#444"]
 		],
@@ -281,7 +281,7 @@ let page_number_spread = (num) => ({
 			["font_family", fonts.ouma],
 			["text", "" + (num+1)],
 			["height", ["em", 12]],
-			["x", ["recto",  7, "x"]],
+			["x", ["recto",  7.9, "x"]],
 			["y", ["hangline", 0]],
 		],
 
@@ -312,7 +312,6 @@ let format_item = (item) => "+:item " +
 (item.symbols ?
 			" +:symbol "
 			+ item.symbols.map(e => "("+e+")").join(" ")
-			+ "\n" 
 			: " ")
 	+ 
 	(
@@ -334,7 +333,7 @@ let jars = (num) => ({
 		["Header",
 			["text", "Jars"],
 			["height", ["em", 12]],
-			["x", ["em", 12 * 4]],
+		 ["x", ["inch", 11.6]],
 			["y", ["hangline", 2]],
 			["rotation", 90]
 		],
@@ -343,21 +342,21 @@ let jars = (num) => ({
 			["text",
 				"+:title " + JARS.title
 				+ " "
-				+ "+:hide >>>>>>> +:subtitle-big " + JARS.subtitle + "\n\n"
+				+ "+:hide >>>>> >>>>> +:subtitle-big " + JARS.subtitle + "\n\n"
 				+ "+:additional " + JARS.additional
 			],
 			["height", ["em", 24]],
 			["x", ["verso", 0, 'x']],
-			["y", ["hangline", 6.5]],
-			["length", ["column_width", 5]]
+			["y", ["hangline", 5.5]],
+			["length", ["column_width", 3.5]]
 		],
 
 		["TextFrame",
 			["text", JARS.items.map(format_item).join("\n\n")],
 			["height", ["em", 24]],
-			["x", ["recto", 1, 'x']],
+			["x", ["recto", 3, 'x']],
 			["y", ["hangline", 3]],
-			["length", ["column_width", 5.5]]
+			["length", ["column_width", 4.5]]
 		]
 	]
 })
@@ -366,51 +365,53 @@ let eggs = (num) => ({
 	title: "",
 	content: [
 		...page_number_spread(num).content,
+
 		["Header",
 			["text", "Eggs"],
 			["height", ["em", 12]],
-			["x", ["em", 12 * 3]],
-			["y", ["em", -.5]],
+		 ["x", ["inch", 11.6]],
+			["y", ["hangline", 2]],
+			["rotation", 90]
 		],
 
 		["TextFrame",
-		 ["text", "+:title "+EGGS.title+ " +:hide >>>>>>>>>>>> +:subtitle-big " + EGGS.subtitle],
+		 ["text", "+:title "+EGGS.title+ " +:hide >>>>>>>>>>>>>>>>>>>>> +:subtitle-big " + EGGS.subtitle],
 			["height", ["em", 38]],
 			["x", ["verso", 0, 'x']],
-			["y", ["hangline", 2]],
+			["y", ["hangline", 1.5]],
 			["length", ["column_width", 6]]
 		],
 
 		["TextFrame",
 		 ["text", EGGS.items.slice(0,6).map(format_item).join("\n\n")],
-			["height", ["em", 38]],
+			["height", ["em", 20]],
 			["x", ["verso", 0, 'x']],
-			["y", ["hangline", 3.5]],
-			["length", ["column_width", 6]]
+			["y", ["hangline", 2.7]],
+			["length", ["column_width", 5]]
 		],
 
 		["TextFrame",
 		 ["text", EGGS.items.slice(6).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
 			["x", ["recto", 2, 'x']],
-			["y", ["hangline", 2.9]],
-			["length", ["column_width", 6]]
+			["y", ["hangline", 1.3]],
+			["length", ["column_width", 4]]
 		],
 
 
 		["TextFrame",
-			["text", "+:title " + BENEDICTS.title],
+			["text", "+:title " + BENEDICTS.title.split("(").join(" +:symbol (")],
 			["height", ["em", 24]],
-			["x", ["recto", 1, 'x']],
-			["y", ["hangline", 5.5]],
+			["x", ["recto", 2, 'x']],
+			["y", ["hangline", 4.2]],
 			["length", ["column_width", 6.3]]
 		],
 
 		["TextFrame",
 			["text", BENEDICTS.items.map(format_item).join("\n\n")],
 			["height", ["em", 24]],
-			["x", ["recto", 1, 'x']],
-			["y", ["hangline", 6.5]],
+			["x", ["recto", 2, 'x']],
+			["y", ["hangline", 5]],
 			["length", ["column_width", 5.5]]
 		]
 	]
@@ -419,34 +420,45 @@ let sandwiches = (num) => ({
 	title: "",
 	content: [
 		...page_number_spread(num).content,
+
 		["Header",
 			["text", "Sandwiches"],
 			["height", ["em", 12]],
-			["x", ["em", 12 * 2.8]],
-			["y", ["em", 1]],
+		 ["x", ["inch", 11.55]],
+			["y", ["hangline", 3]],
+			["rotation", 90]
 		],
 
 		["TextFrame",
 		 ["text", "+:subtitle-big " + SANDWICHES.subtitle],
 			["height", ["em", 38]],
-			["x", ["recto", 3, "x"]],
-			["y", ["em", 5.5]],
-			["length", ["column_width", 4]]
+			["x", ["recto", 7.4, "x"]],
+			["y", ["hangline", 2]],
+		 ["length", ["column_width", 4]],
+			["rotation", 90]
 		],
 		["TextFrame",
-		 ["text", SANDWICHES.non_items.map(format_item).join("\n\n")],
-			["height", ["em", 38]],
-			["x", ["verso", 2, 'x']],
+		 ["text", SANDWICHES.non_items.slice(0,4).map(format_item).join("\n\n")],
+			["height", ["em", 22]],
+			["x", ["verso", 0, 'x']],
 			["y", ["hangline", 2]],
-			["length", ["column_width", 5.5]]
+			["length", ["column_width", 2.7]]
+		],
+
+		["TextFrame",
+		 ["text", SANDWICHES.non_items.slice(4).map(format_item).join("\n\n")],
+			["height", ["em", 22]],
+			["x", ["verso", 3, 'x']],
+			["y", ["hangline", 2.2]],
+			["length", ["column_width", 2.5]]
 		],
 
 		["TextFrame",
 			["text", SANDWICHES.veg_items.map(format_item).join("\n\n")],
 			["height", ["em", 24]],
-			["x", ["recto", 3, 'x']],
-			["y", ["hangline", 5.5]],
-			["length", ["column_width", 5.5]]
+			["x", ["recto", 2, 'x']],
+			["y", ["hangline", 2.2]],
+			["length", ["column_width", 3.5]]
 		]
 	]
 })
@@ -456,27 +468,51 @@ let toast = (num) => ({
 	content: [
 		...page_number_spread(num).content,
 		["Header",
-			["text", "Toasts"],
-			["height", ["em", 22]],
-			["length", ["em", 22]],
-			["x", ["verso", 0, "x"]],
-			["y", ["hangline", 1]],
+			["text", "Toasts / Burgers"],
+			["height", ["em", 12]],
+		 ["x", ["inch", 11.55]],
+			["y", ["hangline", 1.8]],
+			["rotation", 90]
 		],
 
 		["TextFrame",
-		 ["text", TOASTS.items.slice(0,7).map(format_item).join("\n\n")],
+		 ["text", "+:title "+TOASTS.title],
+			["height", ["em", 38]],
+			["x", ["verso", 0, 'x']],
+			["y", ["hangline", 2.3]],
+			["length", ["column_width", 6]]
+		],
+
+		["TextFrame",
+		 ["text", TOASTS.items.slice(0,4).map(format_item).join("\n\n")],
 			["height", ["em", 28]],
 			["x", ["verso", 0, 'x']],
 			["y", ["hangline", 3]],
-			["length", ["column_width", 5.5]]
+			["length", ["column_width", 2.9]]
 		],
 
 		["TextFrame",
-		 ["text", TOASTS.items.slice(7).map(format_item).join("\n\n")],
+		 ["text", TOASTS.items.slice(4,7).map(format_item).join("\n\n")],
+			["height", ["em", 28]],
+			["x", ["verso", 3.1, 'x']],
+			["y", ["hangline", 3.3]],
+			["length", ["column_width", 3]]
+		],
+
+		["TextFrame",
+		 ["text", TOASTS.items.slice(7, 11).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
-			["x", ["recto", 2, 'x']],
-			["y", ["hangline", 2]],
-			["length", ["column_width", 5.3]]
+			["x", ["recto", .5, 'x']],
+			["y", ["hangline", 3]],
+			["length", ["column_width", 2.8]]
+		],
+
+		["TextFrame",
+		 ["text", TOASTS.items.slice(11).map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["recto", 3.7, 'x']],
+			["y", ["hangline", 3]],
+			["length", ["column_width", 2.9]]
 		],
 	]
 })
@@ -485,12 +521,12 @@ let burger = (num) => ({
 	title: "",
 	content: [
 		...page_number_spread(num).content,
+
 		["Header",
-			["text", "Burgers & Toasts"],
-			["height", ["em", 22]],
-			["length", ["em", 22]],
-			["x", ["em", 12 * 4]],
-			["y", ["hangline", 3]],
+			["text", "Burgers"],
+			["height", ["em", 12]],
+		 ["x", ["inch", 11.55]],
+			["y", ["hangline", 2]],
 			["rotation", 90]
 		],
 
@@ -502,7 +538,7 @@ let burger = (num) => ({
 			["height", ["em", 38]],
 			["x", ["verso", 0, "x"]],
 			["y", ["em", 5.5]],
-			["length", ["column_width", 6]]
+			["length", ["column_width", 3.5]]
 		],
 
 		["TextFrame",
@@ -510,14 +546,14 @@ let burger = (num) => ({
 			["height", ["em", 38]],
 			["x", ["verso", 0, 'x']],
 			["length", ["column_width", 5.5]],
-			["y", ["hangline", 5.8]],
+			["y", ["hangline", 4.8]],
 		],
 
 		["TextFrame",
 		 ["text", BURGETS.items.slice(3).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
 			["x", ["recto", 1, 'x']],
-			["y", ["hangline", 6]],
+			["y", ["hangline", 4.8]],
 			["length", ["column_width", 4.5]]
 		],
 	]
@@ -527,11 +563,11 @@ let mains = (num) => ({
 	title: "",
 	content: [
 		...page_number_spread(num).content,
+
 		["Header",
-			["text", "Mains"],
-			["height", ["em", 22]],
-			["length", ["em", 22]],
-			["x", ["em", 12 * 4]],
+			["text", "MAINS"],
+			["height", ["em", 12]],
+		 ["x", ["inch", 11.55]],
 			["y", ["hangline", 3]],
 			["rotation", 90]
 		],
@@ -546,6 +582,7 @@ let mains = (num) => ({
 			["length", ["column_width", 4.5]]
 		],
 
+
 		["TextFrame",
 		 ["text", MAIN_PLATTERS.items.slice(0,3).map(format_item).join("\n\n")],
 			["height", ["em", 28]],
@@ -559,7 +596,7 @@ let mains = (num) => ({
 			["height", ["em", 28]],
 			["x", ["recto", 0.5, 'x']],
 			["length", ["column_width", 5.5]],
-			["y", ["hangline", 3.8]],
+			["y", ["hangline", 2.4]],
 		],
 
 	]
@@ -571,38 +608,46 @@ let superbowls = (num) => ({
 		...page_number_spread(num).content,
 		["Header",
 			["text", "SUPERBOWLS"],
-			["height", ["em", 22]],
-			["length", ["em", 22]],
-			["x", ["recto", 2, "x"]],
-			["y", ["hangline", 10.5]],
+			["height", ["em", 12]],
+		 ["x", ["inch", 11.55]],
+			["y", ["hangline", 3]],
+			["rotation", 90]
 		],
 
 		["TextFrame",
 			["text",
 				"+:title " + SUPERBOWLS.title
-				+ " +:additional " + SUPERBOWLS.additional
+			 + " +:hide >>>>.>>>>>> +:additional " + SUPERBOWLS.additional
 			],
 			["height", ["em", 24]],
-			["x", ["verso", 2, 'x']],
-			["y", ["hangline", 3.5]],
-			["length", ["column_width", 4.5]]
+			["x", ["verso", 1, 'x']],
+			["y", ["hangline", 2.5]],
+			["length", ["column_width", 3.5]]
 		],
 
 
 		["TextFrame",
-		 ["text", SUPERBOWLS.items.slice(0,4).map(format_item).join("\n\n")],
+		 ["text", SUPERBOWLS.items.slice(0,3).map(format_item).join("\n\n")],
 			["height", ["em", 28]],
-			["x", ["verso", 2, 'x']],
-			["length", ["column_width", 5.7]],
-			["y", ["hangline", 4.8]],
+			["x", ["verso", 1, 'x']],
+			["length", ["column_width", 4.7]],
+			["y", ["hangline", 3.8]],
 		],
 
 		["TextFrame",
-		 ["text", SUPERBOWLS.items.slice(4).map(format_item).join("\n\n")],
+		 ["text", SUPERBOWLS.items.slice(3, 6).map(format_item).join("\n\n")],
 			["height", ["em", 28]],
-			["x", ["recto", 2, 'x']],
-			["length", ["column_width", 5.5]],
-			["y", ["hangline", 4.8]],
+			["x", ["recto", .9, 'x']],
+			["length", ["column_width", 3.1]],
+			["y", ["hangline", 3.8]],
+		],
+
+		["TextFrame",
+		 ["text", SUPERBOWLS.items.slice(6).map(format_item).join("\n\n")],
+			["height", ["em", 28]],
+			["x", ["recto", 4.1, 'x']],
+			["length", ["column_width", 3.1]],
+			["y", ["hangline", 3.8]],
 		],
 	]
 })
@@ -620,14 +665,22 @@ let pancakes = (num) => ({
 			["y", ["hangline", 10.5]],
 		],
 
+		["Header",
+			["text", "Desserts"],
+			["height", ["em", 12]],
+			["x", ["inch", 11.55]],
+			["y", ["hangline", 2]],
+			["rotation", 90]
+		],
+
 		["TextFrame",
 			["text",
 				"+:title " + PANCAKES.title +
 			 " +:hide >>>>>>>>>>> +:subtitle-big " + PANCAKES.subtitle],
 		 ["height", ["em", 24]],
 			["x", ["verso", 0.5, 'x']],
-			["y", ["hangline", 3]],
-			["length", ["column_width", 6.5]]
+			["y", ["hangline", 2.5]],
+			["length", ["column_width", 5.5]]
 		],
 
 
@@ -635,15 +688,15 @@ let pancakes = (num) => ({
 		 ["text", PANCAKES.items.slice(0,3).map(format_item).join("\n\n")],
 			["height", ["em", 28]],
 			["x", ["verso", 1, 'x']],
-			["length", ["column_width", 5.7]],
-			["y", ["hangline", 5.8]],
+			["length", ["column_width", 4]],
+			["y", ["hangline", 4.5]],
 		],
 
 		["TextFrame",
 		 ["text", PANCAKES.items.slice(3).map(format_item).join("\n\n")],
 			["height", ["em", 28]],
-			["x", ["recto", 1, 'x']],
-			["length", ["column_width", 5.5]],
+			["x", ["recto", 1.8, 'x']],
+			["length", ["column_width", 4.8]],
 			["y", ["hangline", 4.8]],
 		],
 	]
@@ -668,25 +721,25 @@ let desserts = (num) => ({
 			 " +:hide >>>>>>>>>>> >>>>>>>> +:subtitle-big " + DESSERTS.subtitle],
 		 ["height", ["em", 24]],
 			["x", ["verso", 0.5, 'x']],
-			["length", ["column_width", 8.5]],
-			["y", ["hangline", 5-1]],
+			["length", ["column_width", 5.5]],
+			["y", ["hangline", 2.3]],
 		],
 
 
 		["TextFrame",
-		 ["text", DESSERTS.items.slice(0,4).map(format_item).join("\n\n")],
+		 ["text", DESSERTS.items.slice(0,3).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
 			["x", ["verso", .5, 'x']],
-			["length", ["column_width", 5.5]],
-			["y", ["hangline", 6.4-1]],
+			["length", ["column_width", 3.5]],
+			["y", ["hangline", 3.6]],
 		],
 
 		["TextFrame",
-		 ["text", DESSERTS.items.slice(4).map(format_item).join("\n\n")],
+		 ["text", DESSERTS.items.slice(3).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
-			["x", ["recto", .5, 'x']],
-			["length", ["column_width", 5.5]],
-			["y", ["hangline", 6.65-1]],
+			["x", ["verso", 5, 'x']],
+			["length", ["column_width", 3.3]],
+			["y", ["hangline", 3.8]],
 		],
 	]
 })

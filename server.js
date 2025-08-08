@@ -13,10 +13,11 @@ watch('./', {
 	filter: (f) => {
 		if (f.includes("#")) return false
 		else return true
-},
-	recursive: true }, function(evt, name) {
-	updateSockets("")
-});
+	},
+	recursive: true
+}, function (evt, name) {
+		updateSockets("")
+	});
 
 const app = express()
 expressWs(app)
@@ -25,12 +26,12 @@ app.use(cors())
 
 let sockets = {}
 
-app.ws('/data', function(ws, req) {
+app.ws('/data', function (ws, req) {
 	console.log('socket connected')
 	let uid = Math.random() * Date.now()
 	sockets[uid] = ws
 
-	ws.on('message', function(msg) {
+	ws.on('message', function (msg) {
 		console.log(msg)
 		Object.keys(sockets).forEach((key) => {
 			sockets[key].send("connected")

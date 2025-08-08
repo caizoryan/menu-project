@@ -9,6 +9,11 @@ let fonts = {
 
 let s = new Scale(DPI)
 
+let wood = {
+	width: s.inch(5.5 * 2),
+	height: s.inch(7),
+}
+
 export let tag_hooks = {
 	"+:title": {
 		font_weight: 400,

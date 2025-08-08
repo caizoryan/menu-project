@@ -2,7 +2,7 @@ import { sig, mem, render, HTML as html, eff_on } from "./lib/chowk/monke.js"
 import { hyphenateSync } from "./lib/hyphenator/hyphenate.js"
 import { Q5 as p5 } from "./lib/q5/q5.js"
 import {Scale, DPI} from "./scale.js"
-import {tag_hooks, structure, offsets, data, style} from "./one.js"
+import {wood, tag_hooks, structure, offsets, data, style} from "./three.js"
 
 let ws = new WebSocket("ws://localhost:7462/data")
 
@@ -10,7 +10,7 @@ ws.onopen = () => {
 	console.log("connected")
 }
 
-ws.onmessage = (e) => {
+ws.onmessage = async (e) => {
 	console.log(e)
 	window.location.reload()
 }
@@ -859,6 +859,12 @@ class Book {
 			}
 
 			let spread_num_2 = this.page_to_spread(num2)
+
+			// TODO: HOW TO DO OVERSIZE PAGES!?
+			if (num2 == 19) {
+				console.log("ok?")
+				proportional_width = .5
+			}
 			let img = this.recto_image(p, spread_num_2, "white", horizontal_offset ? proportional_width : .5)
 			let x = horizontal_offset?.axis == "horizontal" ? (horizontal_offset.size.px * (-1 * op * horizontal_offset.direction)) : 0
 			this.draw_img(p, img, p.width / 2 + x, 0)
@@ -1166,9 +1172,10 @@ oninit.push(() => {
 	else {
 		// 8x5.5 wood
 		paper = new Paper(p, s, el, {
-			width: s.inch(5.5 * 2),
-			height: s.inch(7),
+			width: wood.width, 
+			height: wood.height,
 		}, true)
+
 
 		// paper = new Paper(p, s, el, {
 		//   width: s.add(
@@ -1195,7 +1202,7 @@ oninit.push(() => {
 //
 /**@type {Book}*/
 let book
-let page = 1
+let page = 4 
 
 oninit.push(update)
 
@@ -1393,7 +1400,6 @@ onclick=${() => sub_offset(num, "vertical")}
 `
 }
 
-page =1 
 
 
 // x-----------------------x
