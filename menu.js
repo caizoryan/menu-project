@@ -1,8 +1,8 @@
-import { sig, mem, render, HTML as html, eff_on } from "./lib/chowk/monke.js"
+import { sig, mem, render, HTML as html, eff_on, mut, each } from "./lib/chowk/monke.js"
 import { hyphenateSync } from "./lib/hyphenator/hyphenate.js"
 import { Q5 as p5 } from "./lib/q5/q5.js"
-import {Scale, DPI} from "./scale.js"
-import {wood, tag_hooks, structure, offsets, data, style} from "./three.js"
+import { Scale, DPI } from "./scale.js"
+import { wood, tag_hooks, structure, offsets, data, style } from "./one.js"
 
 let ws = new WebSocket("ws://localhost:7462/data")
 
@@ -17,7 +17,7 @@ ws.onmessage = async (e) => {
 
 const full_render = DPI < 101
 const isOdd = num => num % 2 == 1;
-let viewport = .35
+let viewport = .55
 
 setTimeout(init, 10)
 const GlobalStyle = ``
@@ -41,10 +41,10 @@ TODO: Return amount to skip/add or smth + text...
 function draw_line(p, text, x, y, length, state, hooks) {
 	if (text.charAt(0) == `\n`) {
 		if (text.charAt(1) == `\n`) {
-			return {text: text.slice(2), leading: 1.1}
+			return { text: text.slice(2), leading: 1.1 }
 		}
 
-		return {text: text.slice(1), leading: .4}
+		return { text: text.slice(1), leading: .4 }
 	}
 
 	let break_ratio = 1
@@ -122,25 +122,25 @@ function draw_line(p, text, x, y, length, state, hooks) {
 		let word_len = p.textWidth(word)
 
 		let tag = tag_hooks[word.toLowerCase()]
-		if(tag){
+		if (tag) {
 			p.noStroke();
 			p.textSize(state.paragraph.font_size.px)
 			p.textFont(state.paragraph.font_family)
 			p.textWeight(state.paragraph.font_weight)
 			p.fill(state.paragraph.color)
-			p.textStyle(p.NORMAL) 
+			p.textStyle(p.NORMAL)
 
-			if(tag.color)  p.fill(tag.color) 
-			if(tag.leading)  { p.textLeading(tag.leading.px) }
-			if(tag.break_ratio) {break_ratio = tag.break_ratio}
-			if(tag.font_size)  p.textSize(tag.font_size.px) 
-			if(tag.font_weight)  p.textWeight(tag.font_weight)
-			if(tag.font_family)  p.textFont(tag.font_family) 
-			if(tag.font_style)  p.textStyle(p[tag.font_style]) 
+			if (tag.color) p.fill(tag.color)
+			if (tag.leading) { p.textLeading(tag.leading.px) }
+			if (tag.break_ratio) { break_ratio = tag.break_ratio }
+			if (tag.font_size) p.textSize(tag.font_size.px)
+			if (tag.font_weight) p.textWeight(tag.font_weight)
+			if (tag.font_family) p.textFont(tag.font_family)
+			if (tag.font_style) p.textStyle(p[tag.font_style])
 
 			tagged = word + " "
 			line_state.space_size = p.textWidth(" "),
-			line_state.word_count++
+				line_state.word_count++
 			// words.shift()
 			return
 		}
@@ -152,7 +152,7 @@ function draw_line(p, text, x, y, length, state, hooks) {
 				skip = true
 				return
 			}
-			
+
 			let _leftover = try_hyphenation(word)
 			if (_leftover) {
 				line_state.hyphen_leftover = _leftover
@@ -177,13 +177,13 @@ function draw_line(p, text, x, y, length, state, hooks) {
 	})
 
 	p.opacity(1)
-	words =  words.slice(line_state.word_count).join(" ")
+	words = words.slice(line_state.word_count).join(" ")
 
 
-	let t =  line_state.hyphen_leftover ? line_state.hyphen_leftover + " " + words + end_lines : words + end_lines
+	let t = line_state.hyphen_leftover ? line_state.hyphen_leftover + " " + words + end_lines : words + end_lines
 	if (words.length > 0) t = tagged + t
 
-	return {text: t, leading: 1}
+	return { text: t, leading: 1 }
 }
 
 /**
@@ -272,14 +272,14 @@ function draw_paragraph(p, paragraph, grid) {
 		p.textFont(_paragraph.font_family)
 		p.textWeight(_paragraph.font_weight)
 		p.fill(_paragraph.color)
-		p.textStyle(p.NORMAL) 
+		p.textStyle(p.NORMAL)
 
 
 
 		paragraph_state.word_count = start_length - _paragraph.text.length
 
 
-		let {text, leading} = draw_line(
+		let { text, leading } = draw_line(
 			p,
 			_paragraph.text,
 			_paragraph.x,
@@ -293,10 +293,10 @@ function draw_paragraph(p, paragraph, grid) {
 		)
 
 		_paragraph.text = text
-		paragraph_state.vertical_pos +=p.textLeading()*leading
-			//leading.px
-			//
-			//
+		paragraph_state.vertical_pos += p.textLeading() * leading
+		//leading.px
+		//
+		//
 	}
 
 	if (_paragraph.rotation != 0) {
@@ -305,14 +305,14 @@ function draw_paragraph(p, paragraph, grid) {
 
 	// OVERFLOW MARKER
 	if (_paragraph.text.length > 0) {
-			// draw red rectangle
-			p.noFill();
-			p.strokeWeight(2)
-			p.stroke("red");
-			let xx = _paragraph.x.px + _paragraph.length.px-10
-			let yy = _paragraph.y.px + _paragraph.height.px-10
-			p.text("X", xx+10, yy+10)
-			p.rect(xx, yy, 20, 20);
+		// draw red rectangle
+		p.noFill();
+		p.strokeWeight(2)
+		p.stroke("red");
+		let xx = _paragraph.x.px + _paragraph.length.px - 10
+		let yy = _paragraph.y.px + _paragraph.height.px - 10
+		p.text("X", xx + 10, yy + 10)
+		p.rect(xx, yy, 20, 20);
 	}
 	return _paragraph.text
 }
@@ -464,7 +464,6 @@ class Grid {
 		}
 	}
 }
-
 
 /**
 @typedef Drawable
@@ -828,7 +827,7 @@ class Book {
 			let proportional_width
 
 			if (horizontal_offset) {
-			// TODO: update structure
+				// TODO: update structure
 				new_page_width = book.structure?.props[0].page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
 				proportional_width = new_page_width / width.px
 			}
@@ -853,7 +852,7 @@ class Book {
 			let proportional_width
 
 			if (horizontal_offset) {
-			// TODO: update structure
+				// TODO: update structure
 				new_page_width = book.structure?.props[0].page_width.px / 2 + (horizontal_offset.size.px * op * horizontal_offset.direction)
 				proportional_width = new_page_width / width.px
 			}
@@ -861,10 +860,10 @@ class Book {
 			let spread_num_2 = this.page_to_spread(num2)
 
 			// TODO: HOW TO DO OVERSIZE PAGES!?
-			if (num2 == 19) {
-				console.log("ok?")
-				proportional_width = .5
-			}
+			// if (num2 == 19) {
+			// 	console.log("ok?")
+			// 	proportional_width = .5
+			// }
 			let img = this.recto_image(p, spread_num_2, "white", horizontal_offset ? proportional_width : .5)
 			let x = horizontal_offset?.axis == "horizontal" ? (horizontal_offset.size.px * (-1 * op * horizontal_offset.direction)) : 0
 			this.draw_img(p, img, p.width / 2 + x, 0)
@@ -1135,7 +1134,7 @@ let oninit = []
 /** @type {Paper} */
 let paper
 let pages
-let printing = false
+let printing = true
 let foldline = true
 
 function init() {
@@ -1144,14 +1143,14 @@ function init() {
 	oninit.forEach(fn => typeof fn == "function" ? fn() : null)
 }
 
-function update_pages(){
+function update_pages() {
 	pages = data.contents.map((e) => spread_from_block(e, []))
 }
 
 function update() {
 	book = new Book(pages)
 	offsets.forEach((o) => book.mark_page_offset(o))
-	book.set_page(page)
+	book.set_spread(pg())
 	spreads(book.pages())
 }
 
@@ -1172,7 +1171,7 @@ oninit.push(() => {
 	else {
 		// 8x5.5 wood
 		paper = new Paper(p, s, el, {
-			width: wood.width, 
+			width: wood.width,
 			height: wood.height,
 		}, true)
 
@@ -1191,8 +1190,6 @@ oninit.push(() => {
 
 	setTimeout(() => {
 		drawpaper()
-		// paper.draw_book(book)
-		//paper.draw_saddle(book)
 	}, 100)
 })
 
@@ -1202,7 +1199,7 @@ oninit.push(() => {
 //
 /**@type {Book}*/
 let book
-let page = 4 
+let page = 1
 
 oninit.push(update)
 
@@ -1226,10 +1223,13 @@ let drawpaper = () => saddle() ?
 	paper.draw_book(book)
 
 oninit.push(() => eff_on(saddle, drawpaper))
-let pg = sig(0)
+let pg = sig(page)
 
 let spreads = sig([])
-let randoms = ["ass", "monkey", "dhickkyao", "ragavesh"]
+let cc = mut({
+	items: data.contents
+})
+
 let container = () => {
 	let set_page = num => {
 		pg(num);
@@ -1245,7 +1245,6 @@ let container = () => {
 		else if (e.key == "ArrowDown" && e.shiftKey) sub_offset(Math.floor(book.current_spread * 2 + 1), "vertical")
 		else if (e.key == "ArrowRight") set_page(book.current_spread + 1)
 		else if (e.key == "ArrowLeft") set_page(book.current_spread - 1)
-		else if (e.key == "l") set_title(randoms[Math.floor(Math.random() * randoms.length)])
 	})
 
 	let next = () => {
@@ -1282,7 +1281,7 @@ let container = () => {
 	let h_offset = sig(0)
 	let v_offset = sig(0)
 
-	let update_offset= (page) => {
+	let update_offset = (page) => {
 		let h_off = book.offsets.find((e) => (e.page == page && e.axis == "horizontal"))
 		let v_off = book.offsets.find((e) => (e.page == page && e.axis == "vertical"))
 		let h_size = h_off ? h_off.size.value : 0
@@ -1297,7 +1296,7 @@ let container = () => {
 		let size = offset ? offset.size.value : 0
 		let unit = offset ? offset.size.unit : "em"
 		let color = offset ? offset.color : "white"
-		let new_size = size + (op/2)
+		let new_size = size + (op / 2)
 		let direction = offset ? offset.direction : 1
 
 
@@ -1315,8 +1314,63 @@ let container = () => {
 
 	let sub_offset = (page, axis) => add_offset(page, axis, -1)
 
+	let process_face = (face) => {
+		console.log('processing', face)
+		if (face[0] == "TextFrame") return process_text_frame(face.slice(1))
+		return html`<p>${face}</p>`
+	}
+
+	let process_text_frame = (frame) => {
+		return frame.map((e, i) => process_frame_property_set(e, () => [e, i]))
+	}
+
+	let ui_property = (prop) => {
+		let uid = 'id-'+Math.floor(Math.random() * 92309012)
+
+		let update_ui = () => {
+			let el = document.getElementById(uid)
+			Array.from(el.children).forEach((e) => {
+				if (e.classList.contains('value')) e.innerText = prop[1]
+			})
+		}
+
+		let set = (i, num) => {
+			prop[i] = num
+			update_ui()
+			update_pages()
+			update()
+			drawpaper()
+		}
+		// let get = (i) => acc()[0][acc()[1]][i] 
+		if(prop[0] == 'em') return html`
+			<span id=${uid}>
+				<button onclick=${() => {set(1, prop[1]-1)}}>-</button>
+				<span class='value'>
+				${prop[1]}
+				</span> <button onclick=${() => {set(1, prop[1]+1)}}>+</button> ${prop[0]} </span>
+		`
+		else {
+			return prop.map((e) => html`<span>${e}</span>`)
+		}
+	}
+
+	let process_frame_property_set = (entry) => {
+		if (Array.isArray(entry) && Array.isArray(entry[1])) {
+			return html`<p>${entry[0]} : ${ui_property(entry[1])}</p>`
+		}
+		else console.log(entry)
+		return html`<p>${entry}</p>`
+	}
+
+	let face = mem(() => {
+		console.log(data.contents[0])
+		return html`
+		<div class='ui'>
+			${data.contents[pg()].content.map(process_face)}
+		</div>`
+	})
+
 	let page = (num) => {
-		console.log("rendering", num)
 		return html`
 <div class="page" >
 <button onclick=${() => set_page(Math.floor(num / 2))} >${num != 0 ? num : ""}</button>
@@ -1338,9 +1392,6 @@ onclick=${() => add_offset(num, "vertical")}
 <button style="grid-area: bottom;"
 onclick=${() => sub_offset(num, "vertical")}
 > ↓ </button>
-
-
-
 </div>
 </div>
 	`}
@@ -1394,6 +1445,11 @@ onclick=${() => sub_offset(num, "vertical")}
 			style="position:fixed;top:10em;left:0" >
 				<p>H: ${h_offset}</p>
 				<p>V: ${v_offset}</p>
+		</div>
+
+		<div
+			style="position:fixed;top:13em;left:0" >
+				${face}
 		</div>
 
   </div>
@@ -1540,7 +1596,7 @@ function spread_from_block(block, extensions = []) {
 	})
 
 	let grid = new Grid([structure, structure], s)
-	return  new Spread(grid, s, [...contents, ...extensions])
+	return new Spread(grid, s, [...contents, ...extensions])
 
 	// return Math.random()  > .5
 	// 	? new Spread(grid, s, [...contents, ...extensions])

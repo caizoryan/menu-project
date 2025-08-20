@@ -1,6 +1,15 @@
 import * as Type from "./menu.js"
 export const DPI = 100
 
+/**
+@typedef {("inch" | "pica" | "point" | "em" | "pixel")} UnitType
+@typedef {{
+	unit?: UnitType,
+	value?: number,
+	px: number
+}} Unit
+ */
+
 export class Scale {
 	constructor(scale = 1) {
 		this.dpi = window.devicePixelRatio * 96

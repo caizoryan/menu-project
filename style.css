@@ -113,3 +113,12 @@ button:hover{
 	.page:hover .controls {
 		display: grid;
 	}
+
+	.ui{
+		width: 20vw;
+		height: 60vh;
+		background: #eee;
+		padding: 1em;
+		overflow-y: scroll;
+		overflow-x: visible;
+	}

@@ -9,16 +9,16 @@ let fonts = {
 
 let s = new Scale(DPI)
 
-let wood = {
+export let wood = {
 	width: s.inch(5.5 * 2),
 	height: s.inch(7),
 }
 
 export let tag_hooks = {
 	"+:title": {
-		font_weight: 400,
+		font_weight: 200,
 		font_family: "stolzl",
-		font_size: s.point(18),
+		font_size: s.point(16),
 		leading: s.point(20)
 	},
 	"+:comment": {},
@@ -26,7 +26,7 @@ export let tag_hooks = {
 		font_weight: 100,
 		font_family: "stolzl",
 		font_size: s.point(9),
-		leading: s.point(10)
+		leading: s.point(9.5)
 	},
 
 	"+:subtitle-big": {
@@ -67,9 +67,9 @@ export let tag_hooks = {
 
 	"+:item": {
 		font_family: "stolzl",
-		font_weight: "500",
-		font_size: s.point(9),
-		leading: s.point(10)
+		font_weight: "400",
+		font_size: s.point(8.5),
+		leading: s.point(9.5)
 	},
 
 	"+:hide": {
@@ -84,6 +84,7 @@ export let tag_hooks = {
 	}
 
 }
+
 
 export let structure = {
 	page_width: s.inch(8),
@@ -182,7 +183,7 @@ export let offsets = [
 		page: 9
 	},
 	{
-		size: s.em(0),
+		size: s.em(-4.5),
 		axis: "vertical",
 		color: "#eee",
 		direction: 1,
@@ -311,7 +312,7 @@ let page_number_spread = (num) => ({
 			["font_family", fonts.ouma],
 			["text", "" + (num+1)],
 			["height", ["em", 12]],
-			["x", ["recto",  7, "x"]],
+			["x", ["recto",  7.7, "x"]],
 			["y", ["hangline", 0]],
 		],
 
@@ -494,18 +495,18 @@ let toast = (num) => ({
 		],
 
 		["TextFrame",
-		 ["text", TOASTS.items.slice(0,7).map(format_item).join("\n\n")],
+		 ["text", TOASTS.items.slice(0,6).map(format_item).join("\n\n")],
 			["height", ["em", 28]],
 			["x", ["verso", 0, 'x']],
-			["y", ["hangline", 3]],
+			["y", ["hangline", 4.3]],
 			["length", ["column_width", 5.5]]
 		],
 
 		["TextFrame",
-		 ["text", TOASTS.items.slice(7).map(format_item).join("\n\n")],
+		 ["text", TOASTS.items.slice(6).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
 			["x", ["recto", 2, 'x']],
-			["y", ["hangline", 2]],
+			["y", ["hangline", 1.5]],
 			["length", ["column_width", 5.3]]
 		],
 	]
@@ -589,7 +590,7 @@ let mains = (num) => ({
 			["height", ["em", 28]],
 			["x", ["recto", 0.5, 'x']],
 			["length", ["column_width", 5.5]],
-			["y", ["hangline", 3.8]],
+			["y", ["hangline", 4]],
 		],
 
 	]
@@ -686,7 +687,7 @@ let desserts = (num) => ({
 			["text", "DESSERT"],
 			["height", ["em", 22]],
 			["length", ["em", 22]],
-			["x", ["inch", 7.8]],
+			["x", ["inch", 7.9]],
 			["font_size", ["em", 1.8]],
 			["y", ["hangline", 9.2]],
 			["rotation", 90]
