@@ -1199,7 +1199,7 @@ oninit.push(() => {
 //
 /**@type {Book}*/
 let book
-let page = 9
+let page = 6
 
 oninit.push(update)
 

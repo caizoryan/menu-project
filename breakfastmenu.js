@@ -1,3 +1,8 @@
+export let NOTE = [
+	"Kindly inform our servers of any food allergies before placing your order.",
+	"All prices are exclusive of applicable government taxes."
+]
+
 export let JARS = {
 	title: "HEALTHY JARS",
 	subtitle: "aka “I wanna feel light but still slay”",
@@ -59,12 +64,12 @@ export let EGGS = {
 		},
 
 		{title: "Smoked Cheese Omelette	",
-		 description: " Filled with melted cheese creamy.	",
+		 description: "Filled with melted cheese creamy.	",
 		 price:249
 		},
 
 		{title: "Spicy Masala Omelette	",
-		 description: " Indian-style with onions, tomatoes, green chilies, coriander, and spices.	",
+		 description: "Indian-style with onions, tomatoes, green chilies, coriander, and spices.	",
 		 price:249
 		},
 
@@ -83,8 +88,8 @@ export let EGGS = {
 		 price:249
 		},
 
-		{title: "Akuri	",
-		 description: "a spicy, soft-scrambled Parsi-style egg dish.	",
+		{title: "Akuri",
+		 description: "A spicy, soft-scrambled Parsi-style egg dish.	",
 		 price:249
 		},
 
@@ -193,16 +198,41 @@ export let TOASTS = {
 }
 
 export let BURGETS = {
-	title: "BURGERS – BITE ME",
+	title: "Sliders – BITE ME",
 	subtitle: "Yes, it’s 10AM. No, I won’t apologize.",
 
 	items: [
-		{ title: "The Truffle Mushroom Melt", description: "Buttered bun with sautéed mushrooms, cheese, and truffle aioli" },
-		{ title: "Chilly Bean Burger", description: "Fire bean patty, jalapeños, chipotle drip, melty cheddar. For the spicy babes only." },
-		{ title: "Classic vegetables patty burger", description: "Crisp mixed veggie patty with lettuce, tomato, onions, and mayo" },
-		{ title: "Baby in the City ", description: "Lamb patty, creamy cheese, caramelized onions & sriracha drizzle." },
-		{ title: "Ranch Chicken Burger", description: "Grilled chicken breast with ranch dressing, iceberg lettuce, and pepperjack cheese in a sesame bun." },
-		{ title: "Classic grilled chicken burger", description: "Herb-marinated chicken Patty  with fresh greens, tomato, and garlic aioli." },
+		{title: "The Truffle Mushroom Melt",
+		 description: "Buttered bun with sautéed mushrooms, cheese, and truffle aioli	",
+		 price:399
+		},
+		{title: "Classic vegetables patty slider",
+		 description: "Crisp mixed veggie patty with lettuce, tomato, onions, and mayo	",
+		 price:399
+		},
+		{title: "Falafel Slider",
+		 description: "Soft Buns with Falafel Patty and Pickled Cabbage	",
+		 price:399
+		},
+
+		// non veg
+		{title: "Sriracha Lamb Slider	",
+		 description: "Lamb patty, creamy cheese, caramelized onions & sriracha drizzle.	",
+		 price:499
+		},
+		{title: "Ranch chicken slider	",
+		 description: "Grilled chicken breast with ranch dressing, iceberg lettuce, and pepperjack cheese in a sesame bun.	",
+		 price:499
+		},
+		{title: "Classic grilled chicken slider	",
+		 description: "Herb-marinated chicken Patty  with fresh greens, tomato, and garlic aioli.	",
+		 price:449
+		},
+
+		{title: "ADD ON: Sunny Side up",
+		 price: 60
+		}
+		
 	]
 }
 
@@ -228,6 +258,31 @@ export let MAIN_PLATTERS = {
 		},
 
 	]
+}
+
+export let GOURMENTBITES = {
+	title: 'Gourmet Bites',
+	items: [
+		{title: "Spinach & Feta Puff Pastry	",
+		 description: "Flaky puff pastry filled with a savory blend of spinach and creamy feta cheese.	",
+		 price:299
+		},
+		{title: "Greek-style spanakopita.	",
+		 description: "Flaky Greek pastry filled with spinach, herbs, and feta cheese.	",
+		 price:299
+		},
+	
+		{title: "Veg Kheema Paav",
+		 price:	249
+		},
+	
+		{title: "Paneer Bhurjee Paav",
+		 price:	349
+		}	,
+		{title: "Mutton Kheema Paav",
+		 price:	399
+		},
+]
 }
 
 export let SUPERBOWLS = {
@@ -265,17 +320,76 @@ export let SUPERBOWLS = {
 }
 
 export let PANCAKES = {
-	title: "PANCAKES & WAFFLES – STACKED FOR THE FEED",
-	subtitle: "Fluffy stacks. Big snacks",
+	title: `OG PANCAKES +:symbol`,
+
+	subtitle: `Fluffy stacks. Big snacks +:symbol
++:comment (Eggless option available on request) +:symbol`,
 
 	items: [
-		{ title: "Nutella Banana Waffle", description: "creamy Nutella and caramelized banana on a warm waffle, topped with roasted nuts and a dusting of cocoa." },
-		{ title: "Red Velvet Cream Cheese Waffle", description: "Red velvet waffle topped with cream cheese frosting and berry compote" },
-		{ title: "Classic Maple Butter Waffle", description: "Buttery waffle served with maple syrup and whipped cream" },
+		{title: "Lotus Biscoff Pancake	",
+		 description: "Buttery pancakes smothered in creamy Biscoff spread and biscuit crumbles, topped with whipped cream and a caramel.	",
+		 price:299
+		},
+		{title: "CHEF'S SPECIAL- Berry Blast Pancake	",
+		 description: "Loaded with blueberries, strawberries & berry compote, topped with cream	",
+		 price:299
+		},
+		{title: "Choco Chip Pancake	",
+		 description: "Fluffy pancakes loaded with rich, gooey choco chips in every bite	",
+		 price:299
+		},
+		{title: "Japanese Souffle Pancakes	",
+		 description: "Fluffy and light pancakes with a delicate sweetness",
+		 price:349
+		},
+]
+}
 
-		{ title: "Lotus Biscoff Pancake", description: "Buttery pancakes smothered in creamy Biscoff spread and biscuit crumbles, topped with whipped cream and a caramel." },
-		{ title: "Semolina & Olive Oil Pancake", description: "Mini pancakes topped with berry compote, mascarpone, and sesame brittle." },
-		{ title: "CHEF'S SPECIAL- Berry Blast Pancake", description: "Loaded with blueberries, strawberries & berry compote, topped with cream" },
+export let FRENCH = {
+	title: `FRENCH TOAST +:symbol
++:symbol Fluffy stacks. Big snacks.`,
+	subtitle: "Choose Any 3 Gourmet Toppings",
+
+	items: [
+		{
+			title: "French Toast",
+			price: 299
+		},
+	],
+	toppings: [
+		{title: "Velvety Mascarpone"},
+		{title: "Fresh Seasonal Berries"},
+		{title: "Silken Nutella"},
+		{title: "Caramelized Banana Bliss"},
+		{title: "Whipped Cream Cheese Frosting"},
+		{title: "Lush Berry Compote"},
+		{title: "Golden Maple Drizzle"},
+		{title: "Pure Wildflower Honey"},
+		{title: "Fluffy Whipped Cream"},
+		{title: "Rich Hazelnut Spread"},
+		{title: "Decadent Chocolate Sauce"},
+		{title: "Farm-Fresh Seasonal Fruits"},
+	]
+}
+
+export let WAFFLES = {
+	title: `WAFFLES +:symbol
++:symbol STACKED FOR THE FEED (Eggless)`,
+	subtitle: "Pick Any 3 Indulgent Toppings",
+
+	items: [{title: "Waffles", price: 299},],
+	toppings: [
+		{title: "Silken Nutella"},
+		{title: "Caramelized Banana Bliss"},
+		{title: "Velvety Cream Cheese Frosting"},
+		{title: "Lush Berry Compote"},
+		{title: "Golden Maple Drizzle"},
+		{title: "Wildflower Honey"},
+		{title: "Fluffy Whipped Cream"},
+		{title: "Roasted Hazelnut Spread"},
+		{title: "Decadent Chocolate Sauce"},
+		{title: "Fresh Seasonal Fruits"},
+		{title: "Velvety Mascarpone"},
 	]
 }
 
@@ -307,3 +421,34 @@ export let DESSERTS = {
 
 }
 
+export let BREADTHINGS = {
+	title: `BREAD THINGS +:symbol
++:symbol (ON THE SIDE, OR NOT)`,
+	items: [
+		{title: "Fruit Tea cakes	",
+		 description: "Lightly toasted raisin buns with cinnamon butter.	",
+		 price:199
+		},
+		{title: "Banana Bread Slice	",
+		 description: "Served warm with a pat of butter or maple drizzle.	",
+		 price:150
+		},
+		{title: "Classic Chocolate Donut	",
+		 description: "Soft and fluffy donut coated in rich dark chocolate glaze with a glossy finish.	",
+		 price:220
+		},
+		{title: "Almond Croissant 	",
+		 description: "Stuffed with rich almond frangipane and topped with toasted almond flakes and powdered sugar.	",
+		 price:250
+		},
+		{title: "Bun Maska	",
+		 description: "Soft bun served with a generous spread of butter.	",
+		 price:99
+		},
+		{title: "Pain au Chocolat (2pcs)	",
+		 description: "A flaky French pastry made of buttery croissant dough filled with rich dark chocolate.",
+		 price:220
+		},
+	]
+
+}

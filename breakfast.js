@@ -1,5 +1,5 @@
 import { Scale, DPI } from "./scale.js"
-import { BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES, BURGETS, SUPERBOWLS, MAIN_PLATTERS, PANCAKES, DESSERTS } from "./breakfastmenu.js"
+import { GOURMENTBITES, BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES, BURGETS, SUPERBOWLS, MAIN_PLATTERS, PANCAKES, DESSERTS, WAFFLES, FRENCH, BREADTHINGS, NOTE } from "./breakfastmenu.js"
 import * as Type from "./menu.js"
 import { h2 } from "./lib/chowk/monke.js"
 export let file = './breakfast.json'
@@ -45,8 +45,9 @@ export let tag_hooks = {
 		color: "#222"
 	},
 	"+:subtitle": {
-		font_weight: 600,
+		font_weight: 400,
 		font_family: "freight-macro-pro",
+		color: "#222",
 		font_size: s.point(11),
 		leading: s.point(13),
 		font_style: "ITALIC",
@@ -88,6 +89,13 @@ export let tag_hooks = {
 		font_size: s.point(7.5),
 		color: "#444",
 		leading: s.point(9.2)
+	},
+
+	"+:toppings": {
+		font_family: "freight-micro-pro",
+		font_size: s.point(8.5),
+		color: "#222",
+		leading: s.point(9.9)
 	}
 
 }
@@ -128,75 +136,75 @@ export let structure = {
 /**@type {Type.Offset[]}*/
 export let offsets = [
 	{
-		size: s.em(6),
+		size: s.em(5),
 		axis: "horizontal",
-		color: "#eee",
+		color: "#E4D1C3",
 		direction: 1,
 		page: 1
 	},
 	{
 		size: s.em(-4.5),
 		axis: "vertical",
-		color: "#eee",
+		color: "#E4D1C3",
 		direction: 1,
 		page: 1
 	},
 	{
-		size: s.em(2),
+		size: s.em(0),
 		axis: "horizontal",
-		color: "#E4D1C3",
+		color: "#eee",
 		direction: 1,
 		page: 3
 	},
 	{
 		size: s.em(-4.5),
 		axis: "vertical",
-		color: "#E4D1C3",
+		color: "#eee",
 		direction: 1,
 		page: 3
 	},
 	{
-		size: s.em(2),
+		size: s.em(0),
 		axis: "horizontal",
-		color: "#Eee",
+		color: "#BF9F83",
 		direction: 1,
 		page: 5
 	},
 	{
 		size: s.em(0),
 		axis: "vertical",
-		color: "#eee",
+		color: "#BF9F83",
 		direction: 1,
 		page: 5
 	},
 	{
-		size: s.em(6),
+		size: s.em(5),
 		axis: "horizontal",
 		color: "#E4D1C3",
 		direction: 1,
 		page: 7
 	},
 	{
-		size: s.em(4.5),
+		size: s.em(5),
 		axis: "vertical",
 		color: "#E4D1C3",
 		direction: 1,
 		page: 7
 	},
-	{
-		size: s.em(2),
-		axis: "horizontal",
-		color: "#eee",
-		direction: 1,
-		page: 9
-	},
-	{
-		size: s.em(-4.5),
-		axis: "vertical",
-		color: "#eee",
-		direction: 1,
-		page: 9
-	},
+	// {
+	// 	size: s.em(2),
+	// 	axis: "horizontal",
+	// 	color: "#eee",
+	// 	direction: 1,
+	// 	page: 9
+	// },
+	// {
+	// 	size: s.em(-4.5),
+	// 	axis: "vertical",
+	// 	color: "#eee",
+	// 	direction: 1,
+	// 	page: 9
+	// },
 ]
 
 export let style = {
@@ -324,13 +332,24 @@ let jars = (num) => ({
 
 		["TextFrame",
 			["text",
-				"+:title " + JARS.title
-				+ " "
-				+ "+:hide >>>>>>> +:subtitle-big " + JARS.subtitle + "\n"
+			 "+:title NOTE" + "\n"+
+			 NOTE.map((e) => "+:subtitle " + e).join('\n\n')
 			],
 			["height", ["em", 24]],
-			["x", ["recto", 2, 'x']],
-			["y", ["hangline", 5]],
+			["x", ["verso", 0, 'x']],
+			["y", ["hangline", 10]],
+			["length", ["column_width", 4]]
+		],
+
+		["TextFrame",
+			["text",
+				"+:title " + JARS.title
+				+ " "
+				+ "+:subtitle-big " + JARS.subtitle + "\n"
+			],
+			["height", ["em", 24]],
+			["x", ["recto", 1, 'x']],
+			["y", ["hangline", 3.2]],
 			["length", ["column_width", 4]]
 		],
 
@@ -338,8 +357,8 @@ let jars = (num) => ({
 			["text", JARS.items.map(format_item).join("\n\n")],
 			["height", ["em", 24]],
 			["x", ["recto", 1, 'x']],
-			["y", ["hangline", 7]],
-			["length", ["column_width", 4.5]]
+			["y", ["hangline", 5]],
+			["length", ["column_width", 4.3]]
 		]
 	]
 })
@@ -351,14 +370,14 @@ let eggs = (num) => ({
 		["Header",
 			["text", "Eggs"],
 			["height", ["em", 12]],
-			["x", ["em", 12 * 3.4]],
+		 ["x", ["recto", 1.5, "x"]],
 			["y", ["em", -.5]],
 		],
 
 		["TextFrame",
-		 ["text", "+:title "+ EGGS.title+ " +:hide >>>>>>>>>>>>>>>>> +:subtitle-big " + EGGS.subtitle],
+		 ["text", "+:title "+ EGGS.title+ " +:hide >>>>>>>>>> +:subtitle-big " + EGGS.subtitle],
 			["height", ["em", 38]],
-			["x", ["verso", 0, 'x']],
+			["x", ["verso", 1, 'x']],
 			["y", ["hangline", 2]],
 			["length", ["column_width", 6]]
 		],
@@ -366,24 +385,24 @@ let eggs = (num) => ({
 		["TextFrame",
 		 ["text", EGGS.items.slice(0,7).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
-			["x", ["verso", 0, 'x']],
+			["x", ["verso", 1, 'x']],
 			["y", ["hangline", 3.5]],
-			["length", ["column_width", 6]]
+			["length", ["column_width", 5]]
 		],
 
 		["TextFrame",
 		 ["text", EGGS.items.slice(7).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
-			["x", ["recto", 1.05, 'x']],
+			["x", ["recto", 1.5, 'x']],
 			["y", ["hangline", 3.2]],
-			["length", ["column_width", 6]]
+			["length", ["column_width", 4]]
 		],
 
 
 		["TextFrame",
 		 ["text", "+:title " + BENEDICTS.title.split("(").join(' +:symbol (') +  " +:subtitle \n+:subtitle-big " + BENEDICTS.subtitle],
 			["height", ["em", 24]],
-			["x", ["recto", 1, 'x']],
+			["x", ["recto", 1.5, 'x']],
 			["y", ["hangline", 7]],
 			["length", ["column_width", 6.3]]
 		],
@@ -391,7 +410,7 @@ let eggs = (num) => ({
 		["TextFrame",
 			["text", BENEDICTS.items.map(format_item).join("\n\n")],
 			["height", ["em", 24]],
-			["x", ["recto", 1, 'x']],
+			["x", ["recto", 1.5, 'x']],
 			["y", ["hangline", 8.8]],
 			["length", ["column_width", 5.5]]
 		]
@@ -433,86 +452,15 @@ let sandwiches = (num) => ({
 	]
 })
 
-let toast = (num) => ({
-	title: "",
-	content: [
-		...page_number_spread(num).content,
-		["Header",
-			["text", "Toasts"],
-			["height", ["em", 22]],
-			["length", ["em", 22]],
-			["x", ["verso", 0, "x"]],
-			["y", ["hangline", 1]],
-		],
-
-		["TextFrame",
-		 ["text", TOASTS.items.slice(0,6).map(format_item).join("\n\n")],
-			["height", ["em", 28]],
-			["x", ["verso", 0, 'x']],
-			["y", ["hangline", 4.3]],
-			["length", ["column_width", 5.5]]
-		],
-
-		["TextFrame",
-		 ["text", TOASTS.items.slice(6).map(format_item).join("\n\n")],
-			["height", ["em", 38]],
-			["x", ["recto", 2, 'x']],
-			["y", ["hangline", 1.5]],
-			["length", ["column_width", 5.3]]
-		],
-	]
-})
-
-let burger = (num) => ({
-	title: "",
-	content: [
-		...page_number_spread(num).content,
-		["Header",
-			["text", "Burgers & Toasts"],
-			["height", ["em", 22]],
-			["length", ["em", 22]],
-			["x", ["em", 12 * 4.75]],
-			["y", ["hangline", 3]],
-			["rotation", 90]
-		],
-
-		["TextFrame",
-		 ["text",
-			"+:title " + BURGETS.title+
-			" +:subtitle-big " + BURGETS.subtitle
-		 ],
-			["height", ["em", 38]],
-			["x", ["verso", 0, "x"]],
-			["y", ["em", 5.5]],
-			["length", ["column_width", 6]]
-		],
-
-		["TextFrame",
-		 ["text", BURGETS.items.slice(0,3).map(format_item).join("\n\n")],
-			["height", ["em", 38]],
-			["x", ["verso", 0, 'x']],
-			["length", ["column_width", 5.5]],
-			["y", ["hangline", 5.8]],
-		],
-
-		["TextFrame",
-		 ["text", BURGETS.items.slice(3).map(format_item).join("\n\n")],
-			["height", ["em", 38]],
-			["x", ["recto", 1, 'x']],
-			["y", ["hangline", 6]],
-			["length", ["column_width", 4.5]]
-		],
-	]
-})
-
 let mains = (num) => ({
 	title: "",
 	content: [
 		...page_number_spread(num).content,
+
 		["Header",
-			["text", "Platters & Bites"],
+			["text", "Toasts / Platters"],
 			["height", ["em", 22]],
-			["length", ["em", 22]],
+			["length", ["em", 28]],
 			["x", ["em", 12 * 4.75]],
 			["y", ["hangline", 3]],
 			["rotation", 90]
@@ -533,8 +481,25 @@ let mains = (num) => ({
 			["height", ["em", 28]],
 			["x", ["verso", 0, 'x']],
 			["length", ["column_width", 5.7]],
-			["y", ["hangline", 4.8]],
+			["y", ["hangline", 4]],
 		],
+
+		["TextFrame",
+			["text", "+:title TOASTS"],
+			["height", ["em", 22]],
+			["length", ["em", 22]],
+			["x", ["recto", 1, "x"]],
+			["y", ["hangline", 2.5]],
+		],
+
+		["TextFrame",
+		 ["text", TOASTS.items.map(format_item).join("\n\n")],
+			["height", ["em", 28]],
+			["x", ["recto", 1, 'x']],
+			["y", ["hangline", 4]],
+			["length", ["column_width", 4.5]]
+		],
+
 
 	]
 })
@@ -543,41 +508,59 @@ let superbowls = (num) => ({
 	title: "",
 	content: [
 		...page_number_spread(num).content,
+
+		["TextFrame",
+			["text", "+:title " + GOURMENTBITES.title.toUpperCase()],
+			["height", ["em", 22]],
+			["length", ["column_width", 3.5]],
+			["x", ["verso", 0, "x"]],
+			["y", ["em", 3.5]],
+		],
+
+		["TextFrame",
+		 ["text", GOURMENTBITES.items.map(format_item).join("\n\n")],
+			["height", ["em", 28]],
+			["x", ["verso", 0, 'x']],
+			["y", ["hangline", 3.8]],
+			["length", ["column_width", 3.8]]
+		],
+
+		["TextFrame",
+		 ["text",
+			"+:title " + BURGETS.title+
+			" +:subtitle-big " + BURGETS.subtitle
+		 ],
+			["height", ["em", 38]],
+			["x", ["verso", 4.3, "x"]],
+			["y", ["em", 3.5]],
+			["length", ["column_width", 4]]
+		],
+
+		["TextFrame",
+		 ["text", BURGETS.items.map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["verso", 4.3, 'x']],
+			["length", ["column_width", 4.5]],
+			["y", ["hangline", 3.8]],
+		],
+
+
 		["Header",
 			["text", "SUPERBOWLS"],
 			["height", ["em", 22]],
 			["length", ["em", 22]],
 			["x", ["recto", 2, "x"]],
-			["y", ["hangline", 12.5]],
+			["y", ["hangline", 13]],
 		],
 
 		["TextFrame",
-			["text",
-				"+:title " + SUPERBOWLS.title
-				+ " +:additional " + SUPERBOWLS.additional
-			],
-			["height", ["em", 24]],
-			["x", ["verso", 2, 'x']],
-			["y", ["hangline", 3.5]],
-			["length", ["column_width", 4.5]]
-		],
-
-
-		["TextFrame",
-		 ["text", SUPERBOWLS.items.slice(0,4).map(format_item).join("\n\n")],
-			["height", ["em", 28]],
-			["x", ["verso", 2, 'x']],
-			["length", ["column_width", 5.7]],
-			["y", ["hangline", 4.8]],
-		],
-
-		["TextFrame",
-		 ["text", SUPERBOWLS.items.slice(4).map(format_item).join("\n\n")],
+		 ["text", SUPERBOWLS.items.map(format_item).join("\n\n")],
 			["height", ["em", 28]],
 			["x", ["recto", 2, 'x']],
-			["length", ["column_width", 5.5]],
-			["y", ["hangline", 4.8]],
+			["length", ["column_width", 5.7]],
+			["y", ["hangline", 2.8]],
 		],
+
 	]
 })
 
@@ -590,23 +573,21 @@ let pancakes = (num) => ({
 			["height", ["em", 22]],
 			["length", ["em", 28]],
 			["font_size", ["em", 2]],
-			["x", ["recto", .5, "x"]],
+			["x", ["recto", 1.5, "x"]],
 			["y", ["hangline", 12.7]],
 		],
 
 		["TextFrame",
-			["text",
-				"+:title " + PANCAKES.title +
-			 " +:hide >>>>>>>>>>> +:subtitle-big " + PANCAKES.subtitle],
+			["text", "+:title " + PANCAKES.title],
 		 ["height", ["em", 24]],
 			["x", ["verso", 0.5, 'x']],
-			["y", ["hangline", 3]],
-			["length", ["column_width", 6.5]]
+			["y", ["hangline", 4.7]],
+			["length", ["column_width", 5.5]]
 		],
 
 
 		["TextFrame",
-		 ["text", PANCAKES.items.slice(0,3).map(format_item).join("\n\n")],
+		 ["text", PANCAKES.items.map(format_item).join("\n\n")],
 			["height", ["em", 28]],
 			["x", ["verso", 1, 'x']],
 			["length", ["column_width", 5.7]],
@@ -614,14 +595,59 @@ let pancakes = (num) => ({
 		],
 
 		["TextFrame",
-		 ["text", PANCAKES.items.slice(3).map(format_item).join("\n\n")],
+			["text",
+				"+:title " + WAFFLES.title ],
+		 ["height", ["em", 24]],
+			["x", ["recto", 1.5, "x"]],
+			["length", ["column_width", 8.5]],
+			["y", ["hangline", 3.2]],
+		],
+
+		["TextFrame",
+		 ["text", WAFFLES.items.map(format_item).join("")+
+			 "\n+:subtitle " + WAFFLES.subtitle],
 			["height", ["em", 28]],
-			["x", ["recto", 1, 'x']],
+			["x", ["recto", 1.5, "x"]],
 			["length", ["column_width", 5.5]],
-			["y", ["hangline", 4.8]],
+			["y", ["hangline", 4.1+.2]],
+		],
+
+		["TextFrame",
+		 ["text", WAFFLES.toppings.map(e => "+:toppings " + e.title).join(", ")],
+			["height", ["em", 28]],
+			["x", ["recto", 1.5, "x"]],
+			["length", ["column_width", 5.5]],
+			["y", ["hangline", 5+.15]],
+		],
+
+		["TextFrame",
+			["text",
+				"+:title " + FRENCH.title ],
+		 ["height", ["em", 24]],
+			["x", ["recto", 1.5, "x"]],
+			["length", ["column_width", 8.5]],
+			["y", ["hangline", 7.8]],
+		],
+
+		["TextFrame",
+		 ["text", FRENCH.items.map(format_item).join("")+
+			 "\n+:subtitle " + FRENCH.subtitle],
+			["height", ["em", 28]],
+			["x", ["recto", 1.5, "x"]],
+			["length", ["column_width", 5.5]],
+			["y", ["hangline", 8.7+.2]],
+		],
+
+		["TextFrame",
+		 ["text", FRENCH.toppings.map(e => "+:toppings " + e.title).join(", ")],
+			["height", ["em", 28]],
+			["x", ["recto", 1.5, "x"]],
+			["length", ["column_width", 5.5]],
+			["y", ["hangline", 9.6+.15]],
 		],
 	]
 })
+
 let desserts = (num) => ({
 	title: "",
 	content: [
@@ -630,9 +656,9 @@ let desserts = (num) => ({
 			["text", "DESSERT"],
 			["height", ["em", 22]],
 			["length", ["em", 22]],
-			["x", ["inch", 7.9]],
+			["x", ["inch", 9.4]],
 			["font_size", ["em", 1.8]],
-			["y", ["hangline", 9.2]],
+			["y", ["hangline", 11.2]],
 			["rotation", 90]
 		],
 
@@ -643,16 +669,32 @@ let desserts = (num) => ({
 		 ["height", ["em", 24]],
 			["x", ["verso", 0.5, 'x']],
 			["length", ["column_width", 8.2]],
-			["y", ["hangline", 4]],
+			["y", ["hangline", 3]],
 		],
-
 
 		["TextFrame",
 		 ["text", DESSERTS.items.map(format_item).join("\n\n")],
 			["height", ["em", 38]],
 			["x", ["verso", .5, 'x']],
-			["length", ["column_width", 5.5]],
-			["y", ["hangline", 6.4-1]],
+			["length", ["column_width", 4.5]],
+			["y", ["hangline", 4.4]],
+		],
+
+		["TextFrame",
+			["text",
+			 "+:title " + BREADTHINGS.title ],
+		 ["height", ["em", 24]],
+			["x", ["recto", 0.5, 'x']],
+			["length", ["column_width", 8.2]],
+			["y", ["hangline", 3]],
+		],
+
+		["TextFrame",
+		 ["text", BREADTHINGS.items.map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["recto", .5, 'x']],
+			["length", ["column_width", 5]],
+			["y", ["hangline", 4.4]],
 		],
 
 	]
@@ -666,12 +708,12 @@ export let data = {
 		jars(2),
 		eggs(4),
 		sandwiches(6),
-		toast(8),
-		burger(10),
-		mains(12),
-		superbowls(14),
-		pancakes(16),
-		desserts(18),
-		page_number_spread(20),
+		// toast(8),
+		// burger(10),
+		mains(8),
+		superbowls(10),
+		pancakes(12),
+		desserts(14),
+		page_number_spread(16),
 	]
 }
