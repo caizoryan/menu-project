@@ -1,6 +1,7 @@
 import { Scale, DPI } from "./scale.js"
-import { BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES, BURGETS, SUPERBOWLS, MAIN_PLATTERS, PANCAKES, DESSERTS } from "./menu_items.js"
+import { BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES, BURGETS, SUPERBOWLS, MAIN_PLATTERS, PANCAKES, DESSERTS } from "./breakfastmenu.js"
 import * as Type from "./menu.js"
+import { h2 } from "./lib/chowk/monke.js"
 export let file = './breakfast.json'
 
 let fonts = {
@@ -11,66 +12,71 @@ let fonts = {
 let s = new Scale(DPI)
 
 export let wood = {
-	width: s.inch(5.5 * 2),
-	height: s.inch(7),
+	width: s.inch(6 * 2),
+	height: s.inch(8.5),
 }
 
 export let tag_hooks = {
 	"+:title": {
 		font_weight: 200,
 		font_family: "stolzl",
-		font_size: s.point(16),
-		leading: s.point(20)
+		font_size: s.point(17),
+		leading: s.point(21)
 	},
-	"+:comment": {},
+	"+:comment": {
+		font_weight: 300,
+		font_family: "freight-macro-pro",
+		font_size: s.point(9),
+		leading: s.point(10),
+	},
 	"+:symbol": {
 		font_weight: 100,
 		font_family: "stolzl",
-		font_size: s.point(9),
-		leading: s.point(9.5)
+		font_size: s.point(10),
+		leading: s.point(10.5)
 	},
 
 	"+:subtitle-big": {
 		font_weight: 300,
 		font_family: "freight-macro-pro",
-		font_size: s.point(15),
-		leading: s.point(16),
+		font_size: s.point(16),
+		leading: s.point(17),
 		font_style: "ITALIC",
 		color: "#222"
 	},
 	"+:subtitle": {
 		font_weight: 600,
 		font_family: "freight-macro-pro",
-		font_size: s.point(10),
-		leading: s.point(12),
+		font_size: s.point(11),
+		leading: s.point(13),
 		font_style: "ITALIC",
 	},
 	"+:additional": {
 		font_weight: 300,
 		font_family: "freight-macro-pro",
-		font_size: s.point(8),
-		leading: s.point(8),
+		font_size: s.point(9),
+		leading: s.point(9),
 	},
 
 	"+:additional-italic": {
 		font_weight: 300,
 		font_family: "freight-macro-pro",
-		font_size: s.point(9),
-		leading: s.point(8),
+		font_size: s.point(10),
+		leading: s.point(9),
 		font_style: "ITALIC",
 	},
 
 	"+:price": {
 		font_family: "aktiv-grotesk",
 		font_weight: "500",
-		leading: s.point(9)
+		leading: s.point(10)
 	},
 
 	"+:item": {
 		font_family: "stolzl",
 		font_weight: "400",
-		font_size: s.point(8.5),
-		leading: s.point(9.5)
+		font_size: s.point(9.5),
+		leading: s.point(10.5)
 	},
 
 	"+:hide": {
@@ -88,8 +94,8 @@ export let tag_hooks = {
 
 
 export let structure = {
-	page_width: s.inch(8),
-	page_height: s.inch(5.5),
+	page_width: s.inch(9.5),
+	page_height: s.inch(6.5),
 
 	margin: {
 		top: s.em(2),
@@ -113,8 +119,9 @@ export let structure = {
 		s.em(24),
 		s.em(27),
 		s.em(30),
-		s.em(31),
-		s.em(31.5),
+		s.em(33),
+		s.em(36),
+		s.em(39),
 	],
 }
 
@@ -204,8 +211,8 @@ export let style = {
 
 	body: [
 		["font_family", "Oracle"],
-		["font_size", ["point", 9]],
-		["leading", ["point", 12]],
+		["font_size", ["point", 11]],
+		["leading", ["point", 14]],
 		["font_weight", 500],
 		["color", "black"],
 	],
@@ -240,7 +247,7 @@ let cover = {
 		 ],
 			["height", ["em", 12]],
 			["length", ["em", 12]],
-			["x", ["inch", 5.5]],
+			["x", ["inch", 7.5]],
 			["y", ["hangline", 6]],
 		 ["rotation", 90],
 		],
@@ -252,35 +259,10 @@ let cover = {
 		 ],
 			["height", ["em", 12]],
 			["length", ["em", 12]],
-			["x", ["inch", 7.5]],
+			["x", ["inch", 9]],
 			["y", ["hangline", 6]],
 		 ["rotation", 90],
 			["color", "#444"]
-		],
-	]
-}
-let colophon = {
-	title: "",
-	content: [
-		["TextFrame",
-			["text", `COLOPHON`],
-			["x", ["verso", 0, "x"]],
-			["y", ["hangline", 1]],
-			["length", ["column_width", 3]],
-			["height", ["em", 25]],
-			...style.metadata,
-			["font_weight", 600],
-			["font_size", ["point", 18]],
-		],
-		["TextFrame",
-			["text", `This booklet was typeset using ABC Dinamo's Oracle Family and GapSans designed by GrandChaos9000. GapSans is a fork of Sani Trixie Sans Typeface.
-The booklet was designed in a custom tool developed for an independent study conducted for reasons noted in the contents of the booklet. The tool was written in vanilla javascript.
-`],
-			["x", ["verso", 3, "x"]],
-			["y", ["hangline", 1]],
-			["length", ["column_width", 5]],
-			["height", ["em", 25]],
-			...style.body
 		],
 	]
 }
@@ -290,17 +272,6 @@ let random_price = () => prices[Math.floor(Math.random() * prices.length)]
 let page_number_spread = (num) => ({
 	title: "",
 	content: [
-		// ["TextFrame",
-		// 	["text", "P:" + num],
-		// 	["x", ["verso", 0, "x"]],
-		// 	["y", ["hangline", 1]],
-		// 	["length", ["column_width", 3]],
-		// 	["height", ["em", 25]],
-		// 	...style.title,
-		// 	["font_weight", 600],
-		// 	["font_size", ["point", 18]],
-		// ],
-
 		["TextFrame",
 			["font_family", fonts.ouma],
 			["text", "" + (num)],
@@ -316,26 +287,6 @@ let page_number_spread = (num) => ({
 			["x", ["recto",  7.7, "x"]],
 			["y", ["hangline", 0]],
 		],
-
-		// ["TextFrame",
-		// 	["text", "PAGE: " + (num + 1)],
-		// 	["height", ["em", 12]],
-		// 	["x", ["em", 12 * 4]],
-		// 	["y", ["hangline", 3]],
-		// 	["rotation", 90]
-		// 	//["color", "#0000ffaa"]
-		// ],
-
-		// ["TextFrame",
-		// 	["text", "P:" + (num + 1)],
-		// 	["x", ["recto", 7, "x"]],
-		// 	["y", ["hangline", 1]],
-		// 	["length", ["column_width", 3]],
-		// 	["height", ["em", 25]],
-		// 	...style.title,
-		// 	["font_weight", 600],
-		// 	["font_size", ["point", 18]],
-		// ],
 	]
 })
 let format_item = (item) => "+:item " +
@@ -356,7 +307,7 @@ let format_item = (item) => "+:item " +
 			// + "\n"
 			: " "
 	)
-	+ "+:price //" + random_price()
+		+ "+:price //" + (item.price ? item.price : random_price())
 	+ "\n"
 
 let jars = (num) => ({
@@ -366,7 +317,7 @@ let jars = (num) => ({
 		["Header",
 			["text", "Jars"],
 			["height", ["em", 12]],
-			["x", ["em", 12 * 4]],
+			["x", ["em", 12 * 4.75]],
 			["y", ["hangline", 2]],
 			["rotation", 90]
 		],
@@ -375,21 +326,20 @@ let jars = (num) => ({
 			["text",
 				"+:title " + JARS.title
 				+ " "
-				+ "+:hide >>>>>>> +:subtitle-big " + JARS.subtitle + "\n\n"
-				+ "+:additional " + JARS.additional
+				+ "+:hide >>>>>>> +:subtitle-big " + JARS.subtitle + "\n"
 			],
 			["height", ["em", 24]],
-			["x", ["verso", 0, 'x']],
-			["y", ["hangline", 6.5]],
-			["length", ["column_width", 5]]
+			["x", ["recto", 2, 'x']],
+			["y", ["hangline", 5]],
+			["length", ["column_width", 4]]
 		],
 
 		["TextFrame",
 			["text", JARS.items.map(format_item).join("\n\n")],
 			["height", ["em", 24]],
 			["x", ["recto", 1, 'x']],
-			["y", ["hangline", 3]],
-			["length", ["column_width", 5.5]]
+			["y", ["hangline", 7]],
+			["length", ["column_width", 4.5]]
 		]
 	]
 })
@@ -401,12 +351,12 @@ let eggs = (num) => ({
 		["Header",
 			["text", "Eggs"],
 			["height", ["em", 12]],
-			["x", ["em", 12 * 3]],
+			["x", ["em", 12 * 3.4]],
 			["y", ["em", -.5]],
 		],
 
 		["TextFrame",
-		 ["text", "+:title "+EGGS.title+ " +:hide >>>>>>>>>>>> +:subtitle-big " + EGGS.subtitle],
+		 ["text", "+:title "+ EGGS.title+ " +:hide >>>>>>>>>>>>>>>>> +:subtitle-big " + EGGS.subtitle],
 			["height", ["em", 38]],
 			["x", ["verso", 0, 'x']],
 			["y", ["hangline", 2]],
@@ -414,7 +364,7 @@ let eggs = (num) => ({
 		],
 
 		["TextFrame",
-		 ["text", EGGS.items.slice(0,6).map(format_item).join("\n\n")],
+		 ["text", EGGS.items.slice(0,7).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
 			["x", ["verso", 0, 'x']],
 			["y", ["hangline", 3.5]],
@@ -422,19 +372,19 @@ let eggs = (num) => ({
 		],
 
 		["TextFrame",
-		 ["text", EGGS.items.slice(6).map(format_item).join("\n\n")],
+		 ["text", EGGS.items.slice(7).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
-			["x", ["recto", 2, 'x']],
-			["y", ["hangline", 2.9]],
+			["x", ["recto", 1.05, 'x']],
+			["y", ["hangline", 3.2]],
 			["length", ["column_width", 6]]
 		],
 
 
 		["TextFrame",
-			["text", "+:title " + BENEDICTS.title],
+		 ["text", "+:title " + BENEDICTS.title.split("(").join(' +:symbol (') +  " +:subtitle \n+:subtitle-big " + BENEDICTS.subtitle],
 			["height", ["em", 24]],
 			["x", ["recto", 1, 'x']],
-			["y", ["hangline", 5.5]],
+			["y", ["hangline", 7]],
 			["length", ["column_width", 6.3]]
 		],
 
@@ -442,7 +392,7 @@ let eggs = (num) => ({
 			["text", BENEDICTS.items.map(format_item).join("\n\n")],
 			["height", ["em", 24]],
 			["x", ["recto", 1, 'x']],
-			["y", ["hangline", 6.5]],
+			["y", ["hangline", 8.8]],
 			["length", ["column_width", 5.5]]
 		]
 	]
@@ -454,7 +404,7 @@ let sandwiches = (num) => ({
 		["Header",
 			["text", "Sandwiches"],
 			["height", ["em", 12]],
-			["x", ["em", 12 * 2.8]],
+			["x", ["em", 12 * 3]],
 			["y", ["em", 1]],
 		],
 
@@ -468,17 +418,17 @@ let sandwiches = (num) => ({
 		["TextFrame",
 		 ["text", SANDWICHES.non_items.map(format_item).join("\n\n")],
 			["height", ["em", 38]],
-			["x", ["verso", 2, 'x']],
-			["y", ["hangline", 2]],
-			["length", ["column_width", 5.5]]
+			["x", ["verso", 1, 'x']],
+			["y", ["hangline", 3.5]],
+			["length", ["column_width", 4.5]]
 		],
 
 		["TextFrame",
 			["text", SANDWICHES.veg_items.map(format_item).join("\n\n")],
-			["height", ["em", 24]],
+			["height", ["em", 28]],
 			["x", ["recto", 3, 'x']],
-			["y", ["hangline", 5.5]],
-			["length", ["column_width", 5.5]]
+			["y", ["hangline", 5]],
+			["length", ["column_width", 4.5]]
 		]
 	]
 })
@@ -521,7 +471,7 @@ let burger = (num) => ({
 			["text", "Burgers & Toasts"],
 			["height", ["em", 22]],
 			["length", ["em", 22]],
-			["x", ["em", 12 * 4]],
+			["x", ["em", 12 * 4.75]],
 			["y", ["hangline", 3]],
 			["rotation", 90]
 		],
@@ -560,10 +510,10 @@ let mains = (num) => ({
 	content: [
 		...page_number_spread(num).content,
 		["Header",
-			["text", "Mains"],
+			["text", "Platters & Bites"],
 			["height", ["em", 22]],
 			["length", ["em", 22]],
-			["x", ["em", 12 * 4]],
+			["x", ["em", 12 * 4.75]],
 			["y", ["hangline", 3]],
 			["rotation", 90]
 		],
@@ -579,19 +529,11 @@ let mains = (num) => ({
 		],
 
 		["TextFrame",
-		 ["text", MAIN_PLATTERS.items.slice(0,3).map(format_item).join("\n\n")],
+		 ["text", MAIN_PLATTERS.items.map(format_item).join("\n\n")],
 			["height", ["em", 28]],
 			["x", ["verso", 0, 'x']],
 			["length", ["column_width", 5.7]],
 			["y", ["hangline", 4.8]],
-		],
-
-		["TextFrame",
-		 ["text", MAIN_PLATTERS.items.slice(3).map(format_item).join("\n\n")],
-			["height", ["em", 28]],
-			["x", ["recto", 0.5, 'x']],
-			["length", ["column_width", 5.5]],
-			["y", ["hangline", 4]],
 		],
 
 	]
@@ -606,7 +548,7 @@ let superbowls = (num) => ({
 			["height", ["em", 22]],
 			["length", ["em", 22]],
 			["x", ["recto", 2, "x"]],
-			["y", ["hangline", 10.5]],
+			["y", ["hangline", 12.5]],
 		],
 
 		["TextFrame",
@@ -647,9 +589,9 @@ let pancakes = (num) => ({
 			["text", "PANCAKES & WAFFLES"],
 			["height", ["em", 22]],
 			["length", ["em", 28]],
-			["font_size", ["em", 1.8]],
+			["font_size", ["em", 2]],
 			["x", ["recto", .5, "x"]],
-			["y", ["hangline", 10.5]],
+			["y", ["hangline", 12.7]],
 		],
 
 		["TextFrame",
@@ -700,26 +642,19 @@ let desserts = (num) => ({
 			 " +:hide >>>>>>>>>>> >>>>>>>> +:subtitle-big " + DESSERTS.subtitle],
 		 ["height", ["em", 24]],
 			["x", ["verso", 0.5, 'x']],
-			["length", ["column_width", 8.5]],
-			["y", ["hangline", 5-1]],
+			["length", ["column_width", 8.2]],
+			["y", ["hangline", 4]],
 		],
 
 
 		["TextFrame",
-		 ["text", DESSERTS.items.slice(0,4).map(format_item).join("\n\n")],
+		 ["text", DESSERTS.items.map(format_item).join("\n\n")],
 			["height", ["em", 38]],
 			["x", ["verso", .5, 'x']],
 			["length", ["column_width", 5.5]],
 			["y", ["hangline", 6.4-1]],
 		],
 
-		["TextFrame",
-		 ["text", DESSERTS.items.slice(4).map(format_item).join("\n\n")],
-			["height", ["em", 38]],
-			["x", ["recto", .5, 'x']],
-			["length", ["column_width", 5.5]],
-			["y", ["hangline", 6.65-1]],
-		],
 	]
 })
 // x-----------------------x

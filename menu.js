@@ -2,7 +2,7 @@ import { sig, mem, render, HTML as html, eff_on, mut, each } from "./lib/chowk/m
 import { hyphenateSync } from "./lib/hyphenator/hyphenate.js"
 import { Q5 as p5 } from "./lib/q5/q5.js"
 import { Scale, DPI } from "./scale.js"
-import { wood, tag_hooks, structure, offsets, data, style } from "./one.js"
+import {file, wood, tag_hooks, structure, offsets, data, style } from "./breakfast.js"
 
 let ws = new WebSocket("ws://localhost:7462/data")
 
@@ -1134,7 +1134,7 @@ let oninit = []
 /** @type {Paper} */
 let paper
 let pages
-let printing = true
+let printing = false
 let foldline = true
 
 function init() {
@@ -1199,7 +1199,7 @@ oninit.push(() => {
 //
 /**@type {Book}*/
 let book
-let page = 1
+let page = 9
 
 oninit.push(update)
 
@@ -1314,61 +1314,7 @@ let container = () => {
 
 	let sub_offset = (page, axis) => add_offset(page, axis, -1)
 
-	let process_face = (face) => {
-		console.log('processing', face)
-		if (face[0] == "TextFrame") return process_text_frame(face.slice(1))
-		return html`<p>${face}</p>`
-	}
 
-	let process_text_frame = (frame) => {
-		return frame.map((e, i) => process_frame_property_set(e, () => [e, i]))
-	}
-
-	let ui_property = (prop) => {
-		let uid = 'id-'+Math.floor(Math.random() * 92309012)
-
-		let update_ui = () => {
-			let el = document.getElementById(uid)
-			Array.from(el.children).forEach((e) => {
-				if (e.classList.contains('value')) e.innerText = prop[1]
-			})
-		}
-
-		let set = (i, num) => {
-			prop[i] = num
-			update_ui()
-			update_pages()
-			update()
-			drawpaper()
-		}
-		// let get = (i) => acc()[0][acc()[1]][i] 
-		if(prop[0] == 'em') return html`
-			<span id=${uid}>
-				<button onclick=${() => {set(1, prop[1]-1)}}>-</button>
-				<span class='value'>
-				${prop[1]}
-				</span> <button onclick=${() => {set(1, prop[1]+1)}}>+</button> ${prop[0]} </span>
-		`
-		else {
-			return prop.map((e) => html`<span>${e}</span>`)
-		}
-	}
-
-	let process_frame_property_set = (entry) => {
-		if (Array.isArray(entry) && Array.isArray(entry[1])) {
-			return html`<p>${entry[0]} : ${ui_property(entry[1])}</p>`
-		}
-		else console.log(entry)
-		return html`<p>${entry}</p>`
-	}
-
-	let face = mem(() => {
-		console.log(data.contents[0])
-		return html`
-		<div class='ui'>
-			${data.contents[pg()].content.map(process_face)}
-		</div>`
-	})
 
 	let page = (num) => {
 		return html`
@@ -1447,14 +1393,196 @@ onclick=${() => sub_offset(num, "vertical")}
 				<p>V: ${v_offset}</p>
 		</div>
 
-		<div
-			style="position:fixed;top:13em;left:0" >
-				${face}
+		<div class='ui-container'
+			style="position:fixed;top:12em;left:0" >
 		</div>
+
 
   </div>
 `
 }
+
+let increment = .5
+setTimeout(() => {
+	let ui = document.createElement('div')
+	ui.classList.add('ui')
+	document.querySelector(".ui-container").appendChild(ui)
+	let renderframeui = (items) => {
+		let box = document.createElement('div')
+		box.onmouseenter = () => { current_box = items }
+		box.onmouseleave = () => { current_box = null }
+
+		box.classList.add('box')
+		ui.appendChild(box)
+
+		items.forEach(
+			(item, i) => {
+				if (i == 0) return
+				let property = document.createElement('div')
+				property.onmouseenter = () => {
+					property.setAttribute('activated', 'true')
+					buffer = item
+				}
+				property.onmouseleave = () => {
+					property.setAttribute('activated', 'false')
+					buffer = null
+				}
+				property.classList.add('property')
+
+				let key = document.createElement('span')
+				key.classList.add('key')
+				key.innerText += item[0] + ' : '
+
+				property.appendChild(key)
+
+				if (Array.isArray(item[1])) {
+					let key = item[1][0]
+					if (
+						key == 'em'
+						|| key == 'point'
+						|| key == 'inch'
+						|| key == 'hangline'
+						|| key == 'column_width'
+						|| key == 'recto'
+						|| key == 'verso'
+					) {
+						let unit = document.createElement('span')
+						unit.innerText = '(' + key + ')'
+						unit.classList.add('unit')
+
+						let input = document.createElement('input')
+						input.value = item[1][1]
+						input.onkeydown = (e) => {
+							if (e.key == 'ArrowRight') { e.stopPropagation() }
+							if (e.key == 'ArrowLeft') { e.stopPropagation() }
+							if (e.key == 'ArrowUp') {
+								e.stopPropagation()
+								item[1][1] += increment
+								input.value = item[1][1]
+								drawpaper()
+								// refresh_redraw_pages()
+							}
+							if (e.key == 'ArrowDown') {
+								e.stopPropagation()
+								item[1][1] -= increment
+								input.value = item[1][1]
+								drawpaper()
+							}
+
+							if (e.key == 'Enter') {
+								e.stopPropagation()
+								e.preventDefault()
+								let lastvalue = item[1][1]
+								let newvalue = parseFloat(e.target.value)
+								if (newvalue == NaN) newvalue = lastvalue
+								item[1][1] = newvalue
+								input.value = item[1][1]
+								refresh_redraw_pages()
+							}
+						}
+
+						property.appendChild(input)
+						property.appendChild(unit)
+					}
+
+
+					else if (key == 'css') {
+						let css_box = document.createElement('div')
+						if (Array.isArray(item[1][1])) item[1][1].forEach((el) => {
+							let p = document.createElement('p')
+							let key = document.createElement('span')
+							let input = document.createElement('input')
+							key.innerText = el[0]
+							input.value = el[1]
+
+							input.onkeydown = (e) => {
+								if (e.key == 'ArrowRight') { e.stopPropagation() }
+								if (e.key == 'ArrowLeft') { e.stopPropagation() }
+								if (e.key == 'Enter') {
+									e.stopPropagation()
+									e.preventDefault()
+									let value = e.target.value
+									el[1] = value
+									refresh_redraw_pages()
+								}
+							}
+
+							p.appendChild(key)
+							p.appendChild(input)
+							css_box.appendChild(p)
+						})
+
+						property.appendChild(css_box)
+					}
+
+				}
+				else if (
+					typeof item[1] == 'number'||
+					typeof item[1] == 'string'
+				) {
+
+					let input = document.createElement('input')
+					input.value = item[1]
+					input.onkeydown = (e) => {
+						if (e.key == 'ArrowRight') { e.stopPropagation() }
+						if (e.key == 'ArrowLeft') { e.stopPropagation() }
+						if (e.key == 'Enter') {
+							e.stopPropagation()
+							e.preventDefault()
+							let newvalue = e.target.value
+							item[1] = newvalue
+							console.log(item[1])
+							input.value = item[1]
+							refresh_redraw_pages()
+						}
+					}
+
+					property.appendChild(input)
+
+				}
+
+				box.appendChild(property)
+			})
+
+	}
+	let updateui = eff_on(pg, () => {
+		ui.innerHTML = ''
+		if (Array.isArray(data.contents[pg()].content))
+			data.contents[pg()].content.forEach(renderframeui)
+		let btn = document.createElement('button')
+		btn.innerText = 'save'
+		btn.onclick = () => save()
+
+		ui.appendChild(btn)
+	})
+}, 500)
+
+
+/**@type {CSSStyleDeclaration}*/
+
+// let save = () => {
+// 	fetch('/save', {
+// 		headers: {
+// 			'Content-Type': 'application/json',
+// 		},
+// 		method: 'POST',
+// 		body: JSON.stringify(data)
+// 	}).then((res) => res.json())
+// 		.then((res) => console.log(res))
+
+// 	fetch('/offsets', {
+// 		headers: {
+// 			'Content-Type': 'application/json',
+// 		},
+// 		method: 'POST',
+// 		body: JSON.stringify(book.getOffsets())
+// 	}).then((res) => res.json())
+// 		.then((res) => console.log(res))
+// }
+
+let buffer
+let current_box
+
 
 
 

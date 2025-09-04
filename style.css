@@ -7,7 +7,7 @@
 		src: url("/fs/fonts/ABCOracle.ttf");
 	}
 
-	* {
+	body {
 		font-family: "ouma-devanagari", sans-serif;
 		font-weight: 400;
 		/* font-style: normal; */
@@ -114,11 +114,90 @@ button:hover{
 		display: grid;
 	}
 
+	.attribute{
+		color: yellow;
+		background: black;
+	}
+
 	.ui{
+		font-family: 'aktiv-grotesk';
+		font-size: .8em;
 		width: 20vw;
 		height: 60vh;
 		background: #eee;
 		padding: 1em;
 		overflow-y: scroll;
 		overflow-x: visible;
+
+-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /
+	}
+
+	.frame {padding: 1em; border: 1px solid black;}
+
+	.ui {
+		position: fixed;
+		width: 30vw;
+		height: 70vh;
+		top: 14em;
+		right: -28vw;
+		z-index: 99;
+		background: #ddd;
+		padding: 1em;
+		overflow-y: scroll;
+	}
+
+	.ui:hover {
+		right: .1vw;
+	}
+
+	.box {
+		border: 1px solid #555;
+		padding: .4em;
+		margin-bottom: 1em;
+	}
+
+	.property {
+		border: 1px solid #2222;
+		padding: .4em;
+		font-family: monospace;
+		margin: .3em;
+		width: 250px;
+	}
+
+	.property[activated="true"] {
+		background: yellow;
+	}
+
+	.key {
+		font-family: monospace;
+	}
+
+	.unit {
+		background: #4444;
+		font-family: monospace;
+	}
+
+	button {
+		all: unset;
+		border: 1px solid black;
+		padding: .1em;
+	}
+
+	button:hover {
+		cursor: pointer;
+		background: black;
+		color: white;
+	}
+
+	input {
+		all: unset;
+		border: 1px solid black;
+		padding: .1em;
+		width: 150px;
+		margin-left: .2em;
 	}
