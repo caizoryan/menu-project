@@ -271,7 +271,7 @@ export let SMALLEATS = {
 		},
 
 		{title: "Champagne mushroom fricassee (6 pcs)",
-		 description: "mushroom tossed in champagne vinegar with parmesan cheese wrapped in crunchy filo.",
+		 description: "Mushroom tossed in champagne vinegar with parmesan cheese wrapped in crunchy filo.",
 		 price:349
 		},
 
@@ -330,7 +330,8 @@ export let SMALLEATS = {
 		 price:349
 		},
 
-		{title: "CLASSIC FLAVOURED FRIES +:comment (Salted Fries, Truffle Parmesan Fries, Peri Peri Fries)",
+		{title: `CLASSIC FLAVOURED FRIES
++:comment (Salted Fries, Truffle Parmesan Fries, Peri Peri Fries)`,
 		 price: 299,
 	},
 
@@ -392,17 +393,17 @@ export let SMALLEATS = {
 		 price:399
 		},
 
-		{title: "Chicken Jacket Potato	",
+		{title: "Chicken Jacket Potato",
 		 description: "Crispy potato boats filled with cheddar cheese served with  sour cream & chives.	",
 		 price:349
 		},
 
-		{title: "Pita Pocket chicken	",
+		{title: "Pita Pocket chicken",
 		 description: "Pita stuffed with juicy grilled chicken, crisp lettuce, tomato, red onions, pickled & garlic aioli	",
 		 price:349
 		} ,
 
-		{title: "CHARMOULA CHICKEN SKEWERS	",
+		{title: "Charmoula Chicken Skewers",
 		 description: "Overnight marinated chicken in basil coriander chilli, with pita.	",
 		 price:399
 		},

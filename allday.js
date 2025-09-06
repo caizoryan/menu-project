@@ -467,7 +467,7 @@ let eggs = (num) => ({
 			["height", ["em", 24]],
 			["x", ["recto", 1.5, 'x']],
 			["y", ["hangline", 6.2]],
-			["length", ["column_width", 6.3]]
+			["length", ["column_width", 5.3]]
 		],
 
 		["TextFrame",
@@ -530,6 +530,22 @@ let mains = (num) => ({
 		],
 
 		["TextFrame",
+			["text", "+:title " + GOURMENTBITES.title.toUpperCase()],
+			["height", ["em", 22]],
+			["length", ["column_width", 3.5]],
+			["x", ["recto", 1, "x"]],
+			["y", ["em", 4.8]],
+		],
+
+		["TextFrame",
+		 ["text", GOURMENTBITES.items.map(format_item).join("\n\n")],
+			["height", ["em", 28]],
+			["x", ["recto", 1, 'x']],
+			["y", ["hangline", 4]],
+			["length", ["column_width", 4]] // 
+		],
+
+		["TextFrame",
 			["text",
 				"+:title " + MAIN_PLATTERS.title
 			],
@@ -543,7 +559,7 @@ let mains = (num) => ({
 		 ["text", MAIN_PLATTERS.items.map(format_item).join("\n\n")],
 			["height", ["em", 28]],
 			["x", ["verso", 1, 'x']],
-			["length", ["column_width", 3.8]],
+			["length", ["column_width", 4.5]],
 			["y", ["hangline", 4]],
 		],
 
@@ -570,7 +586,7 @@ let bigeats = (num) => ({
 				"+:title " + BIGEATS.title
 			],
 			["height", ["em", 24]],
-			["x", ["verso", 0, 'x']],
+			["x", ["verso", 1, 'x']],
 			["y", ["hangline", 1.5]],
 			["length", ["column_width", 3.6]]
 		],
@@ -578,7 +594,7 @@ let bigeats = (num) => ({
 		["TextFrame",
 		 ["text", BIGEATS.veg.map(format_item).join("\n\n")],
 			["height", ["em", 32]],
-			["x", ["verso", 0, 'x']],
+			["x", ["verso", 1, 'x']],
 			["length", ["column_width", 3.9]],
 			["y", ["hangline", 3]],
 		],
@@ -620,7 +636,7 @@ let smalleats = (num) => ({
 			 "+:title " + SMALLEATS.title + " +:subtitle\n+:symbol (veg) " 
 			],
 			["height", ["em", 24]],
-			["x", ["verso", 0, 'x']],
+			["x", ["verso", 1, 'x']],
 			["y", ["hangline", 2.5]],
 			["length", ["column_width", 3.6]]
 		],
@@ -628,7 +644,7 @@ let smalleats = (num) => ({
 		["TextFrame",
 		 ["text", SMALLEATS.veg.slice(0,5).map(format_item).join("\n\n")],
 			["height", ["em", 32]],
-			["x", ["verso", 0, 'x']],
+			["x", ["verso", 1, 'x']],
 			["length", ["column_width", 3.8]],
 			["y", ["hangline", 4.5]],
 		],
@@ -712,21 +728,6 @@ let superbowls = (num) => ({
 	content: [
 		...page_number_spread(num).content,
 
-		["TextFrame",
-			["text", "+:title " + GOURMENTBITES.title.toUpperCase()],
-			["height", ["em", 22]],
-			["length", ["column_width", 3.5]],
-			["x", ["verso", 0, "x"]],
-			["y", ["em", 3.5]],
-		],
-
-		["TextFrame",
-		 ["text", GOURMENTBITES.items.map(format_item).join("\n\n")],
-			["height", ["em", 28]],
-			["x", ["verso", 0, 'x']],
-			["y", ["hangline", 3.8]],
-			["length", ["column_width", 3.2]] // 
-		],
 
 		["TextFrame",
 		 ["text",
@@ -734,17 +735,25 @@ let superbowls = (num) => ({
 			" +:subtitle-big " + SLIDERS.subtitle
 		 ],
 			["height", ["em", 38]],
-			["x", ["verso", 3.85, "x"]],
-			["y", ["em", 3.2]],
+			["x", ["verso", .5, "x"]],
+			["y", ["em", 4]],
 			["length", ["column_width", 4]]
 		],
 
 		["TextFrame",
-		 ["text", SLIDERS.items.map(format_item).join("\n\n")],
+		 ["text", SLIDERS.items.slice(0,4).map(format_item).join("\n\n")],
 			["height", ["em", 38]],
-			["x", ["verso", 3.85, "x"]],
-			["length", ["column_width", 4.3]],
-			["y", ["hangline", 3.8]],
+			["x", ["verso", .5, "x"]],
+			["length", ["column_width", 3.8]],
+			["y", ["hangline", 4.3]],
+		],
+
+		["TextFrame",
+		 ["text", SLIDERS.items.slice(4).map(format_item).join("\n\n")],
+			["height", ["em", 38]],
+			["x", ["verso", 5, "x"]],
+			["length", ["column_width", 3.7]],
+			["y", ["hangline", 4.5]],
 		],
 
 
@@ -879,7 +888,7 @@ let desserts = (num) => ({
 			 " +:hide >>>>>>>>>>> >>>>>>>> +:subtitle-big " + DESSERTS.subtitle],
 		 ["height", ["em", 24]],
 			["x", ["verso", 0.5, 'x']],
-			["length", ["column_width", 8.2]],
+			["length", ["column_width", 6.8]],
 			["y", ["hangline", 3]],
 		],
 
