@@ -2,7 +2,7 @@ import { sig, mem, render, HTML as html, eff_on, mut, each } from "./lib/chowk/m
 import { hyphenateSync } from "./lib/hyphenator/hyphenate.js"
 import { Q5 as p5 } from "./lib/q5/q5.js"
 import { Scale, DPI } from "./scale.js"
-import {file, wood, tag_hooks, structure, offsets, data, style } from "./breakfast.js"
+import {file, wood, tag_hooks, structure, offsets, data, style } from "./allday.js"
 
 let ws = new WebSocket("ws://localhost:7462/data")
 
@@ -1199,7 +1199,7 @@ oninit.push(() => {
 //
 /**@type {Book}*/
 let book
-let page = 6
+let page =1 
 
 oninit.push(update)
 

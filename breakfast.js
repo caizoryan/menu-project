@@ -1,7 +1,6 @@
 import { Scale, DPI } from "./scale.js"
 import { GOURMENTBITES, BENEDICTS,TOASTS, EGGS, JARS, SANDWICHES, BURGETS, SUPERBOWLS, MAIN_PLATTERS, PANCAKES, DESSERTS, WAFFLES, FRENCH, BREADTHINGS, NOTE } from "./breakfastmenu.js"
 import * as Type from "./menu.js"
-import { h2 } from "./lib/chowk/monke.js"
 export let file = './breakfast.json'
 
 let fonts = {
@@ -17,6 +16,13 @@ export let wood = {
 }
 
 export let tag_hooks = {
+
+	"+:title-bold": {
+		font_weight: 500,
+		font_family: "stolzl",
+		font_size: s.point(17),
+		leading: s.point(21)
+	},
 	"+:title": {
 		font_weight: 200,
 		font_family: "stolzl",
@@ -76,8 +82,8 @@ export let tag_hooks = {
 	"+:item": {
 		font_family: "stolzl",
 		font_weight: "400",
-		font_size: s.point(9.5),
-		leading: s.point(10.5)
+		font_size: s.point(10.4),
+		leading: s.point(11)
 	},
 
 	"+:hide": {
@@ -86,9 +92,9 @@ export let tag_hooks = {
 
 	"+:description": {
 		font_family: "freight-micro-pro",
-		font_size: s.point(7.5),
-		color: "#444",
-		leading: s.point(9.2)
+		font_size: s.point(9),
+		color: "#222",
+		leading: s.point(10.2)
 	},
 
 	"+:toppings": {
@@ -211,7 +217,7 @@ export let style = {
 	title: [
 		["font_family", fonts.ouma],
 		["length", ["column_width", 7]],
-		["font_size", ["point", 28]],
+		["font_size", ["point", 32]],
 		["color", "#444"],
 		["color", "#666"],
 		["leading", ["point", 38]],
@@ -262,7 +268,7 @@ let cover = {
 
 		["TextFrame",
 		 ["text",
-			"+:title Brickhaus Cafe "
+			"+:title-bold Brickhaus Cafe "
 			+ "+:subtitle-big breakfast menu"
 		 ],
 			["height", ["em", 12]],
@@ -424,7 +430,7 @@ let sandwiches = (num) => ({
 			["text", "Sandwiches"],
 			["height", ["em", 12]],
 			["x", ["em", 12 * 3]],
-			["y", ["em", 1]],
+			["y", ["em", .2]],
 		],
 
 		["TextFrame",
@@ -447,7 +453,7 @@ let sandwiches = (num) => ({
 			["height", ["em", 28]],
 			["x", ["recto", 3, 'x']],
 			["y", ["hangline", 5]],
-			["length", ["column_width", 4.5]]
+			["length", ["column_width", 5]]
 		]
 	]
 })
@@ -522,7 +528,7 @@ let superbowls = (num) => ({
 			["height", ["em", 28]],
 			["x", ["verso", 0, 'x']],
 			["y", ["hangline", 3.8]],
-			["length", ["column_width", 3.8]]
+			["length", ["column_width", 3.2]] // 
 		],
 
 		["TextFrame",
@@ -531,16 +537,16 @@ let superbowls = (num) => ({
 			" +:subtitle-big " + BURGETS.subtitle
 		 ],
 			["height", ["em", 38]],
-			["x", ["verso", 4.3, "x"]],
-			["y", ["em", 3.5]],
+			["x", ["verso", 3.85, "x"]],
+			["y", ["em", 3.2]],
 			["length", ["column_width", 4]]
 		],
 
 		["TextFrame",
 		 ["text", BURGETS.items.map(format_item).join("\n\n")],
 			["height", ["em", 38]],
-			["x", ["verso", 4.3, 'x']],
-			["length", ["column_width", 4.5]],
+			["x", ["verso", 3.85, "x"]],
+			["length", ["column_width", 4.3]],
 			["y", ["hangline", 3.8]],
 		],
 
@@ -555,10 +561,10 @@ let superbowls = (num) => ({
 
 		["TextFrame",
 		 ["text", SUPERBOWLS.items.map(format_item).join("\n\n")],
-			["height", ["em", 28]],
+			["height", ["em", 30]],
 			["x", ["recto", 2, 'x']],
 			["length", ["column_width", 5.7]],
-			["y", ["hangline", 2.8]],
+			["y", ["hangline", 2.4]],
 		],
 
 	]
@@ -580,7 +586,7 @@ let pancakes = (num) => ({
 		["TextFrame",
 			["text", "+:title " + PANCAKES.title],
 		 ["height", ["em", 24]],
-			["x", ["verso", 0.5, 'x']],
+			["x", ["verso", 1, 'x']],
 			["y", ["hangline", 4.7]],
 			["length", ["column_width", 5.5]]
 		],
